@@ -1,0 +1,21 @@
+{
+    "name": "prestashop/pstest",
+    "require": {
+        "phpunit/phpunit": "~4.5",
+        "symfony/console": "~2.6"
+    },
+    "authors": [
+        {
+            "name": "fmdj",
+            "email": "fmdj@prestashop.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "PrestaShop\\PSTest\\": "src/pstest/",
+            "PrestaShop\\ConfMap\\": "src/confmap/",
+            "PrestaShop\\ConfMap\\Tests\\": "tests/confmap/",
+            "PrestaShop\\ConfMap\\Tests\\Fixtures\\": "tests/confmap/fixtures/"
+        }
+    }
+}

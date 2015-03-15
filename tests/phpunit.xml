@@ -1,0 +1,8 @@
+<phpunit bootstrap="../vendor/autoload.php">
+    <testsuites>
+        <testsuite name="ConfMap">
+            <directory>./confmap</directory>
+            <exclude>./confmap/fixtures</exclude>
+        </testsuite>
+    </testsuites>
+</phpunit>

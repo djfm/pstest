@@ -1,0 +1,9 @@
+{
+    "some_conf": {
+        "a": 1,
+        "b": 2,
+        "database": {
+            "user": "root"
+        }
+    }
+}
