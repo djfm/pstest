@@ -2,15 +2,53 @@
 
 namespace PrestaShop\PSTest;
 
-class SystemSettings
+use PrestaShop\ConfMap\Configuration;
+
+/**
+ * @root system
+ */
+class SystemSettings extends Configuration
 {
+    /**
+     * @conf database.host
+     * @var string
+     */
     private $database_host = '127.0.0.1';
+
+    /**
+     * @conf database.port
+     * @var int
+     */
     private $database_port = 3306;
+
+    /**
+     * @conf database.user
+     * @var string
+     */
     private $database_user = 'root';
+
+    /**
+     * @conf database.pass
+     * @var string
+     */
     private $database_pass = '';
+
+    /**
+     * @conf database.name
+     * @var string
+     */
     private $database_name;
 
+    /**
+     * @conf www.path
+     * @var string
+     */
     private $www_path; // example: /var/www/sandbox
+
+    /**
+     * @conf www.base
+     * @var string
+     */
     private $www_base; // example: http://localhost/sandbox
 
 

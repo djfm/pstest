@@ -9,7 +9,7 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 use PrestaShop\PSTest\SystemSettings;
-use PrestaShop\PSTest\Shop\LocalShopSourceSettings;
+use PrestaShop\PSTest\LocalShopSourceSettings;
 use PrestaShop\PSTest\Shop\LocalShopFactory;
 
 class ShopInstall extends Command

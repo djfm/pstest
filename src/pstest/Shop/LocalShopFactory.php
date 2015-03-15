@@ -3,7 +3,7 @@
 namespace PrestaShop\PSTest\Shop;
 
 use PrestaShop\PSTest\SystemSettings;
-use PrestaShop\PSTest\Shop\LocalShopSourceSettings;
+use PrestaShop\PSTest\LocalShopSourceSettings;
 
 class LocalShopFactory
 {
@@ -18,6 +18,6 @@ class LocalShopFactory
 
     public function makeShop()
     {
-        
+
     }
 }

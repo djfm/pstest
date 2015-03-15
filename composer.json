@@ -15,7 +15,8 @@
             "PrestaShop\\PSTest\\": "src/pstest/",
             "PrestaShop\\ConfMap\\": "src/confmap/",
             "PrestaShop\\ConfMap\\Tests\\": "tests/confmap/",
-            "PrestaShop\\ConfMap\\Tests\\Fixtures\\": "tests/confmap/fixtures/"
+            "PrestaShop\\ConfMap\\Tests\\Fixtures\\": "tests/confmap/fixtures/",
+            "PrestaShop\\PSTest\\Tests\\": "tests/pstest/"
         }
     }
 }
