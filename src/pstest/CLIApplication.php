@@ -4,6 +4,7 @@ namespace PrestaShop\PSTest;
 
 use Symfony\Component\Console\Application;
 
+use PrestaShop\PSTest\Command\ConfigCreate;
 use PrestaShop\PSTest\Command\ShopInstall;
 
 class CLIApplication extends Application
@@ -16,6 +17,7 @@ class CLIApplication extends Application
 
     private function addCustomCommands()
     {
+        $this->add(new ConfigCreate);
         $this->add(new ShopInstall);
     }
 }

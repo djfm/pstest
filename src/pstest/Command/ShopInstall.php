@@ -12,11 +12,8 @@ use PrestaShop\PSTest\SystemSettings;
 use PrestaShop\PSTest\LocalShopSourceSettings;
 use PrestaShop\PSTest\Shop\LocalShopFactory;
 
-class ShopInstall extends Command
+class ShopInstall extends BaseCommand
 {
-    private $configuration_file_name = 'pstest.settings.json';
-
-
     protected function configure()
     {
         $this
@@ -29,8 +26,8 @@ class ShopInstall extends Command
         $systemSettings = new SystemSettings();
         $sourceSettings = new LocalShopSourceSettings();
 
-        if (!file_exists($this->configuration_file_name)) {
-            $output->writeln(sprintf('<error>Oops:</error> Cannot find configuration file `%s` in current directory.', $this->configuration_file_name));
+        if (!file_exists($this->getConfigurationFileName())) {
+            $output->writeln(sprintf('<error>Oops:</error> Cannot find configuration file `%s` in current directory.', $this->getConfigurationFileName()));
             return 1;
         }
 
