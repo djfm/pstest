@@ -105,5 +105,24 @@ class ConfigurationTest extends PHPUnit_Framework_TestCase
             $conf->dumpArray(),
             $otherConf->dumpArray()
         );
+
+        unlink($file);
+    }
+
+    public function test_dumpFile_existingFile_does_NOT_overwrite_other_data()
+    {
+        $multiconfPath = __DIR__ . DIRECTORY_SEPARATOR . 'fixtures' . DIRECTORY_SEPARATOR . 'multiconf.json';
+        $currentConf = new SomeConf;
+        $currentConf->loadFile($multiconfPath);
+
+        $dumpedconfPath = tempnam(sys_get_temp_dir(), 'conftest');
+        copy($multiconfPath, $dumpedconfPath);
+
+        $currentConf->dumpFile($dumpedconfPath);
+
+        $written = json_decode(file_get_contents($dumpedconfPath), true);
+        $this->assertEquals('me', $written['dont_touch']);
+
+        unlink($dumpedconfPath);
     }
 }

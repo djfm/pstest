@@ -117,10 +117,25 @@ class Configuration
 
     public function dumpFile($path)
     {
+        // Load raw current data array if existing
+        $currentData = [];
+        if (file_exists($path)) {
+            $currentData = @json_decode(file_get_contents($path), true);
+            if (!is_array($currentData)) {
+                $currentData = [];
+            }
+        }
+
+        $wrapper = new ArrayWrapper($currentData);
+
+        foreach ($this->dumpArray() as $key => $value) {
+            $wrapper->set($key, $value);
+        }
+
         $ok = @file_put_contents(
             $path,
             json_encode(
-                $this->dumpArray(),
+                $wrapper->getArray(),
                 JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT
             )
         );

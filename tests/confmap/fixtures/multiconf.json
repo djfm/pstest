@@ -1,0 +1,4 @@
+{
+    "dont_touch": "me",
+    "some_conf": {"should_be_overwritten": true}
+}
