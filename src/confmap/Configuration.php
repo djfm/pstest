@@ -119,7 +119,10 @@ class Configuration
     {
         $ok = @file_put_contents(
             $path,
-            json_encode($this->dumpArray())
+            json_encode(
+                $this->dumpArray(),
+                JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT
+            )
         );
 
         if (!$ok) {
