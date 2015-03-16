@@ -31,8 +31,8 @@ class ShopInstall extends BaseCommand
             return 1;
         }
 
-        $systemSettings->loadFile($this->configuration_file_name);
-        $sourceSettings->loadFile($this->configuration_file_name);
+        $systemSettings->loadFile($this->getConfigurationFileName());
+        $sourceSettings->loadFile($this->getConfigurationFileName());
 
         $shopFactory = new LocalShopFactory($systemSettings, $sourceSettings);
 
