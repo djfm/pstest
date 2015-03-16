@@ -12,17 +12,17 @@ class SomeConf extends Configuration
     /**
      * @conf
      */
-    private $a;
+    private $a = 'default_a';
 
     /**
      * @conf
      */
-    private $b;
+    private $b = 'default_b';
 
     /**
      * @conf database.user
      */
-    private $database_user;
+    public $database_user;
 
     public function getA()
     {

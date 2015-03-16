@@ -94,4 +94,38 @@ class Configuration
 
         return $this->loadArray($data);
     }
+
+    public function dumpArray()
+    {
+        $output = new ArrayWrapper([]);
+
+        $root = $this->getRoot();
+
+        foreach ($this->getProperties() as $name => $mappedBy) {
+
+            if (null !== $root) {
+                $mappedBy = $root . '.' . $mappedBy;
+            }
+
+            $getter = Closure::bind(function () use ($name) {
+                return $this->$name;
+            }, $this, $this);
+            $output->set($mappedBy, $getter());
+        }
+        return $output->getArray();
+    }
+
+    public function dumpFile($path)
+    {
+        $ok = @file_put_contents(
+            $path,
+            json_encode($this->dumpArray())
+        );
+
+        if (!$ok) {
+            throw new Exception(sprintf('Error writing configuration to file `%s`.'), $path);
+        }
+
+        return $this;
+    }
 }

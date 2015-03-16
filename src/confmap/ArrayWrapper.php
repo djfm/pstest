@@ -83,4 +83,9 @@ class ArrayWrapper
 
         return $this;
     }
+
+    public function getArray()
+    {
+        return $this->array;
+    }
 }

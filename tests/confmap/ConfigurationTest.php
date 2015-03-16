@@ -75,4 +75,35 @@ class ConfigurationTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(2, $conf->getB());
         $this->assertEquals('root', $conf->getDatabaseUser());
     }
+
+    public function test_dumpArray()
+    {
+        $conf = new SomeConf();
+        $this->assertEquals([
+            'some_conf' => [
+                'a' => 'default_a',
+                'b' => 'default_b',
+                'database' => ['user' => null]
+            ]
+        ], $conf->dumpArray());
+    }
+
+    public function test_dumpFile()
+    {
+        $conf = new SomeConf();
+        $conf->setA('not default_a');
+        $conf->setB('not default_b');
+        $conf->database_user = 'merlin';
+
+        $file = tempnam(sys_get_temp_dir(), 'conftest');
+        $conf->dumpFile($file);
+
+        $otherConf = new SomeConf();
+        $otherConf->loadFile($file);
+
+        $this->assertEquals(
+            $conf->dumpArray(),
+            $otherConf->dumpArray()
+        );
+    }
 }
