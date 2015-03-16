@@ -59,4 +59,28 @@ class ArrayWrapper
 
         return $value;
     }
+
+    private static function _set(array &$source, array $pathComponents, $value)
+    {
+        if (empty($pathComponents)) {
+            $source = $value;
+        } else {
+            $key = array_shift($pathComponents);
+            if (!array_key_exists($key, $source) || !is_array($source[$key])) {
+                $source[$key] = [];
+            }
+            self::_set($source[$key], $pathComponents, $value);
+        }
+    }
+
+    public function set($path, $value)
+    {
+        $pathComponents = self::splitPath($path);
+
+        if ($pathComponents) {
+            $value = self::_set($this->array, $pathComponents, $value);
+        }
+
+        return $this;
+    }
 }

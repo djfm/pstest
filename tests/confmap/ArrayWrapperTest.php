@@ -64,4 +64,24 @@ class ArrayWrapperTest extends PHPUnit_Framework_TestCase
 
         $this->assertEquals(44, $wrapper->get('a.b.c'));
     }
+
+    public function setExamples()
+    {
+        return [
+            ['a'],
+            ['a.b'],
+            ['a.b.c'],
+        ];
+    }
+
+    /**
+     * @dataProvider setExamples
+     */
+    public function test_set($path)
+    {
+        $wrapper = new ArrayWrapper([]);
+        $wrapper->set($path, 42);
+
+        $this->assertEquals(42, $wrapper->get($path));
+    }
 }
