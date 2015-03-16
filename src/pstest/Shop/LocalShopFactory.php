@@ -45,5 +45,14 @@ class LocalShopFactory
         if (!is_dir($targetPath) && !is_file($targetPath)) {
             $this->fs->cpr($sourcesPath, $targetPath);
         }
+
+        $shopSourceSettings = clone $this->sourceSettings;
+        $shopSourceSettings->setPathToShopFiles($targetPath);
+
+        $shopSystemSettings = clone $this->systemSettings;
+
+        $shop = new LocalShop($shopSystemSettings, $shopSourceSettings);
+
+        return $shop;
     }
 }
