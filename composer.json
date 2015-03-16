@@ -15,11 +15,13 @@
         "psr-4": {
             "PrestaShop\\PSTest\\": "src/pstest/",
             "PrestaShop\\ConfMap\\": "src/confmap/",
+            "PrestaShop\\Selenium\\": "src/selenium/src/",
             "PrestaShop\\FileSystem\\": "src/fs/",
             "PrestaShop\\ConfMap\\Tests\\": "tests/confmap/",
             "PrestaShop\\ConfMap\\Tests\\Fixtures\\": "tests/confmap/fixtures/",
             "PrestaShop\\PSTest\\Tests\\": "tests/pstest/",
-            "PrestaShop\\FileSystem\\Tests\\": "tests/fs/"
+            "PrestaShop\\FileSystem\\Tests\\": "tests/fs/",
+            "PrestaShop\\Selenium\\Tests\\": "tests/selenium/"
         }
     }
 }

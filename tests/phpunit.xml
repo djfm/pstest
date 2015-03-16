@@ -15,5 +15,9 @@
             <directory>./fs</directory>
         </testsuite>
 
+        <testsuite name="Selenium">
+            <directory>./selenium</directory>
+        </testsuite>
+
     </testsuites>
 </phpunit>
