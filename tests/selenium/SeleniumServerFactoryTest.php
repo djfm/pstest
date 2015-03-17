@@ -7,8 +7,17 @@ use PHPUnit_Framework_TestCase;
 use PrestaShop\Selenium\SeleniumServerFactory;
 use PrestaShop\Selenium\SeleniumServer;
 
+use PrestaShop\Proc\ExecutableHelper;
+
 class SeleniumServerFactoryTest extends PHPUnit_Framework_TestCase
 {
+    public function setup()
+    {
+        if (!ExecutableHelper::inPath('java')) {
+            $this->markTestIncomplete('Java is not installed, skipping test.');
+        }
+    }
+
     public function test_JARFileIsFound()
     {
         $ssf = new SeleniumServerFactory();
