@@ -121,6 +121,29 @@ class Proc
         return $this;
     }
 
+    private function getNullOutputDescriptor()
+    {
+        if ($this->platformIsWindows()) {
+            return ['file', 'NUL'];
+        } else {
+            return ['file', '/dev/null', 'w'];
+        }
+    }
+
+    public function disableSTDOUT()
+    {
+        $this->stdout_descriptor = $this->getNullOutputDescriptor();
+
+        return $this;
+    }
+
+    public function disableSTDERR()
+    {
+        $this->stderr_descriptor = $this->getNullOutputDescriptor();
+
+        return $this;
+    }
+
     public function setWorkingDirectory($directory)
     {
         $this->cwd = $directory;
@@ -139,15 +162,19 @@ class Proc
         return $this;
     }
 
-    public function start()
+    public function getDescriptors()
     {
-        $pipes = [];
-
-        $this->proc = proc_open($this->command, [
+        return [
             0 => $this->stdin_descriptor,
             1 => $this->stdout_descriptor,
             2 => $this->stderr_descriptor
-        ], $pipes, $this->cwd, $this->env);
+        ];
+    }
+
+    public function start()
+    {
+        $pipes = [];
+        $this->proc = proc_open($this->command, $this->getDescriptors(), $pipes, $this->cwd, $this->env);
 
         return $this->proc ? true : false;
     }

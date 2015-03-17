@@ -34,7 +34,22 @@ class SeleniumServerFactoryTest extends PHPUnit_Framework_TestCase
     {
         $server->shutDown();
         sleep(1);
-        $this->assertFalse($server->serverResponds());
+        $this->assertFalse($server->serverResponds(1));
         $this->assertFalse($server->isRunning());
+    }
+
+    public function test_port_automatically_chosen()
+    {
+        $ssf = new SeleniumServerFactory();
+        $a = $ssf->makeServer();
+        $b = $ssf->makeServer();
+
+        $this->assertTrue($a->isRunning());
+        $this->assertTrue($b->isRunning());
+
+        $this->assertFalse($a->getSettings()->getURL() === $b->getSettings()->getURL());
+
+        $a->shutDown();
+        $b->shutDown();
     }
 }

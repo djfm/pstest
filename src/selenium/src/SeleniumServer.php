@@ -15,10 +15,9 @@ class SeleniumServer
         $this->proc = $proc;
     }
 
-    public function serverResponds()
+    public function serverResponds($maxAttempts = 5)
     {
         $interval = 1;
-        $maxAttempts = 5;
 
         for ($i = 0; $i < $maxAttempts; $i++) {
             $ch = curl_init(rtrim($this->settings->getURL(), '/') . '/status');
@@ -48,5 +47,10 @@ class SeleniumServer
     {
         $killChildren = true;
         return $this->proc->terminate($killChildren);
+    }
+
+    public function getSettings()
+    {
+        return $this->settings;
     }
 }

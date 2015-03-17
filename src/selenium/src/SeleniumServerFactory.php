@@ -49,6 +49,9 @@ class SeleniumServerFactory
     {
         $command = $this->getStartCommand($port);
         $proc = new Proc($command);
+
+        $proc->disableSTDOUT()->disableSTDERR();
+
         $proc->start();
 
         $url = 'http://' . $this->host . ':' . $port . '/wd/hub';
@@ -63,10 +66,19 @@ class SeleniumServerFactory
 
     public function makeServer()
     {
-        $server = $this->_makeServer($this->start_port);
+        for ($port = $this->start_port; $port < $this->end_port; ++$port) {
 
-        if ($server->isRunning()) {
-            return $server;
+            // fast test of port before starting selenium
+            $conn = @fsockopen($this->host, $port);
+            if (is_resource($conn)) {
+                fclose($conn);
+                continue;
+            }
+
+            $server = $this->_makeServer($port);
+            if ($server->isRunning()) {
+                return $server;
+            }
         }
 
         throw new Exception('Could not start local selenium server.');

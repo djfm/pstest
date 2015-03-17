@@ -8,22 +8,27 @@ use PrestaShop\Proc\Proc;
 
 class ProcTest extends PHPUnit_Framework_TestCase
 {
-    private function getSleeperCommand($seconds = 1)
+    private function getCommandThatSleeps($seconds = 1)
     {
         return PHP_BINARY . ' ' . escapeshellarg(__DIR__ . DIRECTORY_SEPARATOR . 'sleeping_beauty.php') . ' ' . (int)$seconds;
+    }
+
+    private function getCommandWithOutput($output)
+    {
+        return PHP_BINARY . ' ' . escapeshellarg(__DIR__ . DIRECTORY_SEPARATOR . 'output.php') . ' ' . escapeshellarg($output);
     }
 
     public function test_run_BaseCase()
     {
         $proc = new Proc();
-        $proc->setCommand($this->getSleeperCommand(1));
+        $proc->setCommand($this->getCommandThatSleeps(1));
         $this->assertTrue($proc->start());
     }
 
     public function test_close_waitsForProcess()
     {
         $proc = new Proc();
-        $proc->setCommand($this->getSleeperCommand(2));
+        $proc->setCommand($this->getCommandThatSleeps(2));
         $tStart = time();
         $this->assertTrue($proc->start());
         $this->assertTrue($proc->close());
@@ -34,7 +39,7 @@ class ProcTest extends PHPUnit_Framework_TestCase
     public function test_exit_code_available_after_close()
     {
         $proc = new Proc();
-        $proc->setCommand($this->getSleeperCommand(1));
+        $proc->setCommand($this->getCommandThatSleeps(1));
         $this->assertTrue($proc->start());
         $this->assertTrue($proc->close());
         $this->assertEquals(42, $proc->getExitCode());
@@ -43,7 +48,7 @@ class ProcTest extends PHPUnit_Framework_TestCase
     public function test_run_getStatus()
     {
         $proc = new Proc();
-        $proc->setCommand($this->getSleeperCommand(1))->start();
+        $proc->setCommand($this->getCommandThatSleeps(1))->start();
         $status = $proc->getStatus();
         $this->assertTrue($status['running']);
     }
@@ -52,7 +57,7 @@ class ProcTest extends PHPUnit_Framework_TestCase
     {
         $proc = new Proc();
         $tStart = time();
-        $proc->setCommand($this->getSleeperCommand(10))->start();
+        $proc->setCommand($this->getCommandThatSleeps(10))->start();
         $proc->terminate();
         sleep(1);
         $this->assertEquals(false, $proc->isRunning());
@@ -62,7 +67,7 @@ class ProcTest extends PHPUnit_Framework_TestCase
     public function test_exitCode_after_terminate()
     {
         $proc = new Proc();
-        $proc->setCommand($this->getSleeperCommand(10))->start();
+        $proc->setCommand($this->getCommandThatSleeps(10))->start();
         $proc->terminate();
         sleep(1);
         $this->assertEquals(false, $proc->isRunning());
@@ -72,7 +77,7 @@ class ProcTest extends PHPUnit_Framework_TestCase
     public function test_run_getExitCode()
     {
         $proc = new Proc();
-        $proc->setCommand($this->getSleeperCommand(1))->start();
+        $proc->setCommand($this->getCommandThatSleeps(1))->start();
         $this->assertTrue($proc->isRunning());
         sleep(2);
         $this->assertFalse($proc->isRunning());
@@ -84,7 +89,7 @@ class ProcTest extends PHPUnit_Framework_TestCase
 
     public function test_getChildren()
     {
-        $proc = new Proc($this->getSleeperCommand(10));
+        $proc = new Proc($this->getCommandThatSleeps(10));
         $proc->start();
         $pids = $proc->getChildren();
         $this->assertGreaterThan(0, count($pids));
