@@ -2,7 +2,7 @@
 
 namespace PrestaShop\Selenium;
 
-use PrestaShop\Confmap\Configuration;
+use PrestaShop\ConfMap\Configuration;
 
 /**
  * @root selenium
