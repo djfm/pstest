@@ -14,14 +14,16 @@
     "autoload": {
         "psr-4": {
             "PrestaShop\\PSTest\\": "src/pstest/",
+            "PrestaShop\\PSTest\\Tests\\": "tests/pstest/",
             "PrestaShop\\ConfMap\\": "src/confmap/",
-            "PrestaShop\\Selenium\\": "src/selenium/src/",
-            "PrestaShop\\FileSystem\\": "src/fs/",
             "PrestaShop\\ConfMap\\Tests\\": "tests/confmap/",
             "PrestaShop\\ConfMap\\Tests\\Fixtures\\": "tests/confmap/fixtures/",
-            "PrestaShop\\PSTest\\Tests\\": "tests/pstest/",
+            "PrestaShop\\Selenium\\": "src/selenium/src/",
+            "PrestaShop\\Selenium\\Tests\\": "tests/selenium/",
+            "PrestaShop\\FileSystem\\": "src/fs/",
             "PrestaShop\\FileSystem\\Tests\\": "tests/fs/",
-            "PrestaShop\\Selenium\\Tests\\": "tests/selenium/"
+            "PrestaShop\\Proc\\": "src/proc",
+            "PrestaShop\\Proc\\Tests\\": "tests/proc"
         }
     }
 }

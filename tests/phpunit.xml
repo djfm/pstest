@@ -19,5 +19,9 @@
             <directory>./selenium</directory>
         </testsuite>
 
+        <testsuite name="Proc">
+            <directory>./proc</directory>
+        </testsuite>
+
     </testsuites>
 </phpunit>
