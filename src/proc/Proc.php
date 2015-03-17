@@ -71,7 +71,7 @@ class Proc
         return $this;
     }
 
-    public function run()
+    public function start()
     {
         $pipes = [];
 
@@ -103,7 +103,7 @@ class Proc
     }
 
     public function terminate()
-    {        
+    {
         if ($this->proc) {
             return proc_terminate($this->proc);
         } else {

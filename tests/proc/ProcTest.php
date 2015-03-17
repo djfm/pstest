@@ -17,7 +17,7 @@ class ProcTest extends PHPUnit_Framework_TestCase
     {
         $proc = new Proc();
         $proc->setCommand($this->getSleeperCommand(1));
-        $this->assertTrue($proc->run());
+        $this->assertTrue($proc->start());
     }
 
     public function test_close_waitsForProcess()
@@ -25,7 +25,7 @@ class ProcTest extends PHPUnit_Framework_TestCase
         $proc = new Proc();
         $proc->setCommand($this->getSleeperCommand(2));
         $tStart = time();
-        $this->assertTrue($proc->run());
+        $this->assertTrue($proc->start());
         $this->assertTrue($proc->close());
         $duration = time() - $tStart;
         $this->assertGreaterThan(0, $duration);
@@ -35,7 +35,7 @@ class ProcTest extends PHPUnit_Framework_TestCase
     {
         $proc = new Proc();
         $proc->setCommand($this->getSleeperCommand(1));
-        $this->assertTrue($proc->run());
+        $this->assertTrue($proc->start());
         $this->assertTrue($proc->close());
         $this->assertEquals(42, $proc->getExitCode());
     }
@@ -43,7 +43,7 @@ class ProcTest extends PHPUnit_Framework_TestCase
     public function test_run_getStatus()
     {
         $proc = new Proc();
-        $proc->setCommand($this->getSleeperCommand(1))->run();
+        $proc->setCommand($this->getSleeperCommand(1))->start();
         $status = $proc->getStatus();
         $this->assertTrue($status['running']);
     }
@@ -52,7 +52,7 @@ class ProcTest extends PHPUnit_Framework_TestCase
     {
         $proc = new Proc();
         $tStart = time();
-        $proc->setCommand($this->getSleeperCommand(10))->run();
+        $proc->setCommand($this->getSleeperCommand(10))->start();
         $proc->terminate();
         sleep(1);
         $this->assertEquals(false, $proc->isRunning());
@@ -62,7 +62,7 @@ class ProcTest extends PHPUnit_Framework_TestCase
     public function test_exitCode_after_terminate()
     {
         $proc = new Proc();
-        $proc->setCommand($this->getSleeperCommand(10))->run();
+        $proc->setCommand($this->getSleeperCommand(10))->start();
         $proc->terminate();
         sleep(1);
         $this->assertEquals(false, $proc->isRunning());
@@ -72,7 +72,7 @@ class ProcTest extends PHPUnit_Framework_TestCase
     public function test_run_getExitCode()
     {
         $proc = new Proc();
-        $proc->setCommand($this->getSleeperCommand(1))->run();
+        $proc->setCommand($this->getSleeperCommand(1))->start();
         $this->assertTrue($proc->isRunning());
         sleep(2);
         $this->assertFalse($proc->isRunning());
