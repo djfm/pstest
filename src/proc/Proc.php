@@ -24,14 +24,14 @@ class Proc
             ->setSTDOUTDescriptor(STDOUT)
             ->setSTDERRDescriptor(STDERR)
             ->setWorkingDirectory(null)
-            ->setEnvironment($_ENV)
+            ->setEnvironment(Platform::getEnv())
             ->setCommand($command)
         ;
     }
 
     public function platformIsWindows()
     {
-        return preg_match('/^WIN/', PHP_OS);
+        return Platform::isWindows();
     }
 
     private function kill($pid)
