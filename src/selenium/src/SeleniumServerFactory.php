@@ -2,8 +2,16 @@
 
 namespace PrestaShop\Selenium;
 
+use Exception;
+
+use PrestaShop\Proc\Proc;
+
 class SeleniumServerFactory
 {
+    private $start_port = 4444;
+    private $end_port = 4500;
+    private $host = '127.0.0.1';
+
     public function __construct()
     {
 
@@ -32,14 +40,35 @@ class SeleniumServerFactory
         return implode(' ', [
             'java',
             '-jar', escapeshellcmd($this->getPathToServerJARFile()),
-            '-port', $port
+            '-port', $port,
+            '-host', escapeshellarg($this->host)
         ]);
+    }
+
+    private function _makeServer($port)
+    {
+        $command = $this->getStartCommand($port);
+        $proc = new Proc($command);
+        $proc->start();
+
+        $url = 'http://' . $this->host . ':' . $port . '/wd/hub';
+
+        $serverSettings = new SeleniumServerSettings();
+        $serverSettings->setURL($url);
+
+        $server = new SeleniumServer($serverSettings, $proc);
+
+        return $server;
     }
 
     public function makeServer()
     {
-        $port = 4444;
+        $server = $this->_makeServer($this->start_port);
 
-        $command = $this->getStartCommand($port);
+        if ($server->isRunning()) {
+            return $server;
+        }
+
+        throw new Exception('Could not start local selenium server.');
     }
 }

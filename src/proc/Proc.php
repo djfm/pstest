@@ -17,7 +17,7 @@ class Proc
     private $proc = null;
     private $exit_code = null;
 
-    public function __construct()
+    public function __construct($command = '')
     {
         $this
             ->setSTDINDescriptor(STDIN)
@@ -25,7 +25,70 @@ class Proc
             ->setSTDERRDescriptor(STDERR)
             ->setWorkingDirectory(null)
             ->setEnvironment($_ENV)
+            ->setCommand($command)
         ;
+    }
+
+    public function platformIsWindows()
+    {
+        return preg_match('/^WIN/', PHP_OS);
+    }
+
+    private function kill($pid)
+    {
+        if ($this->platformIsWindows()) {
+            exec('tskill ' . $pid);
+        } else {
+            exec('kill ' . $pid);
+        }
+    }
+
+    public function getPID()
+    {
+        if ($this->isRunning()) {
+            return $this->getStatus()['pid'];
+        } else {
+            return -1;
+        }
+    }
+
+    public function getChildren()
+    {
+        if (!$this->isRunning()) {
+            return [];
+        }
+
+        $children = [];
+
+        if ($this->platformIsWindows()) {
+            $command = "wmic process where (ParentProcessId=".$this->getPID().") get ProcessId 2>NUL";
+			$output = [];
+			exec($command, $output);
+            for ($i = 1; $i < count($output); $i++) {
+                if (preg_match('/^\d+$/', $output[$i])) {
+                    $children[] = intval($output[$i]);
+                }
+            }
+        } else {
+            $command = "pgrep -P " . $this->getPID();
+			$output = [];
+			$ret = 1;
+			exec($command, $output, $ret);
+			if ($ret === 0) {
+                $children = array_map('intval', $output);
+			}
+        }
+
+        return $children;
+    }
+
+    public function killChildren()
+    {
+        foreach ($this->getChildren() as $pid) {
+            $this->kill($pid);
+        }
+
+        return $this;
     }
 
     public function setCommand($command)
@@ -33,6 +96,11 @@ class Proc
         $this->command = $command;
 
         return $this;
+    }
+
+    public function getCommand()
+    {
+        return $this->command;
     }
 
     public function setSTDINDescriptor($descriptor)
@@ -102,9 +170,14 @@ class Proc
         }
     }
 
-    public function terminate()
+    public function terminate($killChildren = false)
     {
         if ($this->proc) {
+
+            if ($killChildren) {
+                $this->killChildren();
+            }
+
             return proc_terminate($this->proc);
         } else {
             return false;

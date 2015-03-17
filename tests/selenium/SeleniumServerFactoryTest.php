@@ -1,14 +1,40 @@
 <?php
 
+namespace PrestaShop\Selenium\Tests;
+
 use PHPUnit_Framework_TestCase;
 
 use PrestaShop\Selenium\SeleniumServerFactory;
+use PrestaShop\Selenium\SeleniumServer;
 
 class SeleniumServerFactoryTest extends PHPUnit_Framework_TestCase
 {
-    public function testJARFileIsFound()
+    public function test_JARFileIsFound()
     {
         $ssf = new SeleniumServerFactory();
         $this->assertInternalType('string', $ssf->getPathToServerJARFile());
+    }
+
+    public function test_startCommandIsGenerated()
+    {
+        $ssf = new SeleniumServerFactory();
+        $this->assertEquals(1, preg_match('/\.jar\b.*?\-port/', $ssf->getStartCommand(4444)));
+    }
+
+    public function test_makeServer()
+    {
+        $ssf = new SeleniumServerFactory();
+        return $ssf->makeServer();
+    }
+
+    /**
+     * @depends test_makeServer
+     */
+    public function test_stopServer(SeleniumServer $server)
+    {
+        $server->shutDown();
+        sleep(1);
+        $this->assertFalse($server->serverResponds());
+        $this->assertFalse($server->isRunning());
     }
 }

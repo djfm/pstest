@@ -81,4 +81,15 @@ class ProcTest extends PHPUnit_Framework_TestCase
         // which would only get the real status the first time after the program exited.
         $this->assertEquals(42, $proc->getExitCode());
     }
+
+    public function test_getChildren()
+    {
+        $proc = new Proc($this->getSleeperCommand(10));
+        $proc->start();
+        $pids = $proc->getChildren();
+        $this->assertGreaterThan(0, count($pids));
+        foreach ($pids as $pid) {
+            $this->assertFalse($pid === $proc->getPID());
+        }
+    }
 }
