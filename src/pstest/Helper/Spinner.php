@@ -45,7 +45,7 @@ class Spinner
 
         for (;;) {
             try {
-                $test($this);
+                return $test($this);
             } catch (Exception $e) {
                 if ($outOfTime() || $this->mustAbortOn($e)) {
                     if ($this->message) {

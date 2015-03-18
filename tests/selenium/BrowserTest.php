@@ -1,19 +1,40 @@
 <?php
 
+use PrestaShop\Selenium\SeleniumServerFactory;
+use PrestaShop\Selenium\SeleniumBrowserFactory;
+use PrestaShop\Selenium\SeleniumBrowserSettings;
 use PrestaShop\Selenium\Browser\Browser;
+use PrestaShop\Selenium\Xvfb\XvfbServerFactory;
 
 class BrowserTest extends PHPUnit_Framework_TestCase
 {
 	private static $staticBrowser;
+	private static $servers = [];
 
 	public static function setupBeforeClass()
 	{
-		self::$staticBrowser = new Browser(['host' => getenv('SELENIUM_HOST')]);
+		$ssf = new SeleniumServerFactory;
+		$xsf = new XvfbServerFactory;
+
+		if ($xsf->hasXvfbProgram()) {
+			$xvfb = $xsf->makeServer();
+			self::$servers[] = $xvfb;
+			$ssf->setXvfb($xvfb);
+		}
+
+		$server = $ssf->makeServer();
+		self::$servers[] = $server;
+		$browserSettings = new SeleniumBrowserSettings;
+		$sbf = new SeleniumBrowserFactory($server->getSettings(), $browserSettings);
+		self::$staticBrowser = $sbf->makeBrowser();
 	}
 
 	public static function teardownAfterClass()
 	{
 		self::$staticBrowser->quit();
+		foreach (self::$servers as $server) {
+			$server->shutDown();
+		}
 	}
 
 	public function setup()
@@ -29,7 +50,7 @@ class BrowserTest extends PHPUnit_Framework_TestCase
 	}
 
 	/**
-	 * @expectedException PrestaShop\PSTAF\Exception\ElementNotFoundException
+	 * @expectedException PrestaShop\Selenium\Browser\Exception\ElementNotFoundException
 	 */
 	public function testFindUnExistingSingle()
 	{
@@ -37,7 +58,7 @@ class BrowserTest extends PHPUnit_Framework_TestCase
 	}
 
 	/**
-	 * @expectedException PrestaShop\PSTAF\Exception\ElementNotFoundException
+	 * @expectedException PrestaShop\Selenium\Browser\Exception\ElementNotFoundException
 	 */
 	public function testFindUnExistingMultiple()
 	{
@@ -45,7 +66,7 @@ class BrowserTest extends PHPUnit_Framework_TestCase
 	}
 
 	/**
-	 * @expectedException PrestaShop\PSTAF\Exception\TooManyElementsFoundException
+	 * @expectedException PrestaShop\Selenium\Browser\Exception\TooManyElementsFoundException
 	 */
 	public function testFindTooMany()
 	{
@@ -73,7 +94,7 @@ class BrowserTest extends PHPUnit_Framework_TestCase
 	}
 
 	/**
-	 * @expectedException PrestaShop\PSTAF\Exception\ElementNotFoundException
+	 * @expectedException PrestaShop\Selenium\Browser\Exception\ElementNotFoundException
 	 */
 	public function testWaitForExistingNeverVisible()
 	{
@@ -115,7 +136,7 @@ class BrowserTest extends PHPUnit_Framework_TestCase
 	}
 
 	/**
-	 * @expectedException PrestaShop\PSTAF\Exception\ElementNotFoundException
+	 * @expectedException PrestaShop\Selenium\Browser\Exception\ElementNotFoundException
 	 */
 	public function testGetAttributeNotFound()
 	{
@@ -123,7 +144,7 @@ class BrowserTest extends PHPUnit_Framework_TestCase
 	}
 
 	/**
-	 * @expectedException PrestaShop\PSTAF\Exception\TooManyElementsFoundException
+	 * @expectedException PrestaShop\Selenium\Browser\Exception\TooManyElementsFoundException
 	 */
 	public function testGetAttributeTooMany()
 	{
@@ -266,7 +287,7 @@ class BrowserTest extends PHPUnit_Framework_TestCase
 	}
 
 	/**
-	 * @expectedException PrestaShop\PSTAF\Exception\NoAlertException
+	 * @expectedException PrestaShop\Selenium\Browser\Exception\NoAlertException
 	 */
 	public function testAcceptAlertNotFound()
 	{

@@ -5,7 +5,7 @@ namespace PrestaShop\Selenium\Browser;
 /**
  * @todo: map this to somewhere
  */
-use PrestaShop\PSTAF\Helper\Spinner;
+use PrestaShop\PSTest\Helper\SpinnerHelper as Spin;
 use PrestaShop\PSTAF\Helper\URL;
 
 use PrestaShop\Selenium\Browser\Exception\ElementNotFoundException;
@@ -322,13 +322,11 @@ class Browser implements BrowserInterface
      */
     private function _acceptAlert()
     {
-        $spinner = new Spinner('Did not find alert.', $this->defaultTimeout, $this->defaultInterval);
-
         try {
-            $spinner->assertNoException(function() {
+            Spin::assertNoException(function() {
                 $alert = $this->driver->switchTo()->alert();
                 $alert->accept();
-            });
+            }, $this->defaultTimeout, $this->defaultInterval, 'Did not find alert.');
         } catch (Exception $e) {
             throw new NoAlertException("There was no alert to accept.", 1, $e);
         }
@@ -406,55 +404,55 @@ class Browser implements BrowserInterface
             $selectorType = 'xpath';
         }
 
-        $spinner = new Spinner(null, $options['timeout'], $options['interval']);
+        $finder = function ($spinner) use ($base, $selectorType, $finalSelector, $options) {
+            $spinner->abortOnException('PrestaShop\Selenium\Browser\Exception\TooManyElementsFoundException');
 
-        $spinner->addPassthroughExceptionClass('PrestaShop\Selenium\Browser\Exception\TooManyElementsFoundException');
+            $found = $base->findElements(WebDriverBy::$selectorType($finalSelector));
+
+            $elements = array_map(function ($nativeElement) {
+                return new Element($nativeElement, $this);
+            }, $found);
+
+            if ($options['displayed'] !== null || $options['enabled'] !== null) {
+                $elements = array_filter($elements, function ($element) use ($options) {
+
+                    $ok = true;
+
+                    if ($options['displayed'] !== null) {
+                        $ok = $ok && ($element->isDisplayed() == $options['displayed']);
+                    }
+
+                    if ($ok && $options['enabled'] !== null) {
+                        $ok = $ok && ($element->isEnabled() == $options['enabled']);
+                    }
+
+                    return $ok;
+                });
+            }
+
+            if (empty($elements)) {
+                throw new Exception('No element found.');
+            }
+
+            $nFound = count($elements);
+
+            if ($options['unique'] && $nFound > 1) {
+                throw new TooManyElementsFoundException("Found `$nFound` elements matching selector `$finalSelector`.");
+            }
+
+            // reindex array starting at 0
+            $elements = array_values($elements);
+
+            if ($options['unique']) {
+                return $elements[0];
+            } else {
+                return $elements;
+            }
+
+        };
 
         try {
-            return $spinner->assertNoException(function () use ($base, $selectorType, $finalSelector, $options) {
-                $found = $base->findElements(WebDriverBy::$selectorType($finalSelector));
-
-                $elements = array_map(function ($nativeElement) {
-                    return new Element($nativeElement, $this);
-                }, $found);
-
-                if ($options['displayed'] !== null || $options['enabled'] !== null) {
-                    $elements = array_filter($elements, function ($element) use ($options) {
-
-                        $ok = true;
-
-                        if ($options['displayed'] !== null) {
-                            $ok = $ok && ($element->isDisplayed() == $options['displayed']);
-                        }
-
-                        if ($ok && $options['enabled'] !== null) {
-                            $ok = $ok && ($element->isEnabled() == $options['enabled']);
-                        }
-
-                        return $ok;
-                    });
-                }
-
-                if (empty($elements)) {
-                    throw new Exception('No element found.');
-                }
-
-                $nFound = count($elements);
-
-                if ($options['unique'] && $nFound > 1) {
-                    throw new TooManyElementsFoundException("Found `$nFound` elements matching selector `$finalSelector`.");
-                }
-
-                // reindex array starting at 0
-                $elements = array_values($elements);
-
-                if ($options['unique']) {
-                    return $elements[0];
-                } else {
-                    return $elements;
-                }
-
-            });
+            return Spin::assertNoException($finder,$options['timeout'], $options['interval']);
         } catch (Exception $e) {
 
             if ($e instanceof TooManyElementsFoundException) {
@@ -663,11 +661,9 @@ class Browser implements BrowserInterface
 
     private function _jqcSelect($selector, $value)
     {
-        $spinner = new Spinner('Could not select value (JQuery Chosen Select)', $this->defaultTimeout, $this->defaultInterval);
-
-        return $spinner->assertNoException(function() use ($selector, $value) {
+        return Spin::assertNoException(function() use ($selector, $value) {
             return $this->tryJqcSelect($selector, $value);
-        });
+        }, $this->defaultTimeout, $this->defaultInterval, 'Could not select value (JQuery Chosen Select)');
     }
 
     public function jqcSelect($selector, $value)
