@@ -1,0 +1,65 @@
+<html>
+	<h1>This file is used to run the Browser tests, this is not intended for humans to read :)</h1>
+	<div id="ohai">Ohai!</div>
+	<span class="many"></span>
+	<span class="many"></span>
+	<span class="three"></span>
+	<span class="three"></span>
+	<span class="three"></span>
+	<span data-hello="world"></span>
+
+	<select id="select">
+		<option value="1"></option>
+		<option value="2"></option>
+		<option value="3" selected>  three  </option>
+		<option value="4"></option>
+	</select>
+
+	<select id="multiple" multiple>
+		<option value="1" selected>one</option>
+		<option value="2"></option>
+		<option value="3" selected>three</option>
+		<option value="4"></option>
+	</select>
+
+	<span id="click-me" onclick="javascript:this.innerHTML='clicked'">not clicked</span>
+	
+	<div id="hover-container" style="background-color:#ccc" onmouseover="javascript:document.getElementById('hover').style.visibility='visible'">
+		<div id="hover" style="visibility:hidden">hovered!</div>
+	</div>
+
+	<input id="input" type="text">
+
+	<div id="invisible" style="visibility:hidden">I'm the ghost in the shell.</div>
+
+	<div id="eventually-visible" style="visibility:hidden">I'm here now</div>
+	<script>
+		window.setTimeout(function () {
+			document.getElementById('eventually-visible').style.visibility = 'visible';
+		}, 2000);
+	</script>
+
+	<div class="first-visible" style="display:none">don't click</div>
+	<div id="first-visible" class="first-visible" onclick="javascript:this.innerHTML='clicked'">not clicked yet</div>
+	<div class="first-visible" style="display:none">don't click either</div>
+
+	<button name="button" style="display:none">a</button>
+	<button name="button" style="visibility:hidden">b</button>
+	<button name="button" disabled>c</button>
+	<button id="clickButtonNamed" style="visibility:hidden" name="button" onclick="javascript:this.innerHTML='clicked'">not clicked yet</button>
+	<script>
+		window.setTimeout(function () {
+			document.getElementById('clickButtonNamed').style.visibility = 'visible';
+		}, 2000);
+	</script>
+	
+	<div>
+		<input type="checkbox" id="checkbox"><label for="checkbox">Check me!</label>
+	</div>
+
+	<div id="executeScript"></div>
+
+	<iframe name="iframe" frameborder="1" srcdoc="<div id=&quot;hi&quot;>this is iframe</div>"></iframe>
+
+	<input type="file" id="file" style="display:none">
+</html>
