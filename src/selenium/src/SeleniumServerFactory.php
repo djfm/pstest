@@ -6,16 +6,15 @@ use Exception;
 
 use PrestaShop\Proc\Proc;
 
+use PrestaShop\Selenium\Xvfb\XvfbServer;
+
 class SeleniumServerFactory
 {
+    private $Xvfb;
+
     private $start_port = 4444;
     private $end_port = 4500;
     private $host = '127.0.0.1';
-
-    public function __construct()
-    {
-
-    }
 
     public function getPathToJARFiles()
     {
@@ -45,12 +44,25 @@ class SeleniumServerFactory
         ]);
     }
 
+    public function setXvfb(XvfbServer $Xvfb)
+    {
+        $this->Xvfb = $Xvfb;
+        return $this;
+    }
+
     private function _makeServer($port)
     {
         $command = $this->getStartCommand($port);
         $proc = new Proc($command);
 
         $proc->disableSTDOUT()->disableSTDERR();
+
+        if ($this->Xvfb) {
+            $proc->addEnvironmentVariable(
+                'DISPLAY',
+                $this->Xvfb->getDisplayName()
+            );
+        }
 
         $proc->start();
 

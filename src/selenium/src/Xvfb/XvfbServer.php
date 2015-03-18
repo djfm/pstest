@@ -30,4 +30,9 @@ class XvfbServer
     {
         return $this->displayNumber;
     }
+
+    public function getDisplayName()
+    {
+        return ':' . $this->getDisplayNumber();
+    }
 }

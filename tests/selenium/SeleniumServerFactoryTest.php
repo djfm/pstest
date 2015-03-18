@@ -7,6 +7,9 @@ use PHPUnit_Framework_TestCase;
 use PrestaShop\Selenium\SeleniumServerFactory;
 use PrestaShop\Selenium\SeleniumServer;
 
+use PrestaShop\Selenium\Xvfb\XvfbServerFactory;
+use PrestaShop\Selenium\Xvfb\XvfbServer;
+
 use PrestaShop\Proc\ExecutableHelper;
 
 class SeleniumServerFactoryTest extends PHPUnit_Framework_TestCase
@@ -60,5 +63,20 @@ class SeleniumServerFactoryTest extends PHPUnit_Framework_TestCase
 
         $a->shutDown();
         $b->shutDown();
+    }
+
+    public function test_makeServer_with_XvfbDisplay()
+    {
+        if (!ExecutableHelper::inPath('Xvfb')) {
+            $this->markTestIncomplete('Xvfb is not installed, skipping test.');
+        }
+
+        $xf = new XvfbServerFactory();
+        $Xvfb = $xf->makeServer();
+        $ssf = new SeleniumServerFactory();
+        $ssf->setXvfb($Xvfb);
+        $seleniumServer = $ssf->makeServer();
+        $seleniumServer->shutDown();
+        $Xvfb->shutDown();
     }
 }
