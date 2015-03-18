@@ -2,11 +2,8 @@
 
 namespace PrestaShop\Selenium\Browser;
 
-/**
- * @todo: map this to somewhere
- */
 use PrestaShop\PSTest\Helper\SpinnerHelper as Spin;
-use PrestaShop\PSTAF\Helper\URL;
+use PrestaShop\PSTAF\Helper\URLHelper as URL;
 
 use PrestaShop\Selenium\Browser\Exception\ElementNotFoundException;
 use PrestaShop\Selenium\Browser\Exception\TooManyElementsFoundException;
