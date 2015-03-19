@@ -10,14 +10,14 @@ use PrestaShop\TestRunner\TestAggregator;
 
 class TestAggregatorTest extends PHPUnit_Framework_TestCase
 {
-    private function makeObserver()
+    private function makeAggregator()
     {
         return new TestAggregator();
     }
 
     public function test_properOrderOfEvents_When_NoNesting()
     {
-        $obs = $this->makeObserver();
+        $obs = $this->makeAggregator();
         $obs->startTest('a');
         $obs->endTest('a', true, 'success');
 
@@ -29,14 +29,14 @@ class TestAggregatorTest extends PHPUnit_Framework_TestCase
      */
     public function test_properOrderOfEvents_When_NoNesting_WrongOrder()
     {
-        $obs = $this->makeObserver();
+        $obs = $this->makeAggregator();
         $obs->startTest('a');
         $obs->endTest('b', true, 'success');
     }
 
     public function test_properOrderOfEvents_When_NestingTests()
     {
-        $obs = $this->makeObserver();
+        $obs = $this->makeAggregator();
         $obs->startTest('a');
         $obs->startTest('b');
         $obs->endTest('b', true, 'success');
@@ -50,7 +50,7 @@ class TestAggregatorTest extends PHPUnit_Framework_TestCase
      */
     public function test_properOrderOfEvents_When_NestingTests_WrongOrder()
     {
-        $obs = $this->makeObserver();
+        $obs = $this->makeAggregator();
         $obs->startTest('a');
         $obs->startTest('b');
         $obs->endTest('a', true, 'success');
@@ -59,7 +59,7 @@ class TestAggregatorTest extends PHPUnit_Framework_TestCase
 
     public function test_ExceptionEvent_Recorded()
     {
-        $obs = $this->makeObserver();
+        $obs = $this->makeAggregator();
         $obs->startTest('a');
         $obs->addException(new Exception('a failed'));
         $obs->endTest('a', false, 'failure');
@@ -70,7 +70,7 @@ class TestAggregatorTest extends PHPUnit_Framework_TestCase
 
     public function test_FileEvent_Recorded()
     {
-        $obs = $this->makeObserver();
+        $obs = $this->makeAggregator();
         $obs->startTest('a');
         $obs->addFile(
             'some/file.txt',
@@ -91,7 +91,7 @@ class TestAggregatorTest extends PHPUnit_Framework_TestCase
 
     public function test_MessageEvent_Recorded()
     {
-        $obs = $this->makeObserver();
+        $obs = $this->makeAggregator();
         $obs->startTest('a');
         $obs->addMessage('hello', 'debug', ['env' => 42]);
         $obs->endTest('a', false, 'failure');
