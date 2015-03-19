@@ -2,11 +2,15 @@
 
 namespace PrestaShop\TestRunner;
 
+use Exception;
+
 class TestResult
 {
     private $shortName;
     private $fullName;
     private $startTime;
+
+    private $events;
 
     public function __construct($shortName, $fullName, $startTime)
     {
@@ -46,5 +50,31 @@ class TestResult
     {
         $this->startTime = $startTime;
         return $this;
+    }
+
+    public function addEvent(TestEvent $event)
+    {
+        $this->events[] = $event;
+        return $this;
+    }
+
+    public function getEvents()
+    {
+        return $this->events;
+    }
+
+    public function getEvent($n)
+    {
+        if (isset($this->events[$n])) {
+            return $this->events[$n];
+        }
+
+        throw new Exception(
+            sprintf(
+                'No event recorded at position `%d` for test `%s`.',
+                $n,
+                $this->fullName
+            )
+        );
     }
 }

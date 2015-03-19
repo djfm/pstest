@@ -22,18 +22,28 @@ class TestObserver
         return $this;
     }
 
-    private function makeTestResult($shortName, $fullName, $startTime = null)
+    private function makeTestResult($shortName, $fullName)
     {
-        if (null === $startTime) {
-            $startTime = microtime(true);
-        }
-
-        $result = new TestResult($shortName, $fullName, $startTime);
-
+        $result = new TestResult($shortName, $fullName, microtime(true));
         return $result;
     }
 
-    public function startTest($name, array $arguments = array(), $description = null)
+    private function addEventToCurrentTestResult()
+    {
+        if (empty($this->runningStack)) {
+            throw new Exception('There is no running test, cannot add event.');
+        }
+
+        $testResult = end($this->runningStack);
+
+        $event = new TestEvent($testResult, microtime(true));
+
+        $testResult->addEvent($event);
+
+        return $event;
+    }
+
+    public function startTest($name, array $arguments = array(), $description = '')
     {
         if (empty($this->runningStack)) {
             $result = $this->makeTestResult($name, $name);
@@ -49,7 +59,9 @@ class TestObserver
 
     public function addException(Exception $e)
     {
+        $this->addEventToCurrentTestResult()->setException($e);
 
+        return $this;
     }
 
     public function addFile($name, $path, array $metaData = array())
@@ -80,6 +92,28 @@ class TestObserver
             );
         }
 
-        $this->completedStack[] = array_pop($this->runningStack);
+        $result = array_pop($this->runningStack);
+        $this->completedStack[$result->getFullName()] = $result;
+
+        return $this;
+    }
+
+    public function getTestResults()
+    {
+        return $this->completedStack;
+    }
+
+    public function getTestResult($fullName)
+    {
+        if (isset($this->completedStack[$fullName])) {
+            return $this->completedStack[$fullName];
+        }
+
+        throw new Exception(
+            sprintf(
+                'There is no result for test `%s`.',
+                $fullName
+            )
+        );
     }
 }
