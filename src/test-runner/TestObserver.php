@@ -110,6 +110,11 @@ class TestObserver
         }
 
         $result = array_pop($this->runningStack);
+
+        $testStatus = new TestStatus($success, $status);
+
+        $result->setStatus($testStatus);
+
         $this->completedStack[$result->getFullName()] = $result;
 
         return $this;

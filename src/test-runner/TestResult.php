@@ -15,11 +15,15 @@ class TestResult
 
     private $events;
 
+    private $status;
+
     public function __construct($shortName, $fullName, $startTime)
     {
         $this->shortName = $shortName;
         $this->fullName = $fullName;
         $this->startTime = $startTime;
+
+        $this->status = new TestStatus(false, 'unknown');
     }
 
     public function getShortName()
@@ -102,4 +106,16 @@ class TestResult
         $this->description = $description;
         return $this;
     }
+
+    public function getStatus()
+    {
+        return $this->status;
+    }
+
+    public function setStatus(TestStatus $status)
+    {
+        $this->status = $status;
+        return $this;
+    }
+
 }
