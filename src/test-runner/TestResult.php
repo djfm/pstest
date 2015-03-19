@@ -10,6 +10,9 @@ class TestResult
     private $fullName;
     private $startTime;
 
+    private $arguments = [];
+    private $description;
+
     private $events;
 
     public function __construct($shortName, $fullName, $startTime)
@@ -76,5 +79,27 @@ class TestResult
                 $this->fullName
             )
         );
+    }
+
+    public function getArguments()
+    {
+        return $this->arguments;
+    }
+
+    public function setArguments($arguments)
+    {
+        $this->arguments = $arguments;
+        return $this;
+    }
+
+    public function getDescription()
+    {
+        return $this->description;
+    }
+
+    public function setDescription($description)
+    {
+        $this->description = $description;
+        return $this;
     }
 }

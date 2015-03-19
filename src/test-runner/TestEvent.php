@@ -12,7 +12,9 @@ class TestEvent
     private $metaData = [];
 
     private $exception;
+    private $file;
 
+    private $message;
 
     public function __construct(TestResult $testResult, $eventTime)
     {
@@ -40,5 +42,42 @@ class TestEvent
     {
         $this->exception = $exception;
         return $this;
+    }
+
+    public function getFile()
+    {
+        return $this->file;
+    }
+
+    public function setFile(FileArtefact $file)
+    {
+        $this->file = $file;
+        return $this;
+    }
+
+    public function hasException()
+    {
+        return $this->exception instanceof Exception;
+    }
+
+    public function hasFile()
+    {
+        return $this->file instanceof FileArtefact;
+    }
+
+    public function getMessage()
+    {
+        return $this->message;
+    }
+
+    public function setMessage(TestMessage $message)
+    {
+        $this->message = $message;
+        return $this;
+    }
+
+    public function hasMessage()
+    {
+        return $this->message instanceof TestMessage;
     }
 }

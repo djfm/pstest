@@ -25,6 +25,7 @@ class TestObserver
     private function makeTestResult($shortName, $fullName)
     {
         $result = new TestResult($shortName, $fullName, microtime(true));
+
         return $result;
     }
 
@@ -46,7 +47,10 @@ class TestObserver
     public function startTest($name, array $arguments = array(), $description = '')
     {
         if (empty($this->runningStack)) {
-            $result = $this->makeTestResult($name, $name);
+            $result = $this->makeTestResult($name, $name)
+                           ->setArguments($arguments)
+                           ->setDescription($description)
+            ;
         } else {
             $parentResult = end($this->runningStack);
             $result = $this->makeTestResult($name, $parentResult->getFullName() . '.' . $name);
@@ -66,12 +70,25 @@ class TestObserver
 
     public function addFile($name, $path, array $metaData = array())
     {
+        $file = new FileArtefact($name, $path);
 
+        $this->addEventToCurrentTestResult()
+             ->setMetaData($metaData)
+             ->setFile($file)
+        ;
+
+        return $this;
     }
 
     public function addMessage($message, $type = 'info', array $metaData = array())
     {
+        $message = new TestMessage($message, $type);
 
+        $this->addEventToCurrentTestResult()
+             ->setMetaData($metaData)
+             ->setMessage($message);
+
+        return $this;
     }
 
     public function endTest($name, $success, $status)
