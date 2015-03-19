@@ -6,13 +6,13 @@ use Exception;
 
 use PHPUnit_Framework_TestCase;
 
-use PrestaShop\TestRunner\TestObserver;
+use PrestaShop\TestRunner\TestAggregator;
 
-class TestObserverTest extends PHPUnit_Framework_TestCase
+class TestAggregatorTest extends PHPUnit_Framework_TestCase
 {
     private function makeObserver()
     {
-        return new TestObserver();
+        return new TestAggregator();
     }
 
     public function test_properOrderOfEvents_When_NoNesting()

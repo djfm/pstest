@@ -4,7 +4,7 @@ namespace PrestaShop\TestRunner;
 
 use Exception;
 
-class TestObserver
+class TestAggregator
 {
     private $context = array();
 
