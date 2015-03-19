@@ -17,7 +17,9 @@ class TestResult
 
     private $status;
 
-    public function __construct($shortName, $fullName, $startTime)
+    private $depth;
+
+    public function __construct($shortName, $fullName, $startTime, $depth)
     {
         $this->shortName = $shortName;
         $this->fullName = $fullName;
@@ -118,4 +120,8 @@ class TestResult
         return $this;
     }
 
+    public function getDepth()
+    {
+        return $this->depth;
+    }
 }

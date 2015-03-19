@@ -6,9 +6,25 @@ use Exception;
 
 class TestAggregator
 {
+    /**
+     * For context data shared by all tests
+     * that this aggregator will see.
+     */
     private $context = array();
 
+    /**
+     * Array of `TestResult`.
+     *
+     * Tests that have been started
+     * and are not yet finished.
+     */
     private $runningStack = array();
+
+    /**
+     * Array of `TestResult`.
+     *
+     * Completed tests, irrespective of status.
+     */
     private $completedStack = array();
 
     public function setContext(array $context)
@@ -22,9 +38,14 @@ class TestAggregator
         return $this;
     }
 
+    public function getContext()
+    {
+        return $this->context;
+    }
+
     private function makeTestResult($shortName, $fullName)
     {
-        $result = new TestResult($shortName, $fullName, microtime(true));
+        $result = new TestResult($shortName, $fullName, microtime(true), count($this->runningStack));
 
         return $result;
     }
