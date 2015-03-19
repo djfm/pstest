@@ -24,7 +24,10 @@
             "PrestaShop\\FileSystem\\": "src/fs/",
             "PrestaShop\\FileSystem\\Tests\\": "tests/fs/",
             "PrestaShop\\Proc\\": "src/proc",
-            "PrestaShop\\Proc\\Tests\\": "tests/proc"
+            "PrestaShop\\Proc\\Tests\\": "tests/proc",
+            "PrestaShop\\TestRunner\\": "src/test-runner",
+            "PrestaShop\\TestRunner\\Tests\\": "tests/test-runner",
+            "PrestaShop\\TestRunner\\Tests\\Fixtures\\": "tests/test-runner/fixtures/"
         }
     }
 }

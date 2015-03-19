@@ -23,5 +23,10 @@
             <directory>./proc</directory>
         </testsuite>
 
+        <testsuite name="Test Runner">
+            <directory>./test-runner/</directory>
+            <exclude>./test-runner/fixtures</exclude>
+        </testsuite>
+
     </testsuites>
 </phpunit>
