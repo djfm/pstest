@@ -16,19 +16,13 @@ class SmokeTest
 
     public function test_Installation()
     {
-        $this->shop->get('installer')->install(
-            $this->context('language'),
-            $this->context('country')
-        );
     }
 
     public function test_ICanLoginToTheBackOffice()
     {
-        $this->shop->get('backOffice')->visit('AdminLogin')->login();
     }
 
     public function test_ICanValidateAnOrder()
     {
-        $this->shop->get('backOfficeOrderManager')->validateById(5);
     }
 }
