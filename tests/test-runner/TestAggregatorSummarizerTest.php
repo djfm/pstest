@@ -57,4 +57,44 @@ class TestAggregatorSummarizerTest extends PHPUnit_Framework_TestCase
             ]
         ], $s->getStatistics());
     }
+
+    public function test_getStatistics_two_aggregators()
+    {
+        $a = $this->makeAggregator([
+            ['count' => 3, 'success' => true, 'status' => 'ok'],
+            ['count' => 3, 'success' => true, 'status' => 'yep'],
+            ['count' => 2, 'success' => false, 'status' => 'error'],
+            ['count' => 5, 'success' => false, 'status' => 'failure']
+        ]);
+
+        $b = $this->makeAggregator([
+            ['count' => 3, 'success' => true, 'status' => 'ok'],
+            ['count' => 3, 'success' => true, 'status' => 'yep'],
+            ['count' => 2, 'success' => false, 'status' => 'error'],
+            ['count' => 5, 'success' => false, 'status' => 'failure'],
+            ['count' => 1, 'success' => false, 'status' => 'skipped']
+        ]);
+
+        $s = new Summarizer();
+
+        $s->addAggregator($a);
+        $s->addAggregator($b);
+
+        $this->assertEquals([
+            'total' => 27,
+            'ok'    => 12,
+            'ko' => 15,
+            'details' => [
+                'ok' => [
+                    'ok' => 6,
+                    'yep' => 6
+                ],
+                'ko' => [
+                    'error' => 4,
+                    'failure' => 10,
+                    'skipped' => 1
+                ]
+            ]
+        ], $s->getStatistics());
+    }
 }
