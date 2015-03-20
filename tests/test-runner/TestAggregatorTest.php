@@ -12,7 +12,7 @@ class TestAggregatorTest extends PHPUnit_Framework_TestCase
 {
     private function makeAggregator()
     {
-        return new TestAggregator();
+        return new TestAggregator;
     }
 
     public function test_properOrderOfEvents_When_NoNesting()
