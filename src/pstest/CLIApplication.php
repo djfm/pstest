@@ -7,6 +7,8 @@ use Symfony\Component\Console\Application;
 use PrestaShop\PSTest\Command\ConfigCreate;
 use PrestaShop\PSTest\Command\ShopInstall;
 
+use PrestaShop\TestRunner\Command\TestRun;
+
 class CLIApplication extends Application
 {
     public function __construct()
@@ -19,5 +21,6 @@ class CLIApplication extends Application
     {
         $this->add(new ConfigCreate);
         $this->add(new ShopInstall);
+        $this->add(new TestRun);
     }
 }
