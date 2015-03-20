@@ -24,6 +24,21 @@ class Loader
 
     public function loadFile($path)
     {
+        $classesInFile = ClassDiscoverer::getDeclaredClasses($path);
 
+        foreach ($this->loaders as $loader) {
+            $plans = $loader->loadTestPlansFromFile($path, $classesInFile);
+            if (!empty($plans)) {
+                $this->testPlans = array_merge($this->testPlans, $plans);
+                break;
+            }
+        }
+
+        return $this;
+    }
+
+    public function getTestPlans()
+    {
+        return $this->testPlans;
     }
 }

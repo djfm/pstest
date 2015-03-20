@@ -2,7 +2,9 @@
 
 namespace PrestaShop\TestRunner\Tests\Fixtures;
 
-class SmokeTest
+use PrestaShop\TestRunner\TestCase\TestCase;
+
+class SmokeTest extends TestCase
 {
     public function contextProvider()
     {

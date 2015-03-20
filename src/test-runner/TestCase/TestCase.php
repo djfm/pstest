@@ -5,8 +5,9 @@ namespace PrestaShop\TestRunner\TestCase;
 use ReflectionClass;
 
 use PrestaShop\TestRunner\TestPlanInterface;
+use PrestaShop\TestRunner\TestAggregator;
 
-class TestCase implements TestPlanInterface
+abstract class TestCase implements TestPlanInterface
 {
     private $aggregator;
     private $_context;
