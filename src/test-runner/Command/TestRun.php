@@ -8,7 +8,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
-use PrestaShop\TestRunner\Runner;
+use PrestaShop\TestRunner\CLIRunner;
 
 class TestRun extends Command
 {
@@ -24,7 +24,7 @@ class TestRun extends Command
         $output; // shut the linter up
         $path =  $input->getArgument('path');
 
-        $runner = new Runner();
+        $runner = new CLIRunner();
 
         $runner->setOutputInterface($output);
         $runner->addTestPath($path);
