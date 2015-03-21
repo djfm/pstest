@@ -89,4 +89,62 @@ class TestCaseTest extends PHPUnit_Framework_TestCase
 
         $test->run();
     }
+
+    public function test_tests_are_executed()
+    {
+        $aggregator = $this->getMockBuilder('PrestaShop\TestRunner\TestAggregator')->getMock();
+
+        $test = $this
+             ->getMockBuilder('PrestaShop\TestRunner\Tests\Fixtures\SmokeTest')
+             ->setMethods(['test_Installation', 'test_ICanLoginToTheBackOffice', 'test_ICanValidateAnOrder'])
+             ->getMock();
+
+        $test->setTestAggregator($aggregator);
+
+        $test->expects($this->exactly(1))->method('test_Installation');
+        $test->expects($this->exactly(1))->method('test_ICanLoginToTheBackOffice');
+        $test->expects($this->exactly(1))->method('test_ICanValidateAnOrder');
+
+        $test->run();
+    }
+
+    public function test_tests_are_not_executed_when_setupBeforeClass_fails()
+    {
+        $aggregator = $this->getMockBuilder('PrestaShop\TestRunner\TestAggregator')->getMock();
+
+        $test = $this
+             ->getMockBuilder('PrestaShop\TestRunner\Tests\Fixtures\SmokeTest')
+             ->setMethods(['setupBeforeClass', 'test_Installation', 'test_ICanLoginToTheBackOffice', 'test_ICanValidateAnOrder'])
+             ->getMock();
+
+        $test->method('setupBeforeClass')->will($this->throwException(new Exception));
+        $test->expects($this->once())->method('setupBeforeClass');
+
+        $test->setTestAggregator($aggregator);
+
+        $test->expects($this->never())->method('test_Installation');
+        $test->expects($this->never())->method('test_ICanLoginToTheBackOffice');
+        $test->expects($this->never())->method('test_ICanValidateAnOrder');
+
+        $test->run();
+    }
+
+    public function test_tests_are_not_executed_when_setup_fails()
+    {
+        $aggregator = $this->getMockBuilder('PrestaShop\TestRunner\TestAggregator')->getMock();
+
+        $test = $this
+             ->getMockBuilder('PrestaShop\TestRunner\Tests\Fixtures\SmokeTest')
+             ->setMethods(['setup', 'test_Installation'])
+             ->getMock();
+
+        $test->method('setup')->will($this->throwException(new Exception));
+        $test->expects($this->exactly(3))->method('setup');
+
+        $test->setTestAggregator($aggregator);
+
+        $test->expects($this->never())->method('test_Installation');
+
+        $test->run();
+    }
 }

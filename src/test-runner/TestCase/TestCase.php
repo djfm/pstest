@@ -2,6 +2,7 @@
 
 namespace PrestaShop\TestRunner\TestCase;
 
+use Exception;
 use ReflectionClass;
 use ReflectionMethod;
 
@@ -176,26 +177,41 @@ abstract class TestCase implements TestPlanInterface
         $beforeEach = $this->getCallables($this->getMethodsToCallBeforeEachTest());
         $afterEach = $this->getCallables($this->getMethodsToCallAfterEachTest());
 
+        $beforeOk = true;
+
         foreach ($before as $callable) {
-            $callable->run($this);
+            $res = $callable->run($this);
+            if ($res instanceof Exception) {
+                $beforeOk = false;
+                break;
+            }
         }
 
-        foreach ($this->tests as $test) {
-            $this->aggregator->startTest($test->getName());
+        if ($beforeOk) {
+            foreach ($this->tests as $test) {
+                $this->aggregator->startTest($test->getName());
 
-            foreach ($beforeEach as $setup) {
-                $setup->run($this);
+                $beforeEachOk = true;
+
+                foreach ($beforeEach as $setup) {
+                    $res = $setup->run($this);
+                    if ($res instanceof Exception) {
+                        $beforeEachOk = false;
+                        break;
+                    }
+                }
+
+                if ($beforeEachOk) {
+                    $test->run($this);
+                }
+
+                foreach ($afterEach as $teardown) {
+                    $teardown->run($this);
+                }
+
+                $this->aggregator->endTest($test->getName(), true, 'ok');
             }
-
-            $test->run($this);
-
-            foreach ($afterEach as $teardown) {
-                $teardown->run($this);
-            }
-
-            $this->aggregator->endTest($test->getName(), true, 'ok');
         }
-
 
         foreach ($after as $callable) {
             $callable->run($this);
