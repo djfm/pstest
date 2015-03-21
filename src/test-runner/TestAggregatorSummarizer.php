@@ -52,7 +52,9 @@ class TestAggregatorSummarizer
 
         foreach ($this->aggregators as $aggregator) {
             foreach ($aggregator->getTestResults() as $result) {
-                $this->updateStatistics($result);
+                if (!$result->hasChildren()) {
+                    $this->updateStatistics($result);
+                }
             }
         }
 

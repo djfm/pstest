@@ -19,11 +19,14 @@ class TestResult
 
     private $depth;
 
+    private $children = [];
+
     public function __construct($shortName, $fullName, $startTime, $depth)
     {
         $this->shortName = $shortName;
         $this->fullName = $fullName;
         $this->startTime = $startTime;
+        $this->depth = $depth;
 
         $this->status = new TestStatus(false, 'unknown');
     }
@@ -123,5 +126,21 @@ class TestResult
     public function getDepth()
     {
         return $this->depth;
+    }
+
+    public function addChild(TestResult $result)
+    {
+        $this->children[] = $result;
+        return $this;
+    }
+
+    public function getChildren()
+    {
+        return $this->children;
+    }
+
+    public function hasChildren()
+    {
+        return !empty($this->children);
     }
 }

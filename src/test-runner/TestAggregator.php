@@ -74,7 +74,8 @@ class TestAggregator
             ;
         } else {
             $parentResult = end($this->runningStack);
-            $result = $this->makeTestResult($name, $parentResult->getFullName() . '.' . $name);
+            $result = $this->makeTestResult($name, $parentResult->getFullName() . '::' . $name);
+            $parentResult->addChild($result);
         }
 
         $this->runningStack[] = $result;

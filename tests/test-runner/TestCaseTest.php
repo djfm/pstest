@@ -7,6 +7,8 @@ use Exception;
 use PHPUnit_Framework_TestCase;
 
 use PrestaShop\TestRunner\Runner;
+use PrestaShop\TestRunner\TestAggregator;
+use PrestaShop\TestRunner\TestAggregatorSummarizer;
 
 use PrestaShop\TestRunner\Tests\Fixtures\SmokeTest;
 
@@ -146,5 +148,71 @@ class TestCaseTest extends PHPUnit_Framework_TestCase
         $test->expects($this->never())->method('test_Installation');
 
         $test->run();
+    }
+
+    public function test_all_ok_if_no_exception()
+    {
+        $aggregator = new TestAggregator;
+
+        $test = new SmokeTest;
+
+        $test->setTestAggregator($aggregator);
+
+        $test->run();
+
+        $summarizer = new TestAggregatorSummarizer;
+        $summarizer->addAggregator($aggregator);
+
+        $stats = $summarizer->getStatistics();
+
+        $this->assertEquals(3, $stats['ok']);
+        $this->assertEquals(3, $stats['details']['ok']['success']);
+    }
+
+    public function test_everyThing_skipped_When_setupBeforeClass_fails()
+    {
+        $aggregator = new TestAggregator;
+
+        $test = $this
+             ->getMockBuilder('PrestaShop\TestRunner\Tests\Fixtures\SmokeTest')
+             ->setMethods(['setupBeforeClass'])
+             ->getMock();
+
+        $test->method('setupBeforeClass')->will($this->throwException(new Exception));
+
+        $test->setTestAggregator($aggregator);
+
+        $test->run();
+
+        $summarizer = new TestAggregatorSummarizer;
+        $summarizer->addAggregator($aggregator);
+
+        $stats = $summarizer->getStatistics();
+
+        $this->assertEquals(3, $stats['ko']);
+        $this->assertEquals(3, $stats['details']['ko']['skipped']);
+    }
+
+    public function test_everyThing_fails_When_setup_fails()
+    {
+        $aggregator = new TestAggregator;
+
+        $test = $this
+             ->getMockBuilder('PrestaShop\TestRunner\Tests\Fixtures\SmokeTest')
+             ->setMethods(['setup'])
+             ->getMock();
+
+        $test->method('setup')->will($this->throwException(new Exception));
+
+        $test->setTestAggregator($aggregator);
+
+        $test->run();
+
+        $summarizer = new TestAggregatorSummarizer;
+        $summarizer->addAggregator($aggregator);
+
+        $stats = $summarizer->getStatistics();
+
+        $this->assertEquals(3, $stats['ko']);
     }
 }

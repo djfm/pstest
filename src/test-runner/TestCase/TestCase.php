@@ -170,51 +170,93 @@ abstract class TestCase implements TestPlanInterface
         return $callables;
     }
 
+    private function getStatusCodeFromException(Exception $e)
+    {
+        return 'error';
+    }
+
     public function run()
     {
+        $this->aggregator->startTest(get_called_class());
+
         $before = $this->getCallables($this->getMethodsToCallBeforeClass());
         $after = $this->getCallables($this->getMethodsToCallAfterClass());
         $beforeEach = $this->getCallables($this->getMethodsToCallBeforeEachTest());
         $afterEach = $this->getCallables($this->getMethodsToCallAfterEachTest());
 
-        $beforeOk = true;
+        $allGood = true;
 
+        $beforeOk = true;
         foreach ($before as $callable) {
             $res = $callable->run($this);
             if ($res instanceof Exception) {
                 $beforeOk = false;
+                $this->aggregator->addException($res);
                 break;
             }
         }
 
-        if ($beforeOk) {
-            foreach ($this->tests as $test) {
-                $this->aggregator->startTest($test->getName());
+        foreach ($this->tests as $test) {
+            $this->aggregator->startTest($test->getName());
 
+            if ($beforeOk) {
                 $beforeEachOk = true;
 
                 foreach ($beforeEach as $setup) {
                     $res = $setup->run($this);
                     if ($res instanceof Exception) {
                         $beforeEachOk = false;
+                        $this->aggregator->addException($res);
                         break;
                     }
                 }
 
+                $testOk = false;
+                $testException = null;
                 if ($beforeEachOk) {
-                    $test->run($this);
+                    $res = $test->run($this);
+                    if ($res instanceof Exception) {
+                        $testException = $res;
+                        $this->aggregator->addException($res);
+                    } else {
+                        $testOk = true;
+                    }
                 }
 
+                $afterEachOk = true;
                 foreach ($afterEach as $teardown) {
-                    $teardown->run($this);
+                    $res = $teardown->run($this);
+                    if ($res instanceof Exception) {
+                        $afterEachOk = false;
+                        $this->aggregator->addException($res);
+                    }
                 }
 
-                $this->aggregator->endTest($test->getName(), true, 'ok');
+                if ($beforeEachOk && $testOk && $afterEachOk) {
+                    $this->aggregator->endTest($test->getName(), true, 'success');
+                } else {
+                    $allGood = false;
+
+                    if ($testException) {
+                        // If the test itself failed, we want to distinguish between failure and error
+                        $this->aggregator->endTest($test->getName(), false, $this->getStatusCodeFromException($testException));
+                    } else {
+                        // If something failed outside the body of the test, we always consider it an error
+                        $this->aggregator->endTest($test->getName(), false, 'error');
+                    }
+                }
+            } else {
+                $this->aggregator->endTest($test->getName(), false, 'skipped');
             }
         }
 
         foreach ($after as $callable) {
-            $callable->run($this);
+            $res = $callable->run($this);
+            if ($res instanceof Exception) {
+                $this->aggregator->addException($res);
+            }
         }
+
+        $this->aggregator->endTest(get_called_class(), $allGood, $allGood ? 'success' : 'failure');
     }
 }
