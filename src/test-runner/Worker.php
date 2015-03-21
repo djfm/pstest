@@ -32,9 +32,22 @@ class Worker
         return $this->processPlan($plan);
     }
 
+    public function onTestEvent(TestEvent $event, array $context)
+    {
+        $this->client->send([
+            'type' => 'test event',
+            'event' => serialize($event),
+            'context' => $context
+        ]);
+
+        return $this;
+    }
+
     private function processPlan(TestPlanInterface $plan)
     {
         $aggregator = new TestAggregator;
+
+        $aggregator->addEventListener([$this, 'onTestEvent']);
 
         $plan->setTestAggregator($aggregator);
 

@@ -27,6 +27,8 @@ class TestAggregator
      */
     private $completedStack = array();
 
+    private $eventListeners = [];
+
     public function setContext(array $context)
     {
         if (!empty($this->context)) {
@@ -58,11 +60,38 @@ class TestAggregator
 
         $testResult = end($this->runningStack);
 
+        return $this->addEventToTestResult($testResult);
+    }
+
+    private function addEventToTestResult(TestResult $testResult)
+    {
         $event = new TestEvent($testResult, microtime(true));
 
         $testResult->addEvent($event);
 
         return $event;
+    }
+
+    /**
+     * Add an event listener to be called after any event is added to a test result, including
+     * test start and test end.
+     *
+     * @param callable $listener A callable that takes a TestEvent and an array as parameters.
+     */
+    public function addEventListener(callable $listener)
+    {
+        $this->eventListeners[] = $listener;
+
+        return $this;
+    }
+
+    private function onEvent(TestEvent $event)
+    {
+        foreach ($this->eventListeners as $listener) {
+            $listener($event, $this->getContext());
+        }
+
+        return $this;
     }
 
     public function startTest($name, array $arguments = array(), $description = '')
@@ -80,12 +109,18 @@ class TestAggregator
 
         $this->runningStack[] = $result;
 
+        $this->onEvent(
+            $this->addEventToCurrentTestResult()->setIsStart()
+        );
+
         return $this;
     }
 
     public function addException(Exception $e)
     {
-        $this->addEventToCurrentTestResult()->setException($e);
+        $this->onEvent(
+            $this->addEventToCurrentTestResult()->setException($e)
+        );
 
         return $this;
     }
@@ -94,10 +129,11 @@ class TestAggregator
     {
         $file = new FileArtefact($name, $path);
 
-        $this->addEventToCurrentTestResult()
-             ->setMetaData($metaData)
-             ->setFile($file)
-        ;
+        $this->onEvent(
+            $this->addEventToCurrentTestResult()
+                 ->setMetaData($metaData)
+                 ->setFile($file)
+        );
 
         return $this;
     }
@@ -106,9 +142,11 @@ class TestAggregator
     {
         $message = new TestMessage($message, $type);
 
-        $this->addEventToCurrentTestResult()
-             ->setMetaData($metaData)
-             ->setMessage($message);
+        $this->onEvent(
+            $this->addEventToCurrentTestResult()
+                 ->setMetaData($metaData)
+                 ->setMessage($message)
+        );
 
         return $this;
     }
@@ -138,6 +176,10 @@ class TestAggregator
         $result->setStatus($testStatus);
 
         $this->completedStack[$result->getFullName()] = $result;
+
+        $this->onEvent(
+            $this->addEventToTestResult($result)->setIsEnd()
+        );
 
         return $this;
     }

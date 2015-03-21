@@ -16,6 +16,9 @@ class TestEvent
 
     private $message;
 
+    private $is_start = false;
+    private $is_end = false;
+
     public function __construct(TestResult $testResult, $eventTime)
     {
         $this->testResult = $testResult;
@@ -79,5 +82,43 @@ class TestEvent
     public function hasMessage()
     {
         return $this->message instanceof TestMessage;
+    }
+
+    public function setIsStart($start = true)
+    {
+        $this->is_start = $start;
+        return $this;
+    }
+
+    public function isStart()
+    {
+        return $this->is_start;
+    }
+
+    public function setIsEnd($end = true)
+    {
+        $this->is_end = $end;
+        return $this;
+    }
+
+    public function isEnd()
+    {
+        return $this->is_end;
+    }
+
+    public function getEventTime()
+    {
+        return $this->eventTime;
+    }
+
+    public function setEventTime($eventTime)
+    {
+        $this->eventTime = $eventTime;
+        return $this;
+    }
+
+    public function getTestResult()
+    {
+        return $this->testResult;
     }
 }

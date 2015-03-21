@@ -64,8 +64,8 @@ class TestAggregatorTest extends PHPUnit_Framework_TestCase
         $obs->addException(new Exception('a failed'));
         $obs->endTest('a', false, 'failure');
 
-        $this->assertTrue($obs->getTestResult('a')->getEvent(0)->hasException());
-        $this->assertEquals('a failed', $obs->getTestResult('a')->getEvent(0)->getException()->getMessage());
+        $this->assertTrue($obs->getTestResult('a')->getEvent(1)->hasException());
+        $this->assertEquals('a failed', $obs->getTestResult('a')->getEvent(1)->getException()->getMessage());
     }
 
     public function test_FileEvent_Recorded()
@@ -79,7 +79,7 @@ class TestAggregatorTest extends PHPUnit_Framework_TestCase
         );
         $obs->endTest('a', true, 'success');
 
-        $event = $obs->getTestResult('a')->getEvent(0);
+        $event = $obs->getTestResult('a')->getEvent(1);
 
         $this->assertTrue($event->hasFile());
 
@@ -96,7 +96,7 @@ class TestAggregatorTest extends PHPUnit_Framework_TestCase
         $obs->addMessage('hello', 'debug', ['env' => 42]);
         $obs->endTest('a', false, 'failure');
 
-        $event = $obs->getTestResult('a')->getEvent(0);
+        $event = $obs->getTestResult('a')->getEvent(1);
 
         $this->assertTrue($event->hasMessage());
         $this->assertEquals('[debug] hello', (string)$event->getMessage());

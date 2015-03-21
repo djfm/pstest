@@ -14,7 +14,7 @@ use PrestaShop\TestRunner\TestAggregator;
 abstract class TestCase implements TestPlanInterface
 {
     private $aggregator;
-    private $_context;
+    private $_context = [];
     private $filePath;
     private $tests = [];
 
@@ -177,6 +177,7 @@ abstract class TestCase implements TestPlanInterface
 
     public function run()
     {
+        $this->aggregator->setContext($this->getContext());
         $this->aggregator->startTest(get_called_class());
 
         $before = $this->getCallables($this->getMethodsToCallBeforeClass());

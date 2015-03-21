@@ -26,6 +26,7 @@ class TestRun extends Command
 
         $runner = new Runner();
 
+        $runner->setOutputInterface($output);
         $runner->addTestPath($path);
 
         $runner->run();
