@@ -117,7 +117,7 @@ class CLIRunner extends Runner
                 if ($event->getTestResult()->getStatus()->isSuccessful()) {
                     $eventType .= '   <fg=green>:-)</fg=green> :';
                 } else {
-                    $eventType .= '   <fg=red>:/(</fg=red> :';
+                    $eventType .= '   <fg=red>:<(</fg=red> :';
                 }
             }
 
