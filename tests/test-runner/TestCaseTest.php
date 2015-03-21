@@ -72,4 +72,21 @@ class TestCaseTest extends PHPUnit_Framework_TestCase
 
         $test->run();
     }
+
+    public function test_setup_and_teardown_are_called()
+    {
+        $aggregator = $this->getMockBuilder('PrestaShop\TestRunner\TestAggregator')->getMock();
+
+        $test = $this
+             ->getMockBuilder('PrestaShop\TestRunner\Tests\Fixtures\SmokeTest')
+             ->setMethods(['setup', 'teardown'])
+             ->getMock();
+
+        $test->setTestAggregator($aggregator);
+
+        $test->expects($this->exactly(3))->method('setup');
+        $test->expects($this->exactly(3))->method('teardown');
+
+        $test->run();
+    }
 }

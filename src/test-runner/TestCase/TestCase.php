@@ -63,6 +63,16 @@ abstract class TestCase implements TestPlanInterface
 
     }
 
+    public function setup()
+    {
+
+    }
+
+    public function teardown()
+    {
+
+    }
+
     public function tearDownAfterClass()
     {
 
@@ -132,6 +142,20 @@ abstract class TestCase implements TestPlanInterface
         );
     }
 
+    final public function getMethodsToCallBeforeEachTest()
+    {
+        return ['setup'];
+    }
+
+    final public function getMethodsToCallAfterEachTest()
+    {
+        return ['teardown'];
+    }
+
+    /**
+     * Returns instances of TestMethod for all methods whose name
+     * specified in $candidates is callable by this class.
+     */
     private function getCallables(array $candidates)
     {
         $callables = [];
@@ -148,6 +172,9 @@ abstract class TestCase implements TestPlanInterface
     public function run()
     {
         $before = $this->getCallables($this->getMethodsToCallBeforeClass());
+        $after = $this->getCallables($this->getMethodsToCallAfterClass());
+        $beforeEach = $this->getCallables($this->getMethodsToCallBeforeEachTest());
+        $afterEach = $this->getCallables($this->getMethodsToCallAfterEachTest());
 
         foreach ($before as $callable) {
             $callable->run($this);
@@ -156,12 +183,19 @@ abstract class TestCase implements TestPlanInterface
         foreach ($this->tests as $test) {
             $this->aggregator->startTest($test->getName());
 
+            foreach ($beforeEach as $setup) {
+                $setup->run($this);
+            }
+
             $test->run($this);
+
+            foreach ($afterEach as $teardown) {
+                $teardown->run($this);
+            }
 
             $this->aggregator->endTest($test->getName(), true, 'ok');
         }
 
-        $after = $this->getCallables($this->getMethodsToCallAfterClass());
 
         foreach ($after as $callable) {
             $callable->run($this);

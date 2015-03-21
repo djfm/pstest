@@ -33,9 +33,9 @@ class TestMethod
 
         try {
             $callable();
-            return 'ok';
+            return true;
         } catch (Exception $e) {
-            return 'ko';
+            return $e;
         }
     }
 }
