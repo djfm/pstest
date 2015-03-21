@@ -17,6 +17,13 @@ class Runner
 
     private $maxWorkers = 1;
 
+    private $summarizer;
+
+    public function __construct()
+    {
+        $this->summarizer = new TestAggregatorSummarizer;
+    }
+
     public function addTestPath($path)
     {
         $this->testPaths[] = $path;
@@ -124,6 +131,9 @@ class Runner
     private function onPlanFinished(TestAggregator $aggregator)
     {
         echo "Finished something!\n";
+        $this->summarizer->addAggregator($aggregator);
+
+        return $this;
     }
 
     /**
@@ -168,5 +178,10 @@ class Runner
         if (empty($this->runningClients) && empty($this->plansLeft)) {
             $this->server->stop();
         }
+    }
+
+    public function getSummarizer()
+    {
+        return $this->summarizer;
     }
 }
