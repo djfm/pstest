@@ -268,16 +268,21 @@ class Runner
         if ($display) {
 
             if ($event->isStart()) {
-                $eventType = 'Start';
+                $eventType = 'Start     :';
             } elseif ($event->isEnd()) {
                 $eventType = 'End';
+                if ($event->getTestResult()->getStatus()->isSuccessful()) {
+                    $eventType .= '   <fg=green>:-)</fg=green> :';
+                } else {
+                    $eventType .= '   <fg=red>:/(</fg=red> :';
+                }
             }
 
             $this->writeln(
                 sprintf(
                     '<info>[%1$s]</info> %2$s {%3$s} %4$s (%5$s)',
                     date('H:i:s', (int)$event->getEventTime()),
-                    str_pad($eventType, 10)  .': ',
+                    $eventType,
                     $this->flatArrayToString($context),
                     $this->nicerClassName($event->getTestResult()->getFullName()),
                     $this->flatArrayToString($event->getTestResult()->getArguments())
