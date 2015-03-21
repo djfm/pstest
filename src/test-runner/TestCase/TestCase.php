@@ -5,6 +5,8 @@ namespace PrestaShop\TestRunner\TestCase;
 use ReflectionClass;
 use ReflectionMethod;
 
+use PrestaShop\PSTest\Helper\DocCommentParser;
+
 use PrestaShop\TestRunner\TestPlanInterface;
 use PrestaShop\TestRunner\TestAggregator;
 
@@ -56,6 +58,16 @@ abstract class TestCase implements TestPlanInterface
         return $this;
     }
 
+    public function setupBeforeClass()
+    {
+
+    }
+
+    public function tearDownAfterClass()
+    {
+
+    }
+
     protected function isTestMethod(ReflectionMethod $method)
     {
         if ($method->isStatic()) {
@@ -71,9 +83,7 @@ abstract class TestCase implements TestPlanInterface
     {
         $refl = new ReflectionClass($this);
 
-        $methods = $refl->getMethods(
-            ReflectionMethod::IS_PUBLIC
-        );
+        $methods = $refl->getMethods();
 
         foreach ($methods as $method) {
             if (!$this->isTestMethod($method)) {
@@ -91,14 +101,70 @@ abstract class TestCase implements TestPlanInterface
         return count($this->tests) * count($this->contextProvider());
     }
 
+    private function getMethodsByAnnotation($annotationName)
+    {
+        $methods = [];
+
+        $refl = new ReflectionClass($this);
+        foreach ($refl->getMethods() as $method) {
+            $comment = new DocCommentParser($method->getDocComment());
+            if ($comment->hasOption($annotationName)) {
+                $methods[] = $method->getName();
+            }
+        }
+
+        return $methods;
+    }
+
+    final public function getMethodsToCallBeforeClass()
+    {
+        return array_merge(
+            ['setupBeforeClass'],
+            $this->getMethodsByAnnotation('beforeClass')
+        );
+    }
+
+    final public function getMethodsToCallAfterClass()
+    {
+        return array_merge(
+            ['tearDownAfterClass'],
+            $this->getMethodsByAnnotation('afterClass')
+        );
+    }
+
+    private function getCallables(array $candidates)
+    {
+        $callables = [];
+
+        foreach ($candidates as $candidate) {
+            if (is_callable([$this, $candidate])) {
+                $callables[] = (new TestMethod)->setName($candidate);
+            }
+        }
+
+        return $callables;
+    }
+
     public function run()
     {
+        $before = $this->getCallables($this->getMethodsToCallBeforeClass());
+
+        foreach ($before as $callable) {
+            $callable->run($this);
+        }
+
         foreach ($this->tests as $test) {
             $this->aggregator->startTest($test->getName());
 
             $test->run($this);
 
             $this->aggregator->endTest($test->getName(), true, 'ok');
+        }
+
+        $after = $this->getCallables($this->getMethodsToCallAfterClass());
+
+        foreach ($after as $callable) {
+            $callable->run($this);
         }
     }
 }

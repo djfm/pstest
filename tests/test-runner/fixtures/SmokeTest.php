@@ -16,15 +16,31 @@ class SmokeTest extends TestCase
         ];
     }
 
-    public function test_Installation()
+    /**
+     * @beforeClass
+     */
+    public function someOtherInitialization()
+    {
+
+    }
+
+    protected function test_Installation()
     {
     }
 
-    public function test_ICanLoginToTheBackOffice()
+    protected function test_ICanLoginToTheBackOffice()
     {
     }
 
     public function test_ICanValidateAnOrder()
     {
+    }
+
+    /**
+     * @afterClass
+     */
+    public function someOtherTeardown()
+    {
+
     }
 }
