@@ -60,4 +60,17 @@ class TestAggregatorSummarizer
 
         return $this->statistics;
     }
+
+    public function forEachTestResult(callable $cb)
+    {
+        foreach ($this->aggregators as $aggregator) {
+            foreach ($aggregator->getTestResults() as $result) {
+                if (!$result->hasChildren()) {
+                    $cb($result);
+                }
+            }
+        }
+
+        return $this;
+    }
 }

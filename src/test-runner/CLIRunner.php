@@ -30,11 +30,6 @@ class CLIRunner extends Runner
         }
     }
 
-    private function displayDots()
-    {
-
-    }
-
     private function flatArrayToString(array $arr)
     {
         $parts = [];
@@ -56,6 +51,19 @@ class CLIRunner extends Runner
         }
 
         return $str;
+    }
+
+    private function displayDots()
+    {
+        $this->getSummarizer()->forEachTestResult(function (TestResult $res) {
+            if ($res->getStatus()->isSuccessful()) {
+                $this->write('.');
+            } else {
+                $this->write('E');
+            }
+        });
+
+        $this->writeln('');
     }
 
     protected function done()
