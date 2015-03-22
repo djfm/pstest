@@ -66,7 +66,7 @@ class TestAggregatorSummarizer
         foreach ($this->aggregators as $aggregator) {
             foreach ($aggregator->getTestResults() as $result) {
                 if (!$result->hasChildren()) {
-                    $cb($result);
+                    $cb($result, $aggregator->getContext());
                 }
             }
         }

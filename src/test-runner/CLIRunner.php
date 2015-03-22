@@ -135,6 +135,27 @@ class CLIRunner extends Runner
         );
     }
 
+    private function displayProblems()
+    {
+        $this->getSummarizer()->forEachTestResult(function (TestResult $res, array $context) {
+            if (!$res->getStatus()->isSuccessful()) {
+                $this->writeln('');
+
+                $id = $this->getTestIdentifierString($res, $context);
+                $this->writeln('<error>Problem</error> ' . $id);
+
+                foreach ($res->getEvents() as $event) {
+                    if ($event->hasException()) {
+                        $this->writeln('');
+                        $this->printException($event->getException(), '    ');
+                    }
+                }
+            }
+        });
+
+        $this->writeln('');
+    }
+
     private function displayDots()
     {
         $this->getSummarizer()->forEachTestResult(function (TestResult $res) {
@@ -156,10 +177,10 @@ class CLIRunner extends Runner
 
         $pad = 15;
 
+        $this->displayProblems();
+
         $this->writeln('');
-
         $this->displayDots();
-
         $this->writeln('');
 
         $this->writeln(
@@ -181,6 +202,16 @@ class CLIRunner extends Runner
                 str_pad('Failed', $pad).': %d',
                 $stats['ko']
             )
+        );
+    }
+
+    private function getTestIdentifierString(TestResult $result, array $context)
+    {
+        return sprintf(
+            '{%1$s} %2$s (%3$s)',
+            $this->flatArrayToString($context),
+            $this->nicerClassName($result->getFullName()),
+            $this->flatArrayToString($result->getArguments())
         );
     }
 
@@ -207,12 +238,10 @@ class CLIRunner extends Runner
 
             $this->writeln(
                 sprintf(
-                    '<info>[%1$s]</info> %2$s {%3$s} %4$s (%5$s)',
+                    '<info>[%1$s]</info> %2$s %3$s',
                     date('H:i:s', (int)$event->getEventTime()),
                     $eventType,
-                    $this->flatArrayToString($context),
-                    $this->nicerClassName($event->getTestResult()->getFullName()),
-                    $this->flatArrayToString($event->getTestResult()->getArguments())
+                    $this->getTestIdentifierString($event->getTestResult(), $context)
                 )
             );
 
