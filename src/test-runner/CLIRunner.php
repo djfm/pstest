@@ -2,6 +2,8 @@
 
 namespace PrestaShop\TestRunner;
 
+use Exception;
+
 class CLIRunner extends Runner
 {
     private $outputInterface;
@@ -51,6 +53,86 @@ class CLIRunner extends Runner
         }
 
         return $str;
+    }
+
+    private function printException(Exception $e, $paddingString)
+    {
+        $this->writeln(
+            sprintf(
+                '%1$s<comment>Message:</comment> %2$s',
+                $paddingString, $e->getMessage()
+            )
+        );
+        $this->printExceptionTrace($e, $paddingString);
+    }
+
+    private function nicerPath($str)
+    {
+        return dirname($str) . DIRECTORY_SEPARATOR . '<options=bold>' . basename($str) . '</options=bold>';
+    }
+
+    private function longestCommonPrefix(array $strings)
+    {
+        $prefix = null;
+
+        foreach ($strings as $str) {
+            if ($prefix === null) {
+                $prefix = $str;
+            } else {
+                $newPrefix = '';
+                for ($c = 0; $c < min(strlen($prefix), strlen($str)); ++$c) {
+                    if ($prefix[$c] === $str[$c]) {
+                        $newPrefix .= $prefix[$c];
+                    }
+                }
+                $prefix = $newPrefix;
+                if ($prefix === '') {
+                    break;
+                }
+            }
+        }
+
+        return $prefix;
+    }
+
+    private function printExceptionTrace(Exception $e, $paddingString)
+    {
+        $trace = $e->getTrace();
+
+        $trace[0]['file'] = $e->getFile();
+        $trace[0]['line'] = $e->getLine();
+
+        // strip common prefix in file paths for optimized display
+        $prefix = $this->longestCommonPrefix(array_map(function ($line) {
+            return $line['file'];
+        }, $trace));
+        $trace = array_map(function ($line) use ($prefix) {
+            $line['file'] = substr($line['file'], strlen($prefix));
+            return $line;
+        }, $trace);
+
+        foreach ($trace as $line) {
+
+            $codeLocation = '<options=bold>' . $line['function'] . '</options=bold>';
+            if (array_key_exists('class', $line)) {
+                $codeLocation = $line['class'] . $line['type'] . $codeLocation;
+            }
+
+            $this->writeln(
+                sprintf(
+                    '%1$s<comment>In     :</comment> %2$s [%3$s:%4$s]',
+                    $paddingString, $codeLocation,
+                    $this->nicerPath($line['file']), $line['line']
+                )
+            );
+        }
+
+        $this->writeln(
+            sprintf(
+                '%1$s<comment>(paths above are relative to: %2$s)</comment>',
+                $paddingString, $prefix
+            )
+        );
     }
 
     private function displayDots()
@@ -106,7 +188,7 @@ class CLIRunner extends Runner
     {
         parent::onTestEvent($event, $context);
 
-        $display = $event->isStart() || $event->isEnd();
+        $display = $event->isStart() || $event->isEnd() || $event->hasException();
 
         if ($display) {
 
@@ -119,6 +201,8 @@ class CLIRunner extends Runner
                 } else {
                     $eventType .= '   <fg=red>:<(</fg=red> :';
                 }
+            } elseif ($event->hasException()) {
+                $eventType = '<error>Problem</error>   !';
             }
 
             $this->writeln(
@@ -131,6 +215,10 @@ class CLIRunner extends Runner
                     $this->flatArrayToString($event->getTestResult()->getArguments())
                 )
             );
+
+            if ($event->hasException()) {
+                $this->printException($event->getException(), str_pad('', 21) . '| ');
+            }
         }
     }
 }

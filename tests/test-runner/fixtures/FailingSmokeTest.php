@@ -32,7 +32,7 @@ class FailingSmokeTest extends TestCase
 
     protected function test_ICanLoginToTheBackOffice()
     {
-        throw new Exception;
+        throw new Exception('Something went wrong.');
     }
 
     public function test_ICanValidateAnOrder()
