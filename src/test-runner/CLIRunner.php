@@ -154,6 +154,11 @@ class CLIRunner extends Runner
                         $this->printException($event->getException(), '    ');
                     }
                 }
+
+                if ($res->getStatus()->getCode() === 'skipped') {
+                    $this->writeln('');
+                    $this->writeln('    <options=bold>Test skipped</options=bold>');
+                }
             }
         });
 
@@ -165,6 +170,8 @@ class CLIRunner extends Runner
         $this->getSummarizer()->forEachTestResult(function (TestResult $res) {
             if ($res->getStatus()->isSuccessful()) {
                 $this->write('.');
+            } elseif ($res->getStatus()->getCode() === 'skipped') {
+                $this->write('S');
             } else {
                 $this->write('E');
             }
