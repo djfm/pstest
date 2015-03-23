@@ -111,20 +111,24 @@ class CLIRunner extends Runner
             return $line;
         }, $trace);
 
-        foreach ($trace as $line) {
+        foreach ($trace as $l => $line) {
 
             $codeLocation = '<options=bold>' . $line['function'] . '</options=bold>';
             if (array_key_exists('class', $line)) {
                 $codeLocation = $line['class'] . $line['type'] . $codeLocation;
             }
 
-            $this->writeln(
-                sprintf(
-                    '%1$s<comment>In     :</comment> %2$s [%3$s:%4$s]',
-                    $paddingString, $codeLocation,
-                    $this->nicerPath($line['file']), $line['line']
-                )
+            $in = sprintf(
+                '%1$s<comment>In     :</comment> %2$s [%3$s:%4$s]',
+                $paddingString, $codeLocation,
+                $this->nicerPath($line['file']), $line['line']
             );
+
+            if ($l !== count($trace) - 1 ) {
+                $in .= ' <comment>↓</comment>';
+            }
+
+            $this->writeln($in);
         }
 
         $this->writeln(
