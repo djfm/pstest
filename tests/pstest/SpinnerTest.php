@@ -122,4 +122,24 @@ class SpinnerTest extends PHPUnit_Framework_TestCase
 
         $this->assertLessThan(1, time() - $tStart);
     }
+
+    public function test_maybe_when_becomesTrue()
+    {
+        $first = true;
+
+        $this->assertTrue(Spin::maybe(function () use (&$first) {
+            if ($first) {
+                $first = false;
+                throw new Exception;
+            }
+            return true;
+        }), 0.2, 100);
+    }
+
+    public function test_maybe_when_neverBecomesTrue()
+    {
+        $this->assertFalse(Spin::maybe(function () {
+            throw new Exception;
+        }), 0.2, 100);
+    }
 }

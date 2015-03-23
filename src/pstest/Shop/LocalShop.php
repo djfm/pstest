@@ -4,17 +4,59 @@ namespace PrestaShop\PSTest\Shop;
 
 use Exception;
 
+use PrestaShop\Selenium\Browser\BrowserInterface;
+
+use PrestaShop\PSTest\Shop\Service\Installer;
+
 use PrestaShop\PSTest\SystemSettings;
 use PrestaShop\PSTest\LocalShopSourceSettings;
 
-class LocalShop
+class LocalShop extends Shop implements ShopInterface
 {
     private $systemSettings;
     private $sourceSettings;
+    private $browser;
 
-    public function __construct(SystemSettings $systemSettings, LocalShopSourceSettings $sourceSettings)
+    public function __construct(
+        BrowserInterface $browser,
+        SystemSettings $systemSettings,
+        LocalShopSourceSettings $sourceSettings
+    )
     {
+        $this->browser        = $browser;
         $this->systemSettings = $systemSettings;
         $this->sourceSettings = $sourceSettings;
+
+        $this->registerServices();
+    }
+
+    public function getInstallerURL()
+    {
+        return implode('/', [
+            rtrim($this->systemSettings->getWWWBase(), '/'),
+            basename($this->sourceSettings->getPathToShopFiles()),
+            $this->sourceSettings->getInstallerFolderName()
+        ]);
+    }
+
+    public function getBrowser()
+    {
+        return $this->browser;
+    }
+
+    public function getSystemSettings()
+    {
+        return $this->systemSettings;
+    }
+
+    public function registerServices()
+    {
+        $this->registerService(
+            'installer',
+            [$this],
+            function (ShopInterface $shop) {
+                return new Installer($shop);
+            }
+        );
     }
 }

@@ -17,4 +17,16 @@ class SpinnerHelper
         $h = new Spinner($test, $timeout_s, $interval_ms, $message);
         return $h->assertTrue();
     }
+
+    public static function maybe(callable $test, $timeout_s = 5, $interval_ms = 500, $message = null)
+    {
+        $h = new Spinner($test, $timeout_s, $interval_ms, $message);
+
+        try {
+            $h->assertTrue();
+            return true;
+        } catch (Exception $e) {
+            return false;
+        }
+    }
 }

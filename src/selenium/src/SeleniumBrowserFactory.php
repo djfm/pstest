@@ -11,6 +11,8 @@ class SeleniumBrowserFactory
     private $serverSettings;
     private $browserSettings;
 
+    private $browsers = [];
+
     public function __construct(SeleniumServerSettings $serverSettings, SeleniumBrowserSettings $browserSettings)
     {
         $this->serverSettings = $serverSettings;
@@ -23,6 +25,20 @@ class SeleniumBrowserFactory
             $this->serverSettings->getURL(),
             $this->browserSettings->toArray()
         );
-        return new Browser($driver);
+
+        $browser = new Browser($driver);
+
+        $this->browsers[] = $browser;
+
+        return $browser;
+    }
+
+    public function quitLaunchedBrowsers()
+    {
+        foreach ($this->browsers as $browser) {
+            $browser->quit();
+        }
+
+        return $this;
     }
 }

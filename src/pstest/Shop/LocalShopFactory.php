@@ -4,6 +4,8 @@ namespace PrestaShop\PSTest\Shop;
 
 use Exception;
 
+use PrestaShop\Selenium\SeleniumBrowserFactory;
+
 use PrestaShop\PSTest\SystemSettings;
 use PrestaShop\PSTest\LocalShopSourceSettings;
 
@@ -13,11 +15,17 @@ class LocalShopFactory
 {
     private $systemSettings;
     private $sourceSettings;
+    private $browserFactory;
 
     private $fs; // helper
 
-    public function __construct(SystemSettings $systemSettings, LocalShopSourceSettings $sourceSettings)
+    public function __construct(
+        SeleniumBrowserFactory $browserFactory,
+        SystemSettings $systemSettings,
+        LocalShopSourceSettings $sourceSettings
+    )
     {
+        $this->browserFactory = $browserFactory;
         $this->systemSettings = $systemSettings;
         $this->sourceSettings = $sourceSettings;
 
@@ -51,7 +59,13 @@ class LocalShopFactory
 
         $shopSystemSettings = clone $this->systemSettings;
 
-        $shop = new LocalShop($shopSystemSettings, $shopSourceSettings);
+        $browser = $this->browserFactory->makeBrowser();
+
+        $shop = new LocalShop(
+            $browser,
+            $shopSystemSettings,
+            $shopSourceSettings
+        );
 
         return $shop;
     }
