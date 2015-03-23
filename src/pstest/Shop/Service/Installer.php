@@ -28,6 +28,7 @@ class Installer
         $chLanguage = new ChooseYourLanguagePage(
             $this->browser
         );
+        $chLanguage->setLanguage('en');
 
         $licensePage = $chLanguage->nextStep();
         $licensePage->agreeToTermsAndConditions();
@@ -69,5 +70,7 @@ class Installer
         }
 
         $systemConfiguration->nextStep();
+
+        return $this->shop;
     }
 }

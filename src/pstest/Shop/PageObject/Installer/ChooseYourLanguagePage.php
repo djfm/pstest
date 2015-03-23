@@ -13,6 +13,13 @@ class ChooseYourLanguagePage
         $this->browser = $browser;
     }
 
+    public function setLanguage($code)
+    {
+        $this->browser->select('#langList', $code);
+
+        return $this;
+    }
+
     public function nextStep()
     {
         $this->browser->click('#btNext');
