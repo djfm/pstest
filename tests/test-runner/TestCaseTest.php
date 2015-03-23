@@ -215,4 +215,25 @@ class TestCaseTest extends PHPUnit_Framework_TestCase
 
         $this->assertEquals(3, $stats['ko']);
     }
+
+    public function test_firstFailure_aborts_plan()
+    {
+        $aggregator = $this->getMockBuilder('PrestaShop\TestRunner\TestAggregator')->getMock();
+
+        $test = $this
+             ->getMockBuilder('PrestaShop\TestRunner\Tests\Fixtures\SmokeTest')
+             ->setMethods(['test_Installation', 'test_ICanLoginToTheBackOffice', 'test_ICanValidateAnOrder'])
+             ->getMock();
+
+        $test->method('test_Installation')->will($this->throwException(new Exception));
+        $test->expects($this->once())->method('test_Installation');
+
+        $test->expects($this->never())->method('test_ICanLoginToTheBackOffice');
+        $test->expects($this->never())->method('test_ICanValidateAnOrder');
+
+        $test->setTestAggregator($aggregator);
+
+        $test->run();
+    }
+
 }

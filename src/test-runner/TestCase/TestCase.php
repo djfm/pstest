@@ -17,6 +17,7 @@ abstract class TestCase implements TestPlanInterface
     private $_context = [];
     private $filePath;
     private $tests = [];
+    private $skipRemainingTests = false;
 
     public function __construct()
     {
@@ -200,7 +201,7 @@ abstract class TestCase implements TestPlanInterface
         foreach ($this->tests as $test) {
             $this->aggregator->startTest($test->getName());
 
-            if ($beforeOk) {
+            if ($beforeOk && false === $this->skipRemainingTests) {
                 $beforeEachOk = true;
 
                 foreach ($beforeEach as $setup) {
@@ -219,6 +220,7 @@ abstract class TestCase implements TestPlanInterface
                     if ($res instanceof Exception) {
                         $testException = $res;
                         $this->aggregator->addException($res);
+                        $this->skipRemainingTests = true;
                     } else {
                         $testOk = true;
                     }
