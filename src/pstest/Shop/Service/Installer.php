@@ -42,13 +42,24 @@ class Installer
             ->setPassword('123456789')
         ;
 
+        $systemSettings = $this->shop->getSystemSettings();
         $systemConfiguration = $storeInformation->nextStep();
         $systemConfiguration
-            ->setDatabaseServerAddress('127.0.0.1:3307')
-            ->setDatabaseName('PrestaShop')
-            ->setDatabaseLogin('root')
-            ->setDatabasePassword('')
-            ->setDatabaseTablesPrefix('ps_')
+            ->setDatabaseServerAddress(
+                $systemSettings->getDatabaseHostAndPort()
+            )
+            ->setDatabaseName(
+                $systemSettings->getDatabaseName()
+            )
+            ->setDatabaseLogin(
+                $systemSettings->getDatabaseUser()
+            )
+            ->setDatabasePassword(
+                $systemSettings->getDatabasePass()
+            )
+            ->setDatabaseTablesPrefix(
+                $systemSettings->getDatabaseTablesPrefix()
+            )
         ;
 
         if (!$systemConfiguration->testDatabaseConnection()) {

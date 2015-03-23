@@ -40,6 +40,11 @@ class SystemSettings extends Configuration
     private $database_name;
 
     /**
+     * @conf database.tables_prefix
+     */
+    private $database_tables_prefix = 'ps_';
+
+    /**
      * @conf www.path
      * @var string
      */
@@ -66,6 +71,16 @@ class SystemSettings extends Configuration
     public function getDatabasePort()
     {
         return $this->database_port;
+    }
+
+    public function getDatabaseHostAndPort()
+    {
+        return $this->getDatabaseHost() . ':' . $this->getDatabasePort();
+    }
+
+    public function getDatabaseTablesPrefix()
+    {
+        return $this->database_tables_prefix;
     }
 
     public function setDatabasePort($database_port)
