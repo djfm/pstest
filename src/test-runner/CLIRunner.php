@@ -146,7 +146,7 @@ class CLIRunner extends Runner
                 $this->writeln('');
 
                 $id = $this->getTestIdentifierString($res, $context);
-                $this->writeln('<error>Problem</error> ' . $id);
+                $this->writeln('<error>Problem!</error> ' . $id);
 
                 foreach ($res->getEvents() as $event) {
                     if ($event->hasException()) {
@@ -219,7 +219,7 @@ class CLIRunner extends Runner
     private function getTestIdentifierString(TestResult $result, array $context)
     {
         return sprintf(
-            '{%1$s} %2$s (%3$s)',
+            '<options=underscore>Context</options=underscore>: {%1$s} <options=underscore>Test</options=underscore>: %2$s (%3$s)',
             $this->flatArrayToString($context),
             $this->nicerClassName($result->getFullName()),
             $this->flatArrayToString($result->getArguments())
