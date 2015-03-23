@@ -188,6 +188,8 @@ class CLIRunner extends Runner
 
         $pad = 15;
 
+        $this->writeln("\n<options=bold>Tests completed, summary follows:</options=bold>");
+
         $this->displayProblems();
 
         $this->writeln('');
