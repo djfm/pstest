@@ -27,9 +27,12 @@ class Worker
             return 1;
         }
 
-        $plan = unserialize($plan);
+        $planData = unserialize($plan);
 
-        return $this->processPlan($plan);
+        $plan = $planData['plan'];
+        $pluginData = $planData['runnerPluginData'];
+
+        return $this->processPlan($plan, $pluginData);
     }
 
     public function onTestEvent(TestEvent $event, array $context)
@@ -43,13 +46,17 @@ class Worker
         return $this;
     }
 
-    private function processPlan(TestPlanInterface $plan)
+    private function processPlan(TestPlanInterface $plan, array $pluginData)
     {
         $aggregator = new TestAggregator;
 
         $aggregator->addEventListener([$this, 'onTestEvent']);
 
         $plan->setTestAggregator($aggregator);
+
+        foreach ($pluginData as $pluginName => $data) {
+            $plan->setRunnerPluginData($pluginName, $data);
+        }
 
         $plan->run();
 

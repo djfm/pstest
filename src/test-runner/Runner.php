@@ -3,6 +3,7 @@
 namespace PrestaShop\TestRunner;
 
 use Exception;
+use ReflectionClass;
 
 use PrestaShop\Proc\Proc;
 
@@ -18,6 +19,7 @@ class Runner
     private $maxWorkers = 1;
 
     private $summarizer;
+    private $plugins = [];
 
     public function __construct()
     {
@@ -46,6 +48,62 @@ class Runner
         $this->plansLeft = $loader->getTestPlans();
 
         return $this;
+    }
+
+    private function loadPlugins()
+    {
+        $unique_plugins = [];
+
+        foreach ($this->plansLeft as $plan) {
+            $plugins = $plan->getRunnerPlugins();
+            foreach ($plugins as $name => $plugin) {
+
+                if (!($plugin instanceof RunnerPlugin)) {
+                    throw new Exception(
+                        sprintf('Class `%s` is not an instance of PrestaShop\TestRunner\RunnerPlugin.', get_class($plugin))
+                    );
+                }
+
+                $hash = md5(serialize($plugin));
+                if (!array_key_exists($hash, $unique_plugins)) {
+                    $unique_plugins[$hash] = [
+                        'plugin' => $plugin,
+                        'planReferences' => []
+                    ];
+                }
+                $unique_plugins[$hash]['planReferences'][] = [
+                    'plan' => $plan,
+                    'name' => $name
+                ];
+            }
+        }
+
+        $this->plugins = $unique_plugins;
+
+        return $this;
+    }
+
+    private function setupPlugins()
+    {
+        foreach ($this->plugins as $pluginConf) {
+            $pluginConf['plugin']->setup();
+        }
+
+        return $this;
+    }
+
+    private function teardownPlugins()
+    {
+        foreach ($this->plugins as $pluginConf) {
+            $pluginConf['plugin']->teardown();
+        }
+
+        return $this;
+    }
+
+    public function getPlugins()
+    {
+        return $this->plugins;
     }
 
     private function bindServerEvents()
@@ -101,8 +159,11 @@ class Runner
     public function run()
     {
         $this->loadPlans();
+        $this->loadPlugins();
+        $this->setupPlugins();
         $this->startServer();
         $this->done();
+        $this->teardownPlugins();
     }
 
     protected function done()
@@ -143,12 +204,30 @@ class Runner
         if (is_array($query) && array_key_exists('type', $query)) {
             if ($query['type'] === 'get plan') {
                 if (!empty($this->plansLeft)) {
-                    $respond(serialize(array_shift($this->plansLeft)));
+                    $respond(serialize($this->getPlanForWorker()));
                 } else {
                     $respond(null);
                 }
             }
         }
+    }
+
+    private function getPlanForWorker()
+    {
+        $plan = array_shift($this->plansLeft);
+
+        $pluginDataToSend = [];
+
+        foreach ($this->plugins as $pluginConf) {
+            foreach ($pluginConf['planReferences'] as $planAndName) {
+                if ($planAndName['plan'] === $plan) {
+                    $pluginData = $pluginConf['plugin']->getRunnerPluginData();
+                    $pluginDataToSend[$planAndName['name']] = $pluginData;
+                }
+            }
+        }
+
+        return ['plan' => $plan, 'runnerPluginData' => $pluginDataToSend];
     }
 
     /**

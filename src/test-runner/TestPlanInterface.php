@@ -5,6 +5,7 @@ namespace PrestaShop\TestRunner;
 interface TestPlanInterface
 {
     public function setTestAggregator(TestAggregator $aggregator);
+
     public function run();
     /**
      * Conventions are:
@@ -13,4 +14,7 @@ interface TestPlanInterface
      * -> null := number of tests cannot be determined statically
      */
     public function getTestsCount();
+
+    public function getRunnerPlugins();
+    public function setRunnerPluginData($pluginName, $data);
 }

@@ -5,6 +5,7 @@ namespace PrestaShop\TestRunner\Tests;
 use PHPUnit_Framework_TestCase;
 
 use PrestaShop\TestRunner\Runner;
+use PrestaShop\TestRunner\Tests\Fixtures\RunnerPlugin;
 
 class RunnerTest extends PHPUnit_Framework_TestCase
 {
@@ -28,5 +29,23 @@ class RunnerTest extends PHPUnit_Framework_TestCase
         $stats = $runner->getSummarizer()->getStatistics();
 
         $this->assertEquals(12, $stats['ok']);
+    }
+
+    public function test_plugins_are_executed()
+    {
+        $runner = new Runner();
+
+        ob_start();
+        $runner
+            ->addTestPath(
+                $this->getFixturePath('PluginTest.php')
+            )
+            ->run();
+        ob_end_clean();
+
+        $stats = $runner->getSummarizer()->getStatistics();
+
+        $this->assertEquals(1, $stats['ok']);
+        $this->assertCount(1, $runner->getPlugins());
     }
 }

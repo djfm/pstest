@@ -33,7 +33,7 @@ abstract class TestCase implements TestPlanInterface
 
     public function contextProvider()
     {
-        return [];
+        return [[]];
     }
 
     public function getContext()
@@ -46,6 +46,16 @@ abstract class TestCase implements TestPlanInterface
         $this->_context = $context;
 
         return $this;
+    }
+
+    public function getRunnerPlugins()
+    {
+        return [];
+    }
+
+    public function setRunnerPluginData($pluginName, $pluginData)
+    {
+
     }
 
     public function getFilePath()
