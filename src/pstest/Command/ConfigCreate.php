@@ -10,6 +10,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 use PrestaShop\PSTest\SystemSettings;
 use PrestaShop\PSTest\LocalShopSourceSettings;
+use PrestaShop\PSTest\Shop\DefaultSettings;
 
 class ConfigCreate extends BaseCommand
 {
@@ -25,7 +26,7 @@ class ConfigCreate extends BaseCommand
     {
         $path = $this->getConfigurationFileName();
 
-        $settingsInstances = [new SystemSettings, new LocalShopSourceSettings];
+        $settingsInstances = [new SystemSettings, new LocalShopSourceSettings, new DefaultSettings];
 
         if (file_exists($path)) {
             foreach($settingsInstances as $settings) {

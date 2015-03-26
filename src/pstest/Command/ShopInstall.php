@@ -16,6 +16,7 @@ use PrestaShop\Selenium\Xvfb\XvfbServerFactory;
 use PrestaShop\PSTest\SystemSettings;
 use PrestaShop\PSTest\LocalShopSourceSettings;
 use PrestaShop\PSTest\Shop\LocalShopFactory;
+use PrestaShop\PSTest\Shop\DefaultSettings;
 
 class ShopInstall extends BaseCommand
 {
@@ -62,8 +63,9 @@ class ShopInstall extends BaseCommand
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $systemSettings = new SystemSettings();
-        $sourceSettings = new LocalShopSourceSettings();
+        $systemSettings = new SystemSettings;
+        $sourceSettings = new LocalShopSourceSettings;
+        $defaultSettings = new DefaultSettings;
 
         if (!file_exists($this->getConfigurationFileName())) {
             $output->writeln(sprintf('<error>Oops:</error> Cannot find configuration file `%s` in current directory.', $this->getConfigurationFileName()));
@@ -72,6 +74,7 @@ class ShopInstall extends BaseCommand
 
         $systemSettings->loadFile($this->getConfigurationFileName());
         $sourceSettings->loadFile($this->getConfigurationFileName());
+        $defaultSettings->loadFile($this->getConfigurationFileName());
 
         $browserFactory = $this->getBrowserFactory(
             $input->getOption('headless')
@@ -79,7 +82,7 @@ class ShopInstall extends BaseCommand
 
         $shopFactory = new LocalShopFactory($browserFactory, $systemSettings, $sourceSettings);
 
-        $shop = $shopFactory->makeShop();
+        $shop = $shopFactory->makeShop()->setDefaults($defaultSettings);
 
         $shop->get('installer')->install();
 

@@ -22,6 +22,12 @@ class ConfigurationTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('some_conf', $conf->getRoot());
     }
 
+    public function test_get()
+    {
+        $conf = new SomeConf();
+        $this->assertEquals('default_a', $conf->get('some_conf.a'));
+    }
+
     public function test_ListOfPropertiesToConfigure_isRetrievedFromAnnotations_When_UnDefined()
     {
         $conf = new EmptyConf();

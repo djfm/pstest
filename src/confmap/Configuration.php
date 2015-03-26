@@ -95,7 +95,7 @@ class Configuration
         return $this->loadArray($data);
     }
 
-    public function dumpArray()
+    public function getArrayWrapper()
     {
         $output = new ArrayWrapper([]);
 
@@ -112,7 +112,18 @@ class Configuration
             }, $this, $this);
             $output->set($mappedBy, $getter());
         }
-        return $output->getArray();
+
+        return $output;
+    }
+
+    public function dumpArray()
+    {
+        return $this->getArrayWrapper()->getArray();
+    }
+
+    public function get($key, $default = null)
+    {
+        return $this->getArrayWrapper()->get($key, $default, false);
     }
 
     public function dumpFile($path)

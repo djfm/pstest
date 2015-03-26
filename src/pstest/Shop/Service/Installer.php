@@ -19,8 +19,17 @@ class Installer
         $this->browser = $shop->getBrowser();
     }
 
-    public function install()
+    /**
+     * Install the shop.
+     * 
+     * @param  array  $shop_options     language (2-letter code), country (2-letter code), name
+     * @param  array  $employee_options firstname, lastname, email, password
+     */
+    public function install(array $shop_options = array(), array $employee_options = array())
     {
+        $shop_options = array_merge($this->shop->getDefaults('shop'), $shop_options);
+        $employee_options = array_merge($this->shop->getDefaults('employee'), $employee_options);
+
         $this->browser->visit(
             $this->shop->getInstallerURL()
         );
@@ -28,19 +37,19 @@ class Installer
         $chLanguage = new ChooseYourLanguagePage(
             $this->browser
         );
-        $chLanguage->setLanguage('en');
+        $chLanguage->setLanguage($shop_options['language']);
 
         $licensePage = $chLanguage->nextStep();
         $licensePage->agreeToTermsAndConditions();
 
         $storeInformation = $licensePage->nextStep();
         $storeInformation
-            ->setShopName('test')
-            ->setCountry('us')
-            ->setFirstName('John')
-            ->setLastName('Doe')
-            ->setEmailAddress('pub@prestashop.com')
-            ->setPassword('123456789')
+            ->setShopName($shop_options['name'])
+            ->setCountry($shop_options['country'])
+            ->setFirstName($employee_options['firstname'])
+            ->setLastName($employee_options['lastname'])
+            ->setEmailAddress($employee_options['email'])
+            ->setPassword($employee_options['password'])
         ;
 
         $systemSettings = $this->shop->getSystemSettings();
