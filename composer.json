@@ -14,6 +14,9 @@
         }
     ],
     "autoload": {
+        "classmap": [
+            "src/ioc/"
+        ],
         "psr-4": {
             "PrestaShop\\PSTest\\": "src/pstest/",
             "PrestaShop\\PSTest\\Tests\\": "tests/pstest/",
@@ -24,11 +27,13 @@
             "PrestaShop\\Selenium\\Tests\\": "tests/selenium/",
             "PrestaShop\\FileSystem\\": "src/fs/",
             "PrestaShop\\FileSystem\\Tests\\": "tests/fs/",
-            "PrestaShop\\Proc\\": "src/proc",
-            "PrestaShop\\Proc\\Tests\\": "tests/proc",
-            "PrestaShop\\TestRunner\\": "src/test-runner",
-            "PrestaShop\\TestRunner\\Tests\\": "tests/test-runner",
-            "PrestaShop\\TestRunner\\Tests\\Fixtures\\": "tests/test-runner/fixtures/"
+            "PrestaShop\\Proc\\": "src/proc/",
+            "PrestaShop\\Proc\\Tests\\": "tests/proc/",
+            "PrestaShop\\TestRunner\\": "src/test-runner/",
+            "PrestaShop\\TestRunner\\Tests\\": "tests/test-runner/",
+            "PrestaShop\\TestRunner\\Tests\\Fixtures\\": "tests/test-runner/fixtures/",
+            "PrestaShop\\IoC\\Tests\\": "tests/ioc/",
+            "PrestaShop\\IoC\\Tests\\Fixtures\\": "tests/ioc/fixtures/"
         }
     }
 }

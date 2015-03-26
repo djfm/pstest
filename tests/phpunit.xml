@@ -28,5 +28,10 @@
             <exclude>./test-runner/fixtures</exclude>
         </testsuite>
 
+        <testsuite name="IoC">
+            <directory>./ioc/</directory>
+            <exclude>./ioc/fixtures</exclude>
+        </testsuite>
+
     </testsuites>
 </phpunit>

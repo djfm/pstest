@@ -23,6 +23,8 @@ class LocalShop extends Shop implements ShopInterface
         LocalShopSourceSettings $sourceSettings
     )
     {
+        parent::__construct();
+
         $this->browser        = $browser;
         $this->systemSettings = $systemSettings;
         $this->sourceSettings = $sourceSettings;
@@ -51,12 +53,8 @@ class LocalShop extends Shop implements ShopInterface
 
     public function registerServices()
     {
-        $this->registerService(
-            'installer',
-            [$this],
-            function (ShopInterface $shop) {
-                return new Installer($shop);
-            }
-        );
+        $this->getContainer()->bind('installer', function () {
+            return new Installer($this);
+        }, true);
     }
 }
