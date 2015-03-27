@@ -25,8 +25,8 @@ class Selenium extends RunnerPlugin
         $this->server->shutDown();
     }
 
-    public function getEnvironment()
+    public function getRunnerPluginData()
     {
-        return ['seleniumServerSettings' => serialize($this->server->getSettings())];
+        return $this->server->getSettings();
     }
 }

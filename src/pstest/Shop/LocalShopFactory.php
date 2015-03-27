@@ -32,8 +32,12 @@ class LocalShopFactory
         $this->fs = new FileSystem();
     }
 
-    public function makeShop()
+    public function makeShop(array $options)
     {
+        $options = array_merge([
+            'temporary' => false
+        ], $options);
+
         $targetRoot = $this->systemSettings->getWWWPath();
 
         if (!is_dir($targetRoot)) {
