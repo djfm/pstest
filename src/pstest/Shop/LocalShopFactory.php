@@ -49,7 +49,7 @@ class LocalShopFactory
         return $uid;
     }
 
-    public function makeShop(array $options)
+    public function makeShop(array $options = array())
     {
         $options = array_merge([
             'temporary' => false
