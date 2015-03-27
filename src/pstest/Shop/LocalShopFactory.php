@@ -36,8 +36,9 @@ class LocalShopFactory
     {
         $uid_lock_path = $this->fs->join($folder, 'pstest.maxuid.lock');
         $h = fopen($uid_lock_path, 'c+');
-        if (!$h)
+        if (!$h) {
             throw new \Exception('Could not get pstaf.maxuid.lock file.');
+        }
         flock($h, LOCK_EX);
         $uid = (int) fgets($h) + 1;
         ftruncate($h, 0);
