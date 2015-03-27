@@ -2,6 +2,8 @@
 
 namespace PrestaShop\TestRunner;
 
+use ReflectionClass;
+
 use PrestaShop\TestRunner\TestCase\TestCaseLoader;
 
 class Loader
@@ -25,6 +27,10 @@ class Loader
     public function loadFile($path)
     {
         $classesInFile = ClassDiscoverer::getDeclaredClasses($path);
+
+        $classesInFile = array_filter($classesInFile, function ($className) {
+            return !(new ReflectionClass($className))->isAbstract();
+        });
 
         foreach ($this->loaders as $loader) {
             $plans = $loader->loadTestPlansFromFile($path, $classesInFile);

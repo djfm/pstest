@@ -63,10 +63,10 @@ class FileSystem
                 if (!@copy($from, $to)) {
                     throw new Exception(sprintf('Could not copy file `%1$s` to %2$s.', $from, $to));
                 }
+            }
 
-                if (!@chmod($to, 0777)) {
-                    throw new Exception(sprintf('Could chmod 777 file `%s`.', $to));
-                }
+            if (!@chmod($to, 0777)) {
+                throw new Exception(sprintf('Could chmod 777 file `%s`.', $to));
             }
         }
     }

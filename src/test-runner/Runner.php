@@ -26,6 +26,12 @@ class Runner
         $this->summarizer = new TestAggregatorSummarizer;
     }
 
+    public function setMaxWorkers($p)
+    {
+        $this->maxWorkers = $p;
+        return $this;
+    }
+
     public function addTestPath($path)
     {
         $this->testPaths[] = $path;

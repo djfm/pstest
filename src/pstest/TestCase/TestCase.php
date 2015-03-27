@@ -15,7 +15,7 @@ use PrestaShop\PSTest\LocalShopSourceSettings;
 use PrestaShop\PSTest\Shop\LocalShopFactory;
 use PrestaShop\PSTest\Shop\DefaultSettings;
 
-class TestCase extends BaseTestCase
+abstract class TestCase extends BaseTestCase
 {
     private $browserFactory;
     protected $shop;

@@ -12,14 +12,6 @@ class TestCaseLoader implements LoaderInterface
         $testPlans = [];
 
         foreach ($classesInFile as $className) {
-
-            // Abstract class TestCase might be detected upon loading a test, dont consider
-            // it a TestCase.
-            // Real tests subclass TestCase.
-            if ($className === 'PrestaShop\TestRunner\TestCase\TestCase') {
-                continue;
-            }
-
             $masterInstance = new $className;
             if ($masterInstance instanceof TestCase) {
                 $contexts = $masterInstance->contextProvider();

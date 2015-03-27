@@ -16,6 +16,7 @@ class TestRun extends Command
     {
         $this->setName('test:run')->setDescription('Run a test or a group of tests.')
              ->addArgument('path', InputArgument::REQUIRED, 'Which test?')
+             ->addOption('parallel', 'p', InputOption::VALUE_REQUIRED, 'How many tests to run in parallel?', 1)
         ;
     }
 
@@ -25,6 +26,8 @@ class TestRun extends Command
         $path =  $input->getArgument('path');
 
         $runner = new CLIRunner();
+
+        $runner->setMaxWorkers($input->getOption('parallel'));
 
         $runner->setOutputInterface($output);
         $runner->addTestPath($path);

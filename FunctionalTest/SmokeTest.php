@@ -10,11 +10,12 @@ class SmokeTest extends TestCase
     {
         return [
             ['country' => 'fr', 'language' => 'fr'],
+            ['country' => 'fr', 'language' => 'de']
         ];
     }
 
     public function testInstallation()
     {
-        
+        $this->shop->get('installer')->install();
     }
 }

@@ -32,6 +32,23 @@ class LocalShopFactory
         $this->fs = new FileSystem();
     }
 
+    private function getUID($folder)
+    {
+        $uid_lock_path = $this->fs->join($folder, 'pstest.maxuid.lock');
+        $h = fopen($uid_lock_path, 'c+');
+        if (!$h)
+            throw new \Exception('Could not get pstaf.maxuid.lock file.');
+        flock($h, LOCK_EX);
+        $uid = (int) fgets($h) + 1;
+        ftruncate($h, 0);
+        rewind($h);
+        fwrite($h, "$uid");
+        fflush($h);
+        flock($h, LOCK_UN);
+        fclose($h);
+        return $uid;
+    }
+
     public function makeShop(array $options)
     {
         $options = array_merge([
@@ -50,7 +67,13 @@ class LocalShopFactory
             throw new Exception(sprintf('Path to shop source files (`%s`) is not a directory.', $targetRoot));
         }
 
-        $targetFolderName = basename($sourcesPath);
+        if ($options['temporary']) {
+            $suffix = '_tmpshpcpy_' . $this->getUID($targetRoot);
+        } else {
+            $suffix = '';
+        }
+
+        $targetFolderName = basename($sourcesPath) . $suffix;
 
         $targetPath = $this->fs->join($targetRoot, $targetFolderName);
 
@@ -62,6 +85,9 @@ class LocalShopFactory
         $shopSourceSettings->setPathToShopFiles($targetPath);
 
         $shopSystemSettings = clone $this->systemSettings;
+        $shopSystemSettings->setDatabaseName(
+            $shopSystemSettings->getDatabaseName() . $suffix
+        );
 
         $browser = $this->browserFactory->makeBrowser();
 
