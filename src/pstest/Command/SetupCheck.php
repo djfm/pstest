@@ -16,7 +16,7 @@ class SetupCheck extends BaseCommand
     {
         $this
         ->setName('setup:check')
-        ->setDescription('Check your setup for potential missing dependencies.')
+        ->setDescription('Check your setup for missing dependencies')
         ;
     }
 

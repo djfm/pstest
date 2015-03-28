@@ -18,7 +18,7 @@ class ConfigCreate extends BaseCommand
     {
         $this
         ->setName('config:create')
-        ->setDescription('Create a configuration file with the default values in the current directory.')
+        ->setDescription('Create a configuration file with the default values in the current directory')
         ;
     }
 
