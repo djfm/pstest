@@ -41,6 +41,20 @@ abstract class TestCase implements TestPlanInterface
         return $this->_context;
     }
 
+    public function context($key)
+    {
+        if (array_key_exists($key, $this->getContext())) {
+            return $this->getContext()[$key];
+        } else {
+            throw new Exception(
+                sprintf(
+                    'There is nothing with key `%s` in the current context.',
+                    $key
+                )
+            );
+        }
+    }
+
     public function setContext(array $context)
     {
         $this->_context = $context;
