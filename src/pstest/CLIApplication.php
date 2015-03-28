@@ -6,8 +6,7 @@ use Symfony\Component\Console\Application;
 
 use PrestaShop\PSTest\Command\ConfigCreate;
 use PrestaShop\PSTest\Command\ShopInstall;
-
-use PrestaShop\TestRunner\Command\TestRun;
+use PrestaShop\PSTest\Command\TestRun;
 
 class CLIApplication extends Application
 {

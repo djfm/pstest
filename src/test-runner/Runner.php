@@ -15,6 +15,7 @@ class Runner
     private $plansLeft;
     private $server;
     private $runningClients = [];
+    private $pluginOptions = [];
 
     private $maxWorkers = 1;
 
@@ -26,6 +27,11 @@ class Runner
         $this->summarizer = new TestAggregatorSummarizer;
     }
 
+    public function setPluginOptions(array $options) {
+        $this->pluginOptions = $options;
+        return $this;
+    }
+
     public function setMaxWorkers($p)
     {
         $this->maxWorkers = $p;
@@ -35,7 +41,6 @@ class Runner
     public function addTestPath($path)
     {
         $this->testPaths[] = $path;
-
         return $this;
     }
 
@@ -92,7 +97,14 @@ class Runner
     private function setupPlugins()
     {
         foreach ($this->plugins as $pluginConf) {
-            $pluginConf['plugin']->setup();
+
+            $className = get_class($pluginConf['plugin']);
+            $options = [];
+            if (array_key_exists($className, $this->pluginOptions)) {
+                $options = $this->pluginOptions[$className];
+            }
+
+            $pluginConf['plugin']->setup($options);
         }
 
         return $this;

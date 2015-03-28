@@ -9,9 +9,12 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 use PrestaShop\TestRunner\CLIRunner;
+use PrestaShop\TestRunner\RunnerPlugin;
 
 class TestRun extends Command
 {
+    private $pluginOptionNames = [];
+
     protected function configure()
     {
         $this->setName('test:run')->setDescription('Run a test or a group of tests.')
@@ -20,12 +23,31 @@ class TestRun extends Command
         ;
     }
 
+    protected function addRunnerPlugin(RunnerPlugin $plugin)
+    {
+        $this->pluginOptionNames[get_class($plugin)] = $plugin->addOptionsToCommand($this);
+
+        return $this;
+    }
+
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $output; // shut the linter up
         $path =  $input->getArgument('path');
 
+        $pluginOptions = [];
+
+        foreach ($this->pluginOptionNames as $className => $optionNames) {
+            $pluginOptions[$className] = [];
+
+            foreach ($optionNames as $optionName) {
+                $pluginOptions[$className][$optionName] = $input->getOption($optionName);
+            }
+        }
+
         $runner = new CLIRunner();
+
+        $runner->setPluginOptions($pluginOptions);
 
         $runner->setMaxWorkers($input->getOption('parallel'));
 
