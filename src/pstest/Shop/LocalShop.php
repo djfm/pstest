@@ -8,8 +8,14 @@ use PrestaShop\Selenium\Browser\BrowserInterface;
 
 use PrestaShop\PSTest\Shop\Service\Installer;
 
+use PrestaShop\PSTest\Helper\MySQL as DatabaseHelper;
+use PrestaShop\PSTest\Shop\Service\Database as DatabaseService;
+
 use PrestaShop\PSTest\SystemSettings;
 use PrestaShop\PSTest\LocalShopSourceSettings;
+
+use PrestaShop\FileSystem\FileSystemOverHTTP;
+use PrestaShop\PSTest\Shop\Service\Files as FilesService;
 
 class LocalShop extends Shop implements ShopInterface
 {
@@ -32,13 +38,17 @@ class LocalShop extends Shop implements ShopInterface
         $this->registerServices();
     }
 
-    public function getInstallerURL()
+    public function getFrontOfficeURL()
     {
         return implode('/', [
             rtrim($this->systemSettings->getWWWBase(), '/'),
-            basename($this->sourceSettings->getPathToShopFiles()),
-            $this->sourceSettings->getInstallerFolderName()
+            basename($this->sourceSettings->getPathToShopFiles())
         ]);
+    }
+
+    public function getInstallerURL()
+    {
+        return $this->getFrontOfficeURL() . '/' . $this->sourceSettings->getInstallerFolderName();
     }
 
     public function getBrowser()
@@ -51,10 +61,39 @@ class LocalShop extends Shop implements ShopInterface
         return $this->systemSettings;
     }
 
+    public function getSourceSettings()
+    {
+        return $this->sourceSettings;
+    }
+
     public function registerServices()
     {
         $this->getContainer()->bind('installer', function () {
+
             return new Installer($this);
+
+        }, true);
+
+        $this->getContainer()->bind('database', function () {
+
+            $db = new DatabaseHelper(
+                $this->getSystemSettings()->getDatabaseHost(),
+                $this->getSystemSettings()->getDatabasePort(),
+                $this->getSystemSettings()->getDatabaseUser(),
+                $this->getSystemSettings()->getDatabasePass()
+            );
+
+            return new DatabaseService($this, $db);
+        }, true);
+
+        $this->getContainer()->bind('files', function () {
+
+            $fs = new FileSystemOverHTTP(
+                $this->getSourceSettings()->getPathToShopFiles(),
+                $this->getFrontOfficeURL()
+            );
+
+            return new FilesService($this, $fs);
         }, true);
     }
 }

@@ -20,6 +20,8 @@ abstract class TestCase extends BaseTestCase
     private $browserFactory;
     protected $shop;
 
+    private $shopIsTemporary = true;
+
     public function getRunnerPlugins()
     {
         return [
@@ -65,9 +67,17 @@ abstract class TestCase extends BaseTestCase
         $shopFactory = new LocalShopFactory($this->browserFactory, $systemSettings, $sourceSettings);
 
         $this->shop = $shopFactory->makeShop([
-            'temporary' => true
+            'temporary' => $this->shopIsTemporary
         ]);
 
         $this->shop->setDefaults($defaultSettings);
+    }
+
+    public function tearDownAfterClass()
+    {
+        if ($this->shopIsTemporary) {
+            $this->shop->get('database')->drop();
+            $this->shop->get('files')->removeAll();
+        }
     }
 }

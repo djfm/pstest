@@ -69,5 +69,9 @@ class FileSystem
                 throw new Exception(sprintf('Could chmod 777 file `%s`.', $to));
             }
         }
+
+        if (!@chmod($targetDir, 0777)) {
+            throw new Exception(sprintf('Could chmod 777 file `%s`.', $to));
+        }
     }
 }

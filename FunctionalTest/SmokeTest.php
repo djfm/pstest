@@ -10,7 +10,7 @@ class SmokeTest extends TestCase
     {
         return [
             ['country' => 'fr', 'language' => 'fr'],
-            ['country' => 'fr', 'language' => 'de']
+            //['country' => 'fr', 'language' => 'de']
         ];
     }
 
