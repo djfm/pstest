@@ -149,8 +149,8 @@ abstract class TestCase implements TestPlanInterface
     final public function getMethodsToCallAfterClass()
     {
         return array_merge(
-            ['tearDownAfterClass'],
-            $this->getMethodsByAnnotation('afterClass')
+            $this->getMethodsByAnnotation('afterClass'),
+            ['tearDownAfterClass']
         );
     }
 

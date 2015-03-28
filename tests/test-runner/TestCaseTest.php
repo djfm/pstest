@@ -34,7 +34,7 @@ class TestCaseTest extends PHPUnit_Framework_TestCase
     {
         $test = new SmokeTest;
         $this->assertEquals(
-            array_map('strtolower', ['teardownAfterClass', 'someOtherTeardown']),
+            array_map('strtolower', ['someOtherTeardown', 'teardownAfterClass']),
             array_map('strtolower', $test->getMethodsToCallAfterClass())
         );
     }
