@@ -40,10 +40,14 @@ abstract class TestCase implements TestPlanInterface
             return false;
         }
 
+        $sawExcludingFilters = false;
+
         foreach ($this->filters as $filter) {
             if (preg_match('/^context:/i', $filter)) {
                 continue;
             }
+
+            $sawExcludingFilters = true;
 
             $expFilter = '/' . $filter . '/';
             if (@preg_match($expFilter, null)) {
@@ -60,8 +64,8 @@ abstract class TestCase implements TestPlanInterface
 
         }
 
-        // no filter matched, so skip the test
-        return true;
+        // no filter matched, so skip the test (except if matching filters were non excluding for tests, e.g. context filters)
+        return $sawExcludingFilters;
     }
 
     public function contextProvider()
