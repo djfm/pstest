@@ -18,9 +18,11 @@ abstract class TestCase implements TestPlanInterface
     private $filePath;
     private $tests = [];
     private $skipRemainingTests = false;
+    private $filters = [];
 
-    public function __construct()
+    public function __construct(array $filters = array())
     {
+        $this->filters = $filters;
         $this->prepareTests();
     }
 
@@ -29,6 +31,37 @@ abstract class TestCase implements TestPlanInterface
         $this->aggregator = $aggregator;
 
         return $this;
+    }
+
+    public function filterOut($testName)
+    {
+        // when no filters, everything goes
+        if (empty($this->filters)) {
+            return false;
+        }
+
+        foreach ($this->filters as $filter) {
+            if (preg_match('/^context:/i', $filter)) {
+                continue;
+            }
+
+            $expFilter = '/' . $filter . '/';
+            if (@preg_match($expFilter, null)) {
+                // if the passed filter can be interpreted as a regexp, use it as such
+                if (preg_match($expFilter, $testName)) {
+                    return false;
+                }
+            } else {
+                // otherwise, just do a string comparison
+                if (strpos($testName, $filter) !== false) {
+                    return false;
+                }
+            }
+
+        }
+
+        // no filter matched, so skip the test
+        return true;
     }
 
     public function contextProvider()
@@ -126,6 +159,10 @@ abstract class TestCase implements TestPlanInterface
                 continue;
             }
 
+            if ($this->filterOut(get_called_class() . '::' . $method->getName())) {
+                continue;
+            }
+
             $test = (new TestMethod)->setName($method->getName());
 
             $this->tests[] = $test;
@@ -134,7 +171,7 @@ abstract class TestCase implements TestPlanInterface
 
     public function getTestsCount()
     {
-        return count($this->tests) * count($this->contextProvider());
+        return count($this->tests);
     }
 
     private function getMethodsByAnnotation($annotationName)

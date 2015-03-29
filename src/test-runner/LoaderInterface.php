@@ -9,6 +9,7 @@ interface LoaderInterface
      */
     public function loadTestPlansFromFile(
         $file,
-        array $classesInFile
+        array $classesInFile,
+        array $filters = array()
     );
 }

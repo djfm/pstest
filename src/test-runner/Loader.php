@@ -10,11 +10,18 @@ class Loader
 {
     private $loaders = [];
     private $testPlans = [];
+    private $filters = [];
 
 
     public function __construct()
     {
         $this->registerLoader(new TestCaseLoader);
+    }
+
+    public function setFilters(array $filters)
+    {
+        $this->filters = $filters;
+        return $this;
     }
 
     public function registerLoader(LoaderInterface $loader)
@@ -33,7 +40,7 @@ class Loader
         });
 
         foreach ($this->loaders as $loader) {
-            $plans = $loader->loadTestPlansFromFile($path, $classesInFile);
+            $plans = $loader->loadTestPlansFromFile($path, $classesInFile, $this->filters);
             if (!empty($plans)) {
                 $this->testPlans = array_merge($this->testPlans, $plans);
                 break;

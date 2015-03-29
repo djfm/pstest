@@ -7,6 +7,7 @@ interface TestPlanInterface
     public function setTestAggregator(TestAggregator $aggregator);
 
     public function run();
+
     /**
      * Conventions are:
      * -> 0, no tests

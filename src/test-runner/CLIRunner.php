@@ -184,6 +184,19 @@ class CLIRunner extends Runner
     {
         parent::done();
 
+        if ($this->informationOnly) {
+            $this->writeln('Not running any tests because the --info flag was provided.');
+
+            $count = 0;
+            foreach ($this->plansLeft as $plan) {
+                $count += $plan->getTestsCount();
+            }
+
+            $this->writeln(sprintf('Would have run %d test(s).', $count));
+
+            return;
+        }
+
         $stats = $this->getSummarizer()->getStatistics();
 
         $pad = 15;

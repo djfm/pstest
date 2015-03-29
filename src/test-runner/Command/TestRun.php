@@ -17,9 +17,11 @@ class TestRun extends Command
 
     protected function configure()
     {
-        $this->setName('test:run')->setDescription('Run a test or a group of tests.')
+        $this->setName('test:run')->setDescription('Run a test or a group of tests')
              ->addArgument('path', InputArgument::REQUIRED, 'Which test?')
              ->addOption('parallel', 'p', InputOption::VALUE_REQUIRED, 'How many tests to run in parallel?', 1)
+             ->addOption('info', 'i', InputOption::VALUE_NONE, 'Only display information about the tests that would be ran, don\'t run them')
+             ->addOption('filter', 'f', InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY, 'Filter tests to run', [])
         ;
     }
 
@@ -63,6 +65,8 @@ class TestRun extends Command
         $runner = new CLIRunner();
 
         $runner->setPluginOptions($pluginOptions);
+        $runner->setInformationOnly($input->getOption('info'));
+        $runner->setFilters($input->getOption('filter'));
 
         $runner->setMaxWorkers($input->getOption('parallel'));
 

@@ -18,7 +18,7 @@ class TestCaseTest extends PHPUnit_Framework_TestCase
     {
         $test = new SmokeTest;
 
-        $this->assertEquals(12, $test->getTestsCount());
+        $this->assertEquals(3, $test->getTestsCount());
     }
 
     public function test_annotation_beforeClass()

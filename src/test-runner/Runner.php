@@ -12,15 +12,17 @@ use djfm\SocketRPC\Server;
 class Runner
 {
     private $testPaths = [];
-    private $plansLeft;
+    protected $plansLeft;
     private $server;
     private $runningClients = [];
     private $pluginOptions = [];
+    private $filters = [];
 
     private $maxWorkers = 1;
 
     private $summarizer;
     private $plugins = [];
+    protected $informationOnly = false;
 
     public function __construct()
     {
@@ -29,6 +31,12 @@ class Runner
 
     public function setPluginOptions(array $options) {
         $this->pluginOptions = $options;
+        return $this;
+    }
+
+    public function setFilters(array $filters)
+    {
+        $this->filters = $filters;
         return $this;
     }
 
@@ -44,9 +52,17 @@ class Runner
         return $this;
     }
 
+    public function setInformationOnly($flag)
+    {
+        $this->informationOnly = $flag;
+        return $this;
+    }
+
     private function loadPlans()
     {
         $loader = new Loader();
+
+        $loader->setFilters($this->filters);
 
         foreach ($this->testPaths as $path) {
             if (is_dir($path)) {
@@ -177,11 +193,16 @@ class Runner
     public function run()
     {
         $this->loadPlans();
-        $this->loadPlugins();
-        $this->setupPlugins();
-        $this->startServer();
-        $this->done();
-        $this->teardownPlugins();
+
+        if (!$this->informationOnly) {
+            $this->loadPlugins();
+            $this->setupPlugins();
+            $this->startServer();
+            $this->done();
+            $this->teardownPlugins();
+        } else {
+            $this->done();
+        }
     }
 
     protected function done()
