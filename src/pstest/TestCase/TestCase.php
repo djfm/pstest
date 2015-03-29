@@ -4,14 +4,15 @@ namespace PrestaShop\PSTest\TestCase;
 
 use PrestaShop\TestRunner\TestCase\TestCase as BaseTestCase;
 use PrestaShop\PSTest\RunnerPlugin\Selenium as SeleniumPlugin;
+use PrestaShop\PSTest\RunnerPlugin\ConfigReader as ConfigReaderPlugin;
 
 use PrestaShop\Selenium\SeleniumServerSettings;
+use PrestaShop\PSTest\SystemSettings;
+use PrestaShop\PSTest\LocalShopSourceSettings;
 
 use PrestaShop\Selenium\SeleniumBrowserFactory;
 use PrestaShop\Selenium\SeleniumBrowserSettings;
 
-use PrestaShop\PSTest\SystemSettings;
-use PrestaShop\PSTest\LocalShopSourceSettings;
 use PrestaShop\PSTest\Shop\LocalShopFactory;
 use PrestaShop\PSTest\Shop\DefaultSettings;
 
@@ -22,10 +23,15 @@ abstract class TestCase extends BaseTestCase
 
     private $shopIsTemporary = true;
 
+    private $systemSettings;
+    private $sourceSettings;
+    private $defaultSettings;
+
     public function getRunnerPlugins()
     {
         return [
-            'selenium' => new SeleniumPlugin
+            'selenium' => new SeleniumPlugin,
+            'config' => new ConfigReaderPlugin
         ];
     }
 
@@ -33,6 +39,10 @@ abstract class TestCase extends BaseTestCase
     {
         if ($pluginName === 'selenium') {
             $this->setupSelenium($pluginData);
+        } else if ($pluginName === 'config') {
+            $this->systemSettings  = $pluginData['systemSettings'];
+            $this->sourceSettings  = $pluginData['sourceSettings'];
+            $this->defaultSettings = $pluginData['defaultSettings'];
         }
     }
 
@@ -46,31 +56,18 @@ abstract class TestCase extends BaseTestCase
         });
     }
 
-    protected function getConfigurationFileName()
-    {
-        return 'pstest.settings.json';
-    }
-
     /**
      * @beforeClass
      */
     public function setShop()
     {
-        $systemSettings  = new SystemSettings;
-        $sourceSettings  = new LocalShopSourceSettings;
-        $defaultSettings = new DefaultSettings;
-
-        $systemSettings->loadFile($this->getConfigurationFileName());
-        $sourceSettings->loadFile($this->getConfigurationFileName());
-        $defaultSettings->loadFile($this->getConfigurationFileName());
-
-        $shopFactory = new LocalShopFactory($this->browserFactory, $systemSettings, $sourceSettings);
+        $shopFactory = new LocalShopFactory($this->browserFactory, $this->systemSettings, $this->sourceSettings);
 
         $this->shop = $shopFactory->makeShop([
             'temporary' => $this->shopIsTemporary
         ]);
 
-        $this->shop->setDefaults($defaultSettings);
+        $this->shop->setDefaults($this->defaultSettings);
     }
 
     public function tearDownAfterClass()

@@ -6,27 +6,38 @@ use PrestaShop\TestRunner\Command\TestRun as TestRunCommand;
 
 abstract class RunnerPlugin
 {
-    public function setup(array $options = array())
-    {
-
-    }
-
-    public function teardown()
-    {
-
-    }
-
-    public function getRunnerPluginData()
+    /**
+     * Should return an array of PrestaShop\TestRunner\Command\CLIOption
+     * that you want to pass to the CLI test runner.
+     */
+    public function getCLIOptions()
     {
         return [];
     }
 
     /**
-     * Should add any options needed to the test:run command,
-     * and return the list of such added options as an array of strings.
-     * The options will be passed to setup.
+     * Will be invoked with the list of option values
+     * according to what getCommandLineOptions defines.
+     * This runs ONCE per plugin, before any test plan is started.
      */
-    public function addOptionsToCommand(TestRunCommand $command)
+    public function setup(array $options = array())
+    {
+
+    }
+
+    /**
+     * This runs after all test plans have finished.
+     * Useful to stop a background task for instance.
+     */
+    public function teardown()
+    {
+
+    }
+
+    /**
+     * Should return the data you want to pass to the PrestaShop\TestRunner\TestPlanInterface
+     */
+    public function getRunnerPluginData()
     {
         return [];
     }

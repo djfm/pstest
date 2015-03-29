@@ -11,10 +11,19 @@ use PrestaShop\TestRunner\RunnerPlugin;
 use PrestaShop\TestRunner\Command\TestRun as TestRunCommand;
 use Symfony\Component\Console\Input\InputOption;
 
+use PrestaShop\TestRunner\Command\CLIOption;
+
 class Selenium extends RunnerPlugin
 {
     private $server;
     private $xvfbServer;
+
+    public function getCLIOptions()
+    {
+        return [
+            new CLIOption('headless', null, InputOption::VALUE_NONE, 'Run the tests headlessly if Xvfb is available')
+        ];
+    }
 
     public function setup(array $options = array())
     {
@@ -45,12 +54,5 @@ class Selenium extends RunnerPlugin
     public function getRunnerPluginData()
     {
         return $this->server->getSettings();
-    }
-
-    public function addOptionsToCommand(TestRunCommand $command)
-    {
-        $command->addOption('headless', null, InputOption::VALUE_NONE, 'Run the tests headlessly if Xvfb is available.');
-
-        return ['headless'];
     }
 }

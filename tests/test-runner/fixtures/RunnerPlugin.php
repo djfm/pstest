@@ -15,7 +15,7 @@ class RunnerPlugin extends BasePlugin
         $this->world = 'world';
     }
 
-    public function setup()
+    public function setup(array $options = array())
     {
 
     }

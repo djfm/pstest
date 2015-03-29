@@ -25,7 +25,22 @@ class TestRun extends Command
 
     protected function addRunnerPlugin(RunnerPlugin $plugin)
     {
-        $this->pluginOptionNames[get_class($plugin)] = $plugin->addOptionsToCommand($this);
+        $options = $plugin->getCLIOptions();
+
+        $this->pluginOptionNames[get_class($plugin)] = [];
+
+        foreach ($options as $option) {
+            $this->addOption(
+                $option->getName(),
+                $option->getShortcut(),
+                $option->getMode(),
+                $option->getDescription(),
+                $option->getDefault()
+            );
+
+            $this->pluginOptionNames[get_class($plugin)][] = $option->getName();
+        }
+
 
         return $this;
     }
