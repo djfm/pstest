@@ -84,13 +84,30 @@ class TestAggregatorSummarizer
 
         $this->forEachTestResult(function (TestResult $result, array $context) use (&$resultsBySuite) {
             ksort($context);
+
+            $name = $result->getTestSuite();
+
+            $contextParts = [];
+            foreach ($context as $key => $value) {
+                if (is_scalar($value)) {
+                    $contextParts[] = "$key: $value";
+                }
+            }
+
+            if (!empty($contextParts)) {
+                $humanContext = ' (' . implode(', ', $contextParts) . ')';
+            } else {
+                $humanContext = '';
+            }
+
             $suiteKey = $result->getPackage() . ' ' . $result->getTestSuite() . md5(serialize($context));
             if (!array_key_exists($suiteKey, $resultsBySuite)) {
                 $resultsBySuite[$suiteKey] = [
-                    'name' => $result->getTestSuite(),
+                    'name' => $name,
                     'package' => $result->getPackage(),
                     'results' => [],
-                    'context' => $context
+                    'context' => $context,
+                    'humanContext' => $humanContext
                 ];
             }
             $resultsBySuite[$suiteKey]['results'][] = $result;
@@ -127,7 +144,7 @@ class TestAggregatorSummarizer
                 $status = $result->getStatus();
 
                 $test = $suite->addChild('testcase');
-                $test->addAttribute('classname', $result->getBaseName());
+                $test->addAttribute('classname', $result->getBaseName() . $data['humanContext']);
                 $test->addAttribute('name', $result->getFullName());
                 $test->addAttribute('time', sprintf('%f',$result->getTotalTime()));
 
