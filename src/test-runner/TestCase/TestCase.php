@@ -241,8 +241,15 @@ abstract class TestCase implements TestPlanInterface
         return 'error';
     }
 
+    public function getPackage()
+    {
+        return 'Unknown';
+    }
+
     public function run()
     {
+        $this->aggregator->setTestSuite(get_called_class());
+        $this->aggregator->setPackage($this->getPackage());
         $this->aggregator->setContext($this->getContext());
         $this->aggregator->startTest(get_called_class());
 

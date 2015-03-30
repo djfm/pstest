@@ -21,6 +21,9 @@ class TestResult
 
     private $children = [];
 
+    private $testSuite = '';
+    private $package = '';
+
     public function __construct($shortName, $fullName, $startTime, $depth)
     {
         $this->shortName = $shortName;
@@ -29,6 +32,28 @@ class TestResult
         $this->depth = $depth;
 
         $this->status = new TestStatus(false, 'unknown');
+    }
+
+    public function setTestSuite($name)
+    {
+        $this->testSuite = $name;
+        return $this;
+    }
+
+    public function getTestSuite()
+    {
+        return $this->testSuite;
+    }
+
+    public function setPackage($name)
+    {
+        $this->package = $name;
+        return $this;
+    }
+
+    public function getPackage()
+    {
+        return $this->package;
     }
 
     public function getShortName()
@@ -142,5 +167,18 @@ class TestResult
     public function hasChildren()
     {
         return !empty($this->children);
+    }
+
+    public function getTotalTime()
+    {
+        if (empty($this->getEvents())) {
+            return 0;
+        }
+        return end($this->getEvents())->getEventTime() - $this->getStartTime();
+    }
+
+    public function getBaseName()
+    {
+        return rtrim(substr($this->getFullName(), 0, strlen($this->getFullName()) - strlen($this->getShortName())), ':');
     }
 }

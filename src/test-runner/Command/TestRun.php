@@ -22,6 +22,7 @@ class TestRun extends Command
              ->addOption('parallel', 'p', InputOption::VALUE_REQUIRED, 'How many tests to run in parallel?', 1)
              ->addOption('info', 'i', InputOption::VALUE_NONE, 'Only display information about the tests that would be ran, don\'t run them')
              ->addOption('filter', 'f', InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY, 'Filter tests to run', [])
+             ->addOption('junit', 'j', InputOption::VALUE_REQUIRED, 'Write a report in the JUnit XML format (specify filename)')
         ;
     }
 
@@ -67,6 +68,7 @@ class TestRun extends Command
         $runner->setPluginOptions($pluginOptions);
         $runner->setInformationOnly($input->getOption('info'));
         $runner->setFilters($input->getOption('filter'));
+        $runner->setJUnitXMLReport($input->getOption('junit'));
 
         $runner->setMaxWorkers($input->getOption('parallel'));
 

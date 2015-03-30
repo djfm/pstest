@@ -7,6 +7,8 @@ use PHPUnit_Framework_TestCase;
 use PrestaShop\TestRunner\Runner;
 use PrestaShop\TestRunner\Tests\Fixtures\RunnerPlugin;
 
+use DOMDocument;
+
 class RunnerTest extends PHPUnit_Framework_TestCase
 {
     private function getFixturePath($name)
@@ -70,5 +72,29 @@ class RunnerTest extends PHPUnit_Framework_TestCase
 
         $this->assertEquals(1, $stats['ok']);
         $this->assertCount(1, $runner->getPlugins());
+    }
+
+    public function test_junit_xml_report()
+    {
+        $runner = new Runner();
+
+        ob_start();
+        $runner
+            ->addTestPath(
+                $this->getFixturePath('FailingSmokeTest.php')
+            )
+            ->addTestPath(
+                $this->getFixturePath('SmokeTest.php')
+            )
+            ->run();
+        ob_end_clean();
+
+        $summarizer = $runner->getSummarizer();
+        $xml = new DOMDocument;
+        $report = $summarizer->getJUnitXMLReportAsString();
+        $xml->loadXML($report);
+        $this->assertTrue($xml->schemaValidate(implode(DIRECTORY_SEPARATOR, [
+            __DIR__,'..', '..', 'src', 'test-runner', 'etc', 'JUnit.xsd'
+        ])));
     }
 }

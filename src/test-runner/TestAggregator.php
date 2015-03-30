@@ -7,6 +7,16 @@ use Exception;
 class TestAggregator
 {
     /**
+     * For JUnit report.
+     */
+    private $testSuite;
+
+    /**
+     * For JUnit report.
+     */
+    private $package;
+
+    /**
      * For context data shared by all tests
      * that this aggregator will see.
      */
@@ -29,6 +39,28 @@ class TestAggregator
 
     private $eventListeners = [];
 
+    public function setTestSuite($name)
+    {
+        $this->testSuite = $name;
+        return $this;
+    }
+
+    public function getTestSuite()
+    {
+        return $this->testSuite;
+    }
+
+    public function setPackage($name)
+    {
+        $this->package = $name;
+        return $this;
+    }
+
+    public function getPackage()
+    {
+        return $this->package;
+    }
+
     public function setContext(array $context)
     {
         if (!empty($this->context)) {
@@ -48,6 +80,8 @@ class TestAggregator
     private function makeTestResult($shortName, $fullName)
     {
         $result = new TestResult($shortName, $fullName, microtime(true), count($this->runningStack));
+
+        $result->setPackage($this->getPackage())->setTestSuite($this->getTestSuite());
 
         return $result;
     }

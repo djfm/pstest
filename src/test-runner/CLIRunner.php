@@ -7,6 +7,13 @@ use Exception;
 class CLIRunner extends Runner
 {
     private $outputInterface;
+    private $writeJUnitXMLReportAs = null;
+
+    public function setJUnitXMLReport($fileName)
+    {
+        $this->writeJUnitXMLReportAs = $fileName;
+        return $this;
+    }
 
     public function setOutputInterface($outputInterface)
     {
@@ -229,6 +236,14 @@ class CLIRunner extends Runner
                 $stats['ko']
             )
         );
+
+        if ($this->writeJUnitXMLReportAs) {
+            $report = $this->getSummarizer()->getJUnitXMLReportAsString();
+            file_put_contents($this->writeJUnitXMLReportAs, $report);
+            $this->writeln(sprintf(
+                "\n<comment>Wrote JUnit XML Report to: %s</comment>"
+            , $this->writeJUnitXMLReportAs));
+        }
     }
 
     private function getTestIdentifierString(TestResult $result, array $context)

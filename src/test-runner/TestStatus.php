@@ -35,6 +35,16 @@ class TestStatus
         return $this->success;
     }
 
+    public function isError()
+    {
+        return !$this->isSuccessful() && !$this->isFailure();
+    }
+
+    public function isFailure()
+    {
+        return !$this->isSuccessful() && $this->getCode() === 'failure';
+    }
+
     public function getCode()
     {
         return $this->code;
