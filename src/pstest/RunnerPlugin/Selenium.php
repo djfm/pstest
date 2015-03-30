@@ -17,17 +17,20 @@ class Selenium extends RunnerPlugin
 {
     private $server;
     private $xvfbServer;
+    private $recordScreenshots = false;
 
     public function getCLIOptions()
     {
         return [
-            new CLIOption('headless', null, InputOption::VALUE_NONE, 'Run the tests headlessly if Xvfb is available')
+            new CLIOption('headless', null, InputOption::VALUE_NONE, 'Run the tests headlessly if Xvfb is available'),
+            new CLIOption('record-screenshots', 's', InputOption::VALUE_NONE, 'Record screenshots during tests execution')
         ];
     }
 
     public function setup(array $options = array())
     {
         $headless = !empty($options['headless']);
+        $this->recordScreenshots = !empty($options['record-screenshots']);
 
         $ssf = new SeleniumServerFactory;
 
@@ -53,6 +56,9 @@ class Selenium extends RunnerPlugin
 
     public function getRunnerPluginData()
     {
-        return $this->server->getSettings();
+        return [
+            'serverSettings' => $this->server->getSettings(),
+            'recordScreenshots' => $this->recordScreenshots
+        ];
     }
 }

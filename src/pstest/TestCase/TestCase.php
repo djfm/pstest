@@ -27,6 +27,8 @@ abstract class TestCase extends BaseTestCase
     private $sourceSettings;
     private $defaultSettings;
 
+    private $recordScreenshots = false;
+
     public function getRunnerPlugins()
     {
         return [
@@ -38,7 +40,7 @@ abstract class TestCase extends BaseTestCase
     public function setRunnerPluginData($pluginName, $pluginData)
     {
         if ($pluginName === 'selenium') {
-            $this->setupSelenium($pluginData);
+            $this->setupSelenium($pluginData['serverSettings'], $pluginData['recordScreenshots']);
         } else if ($pluginName === 'config') {
             $this->systemSettings  = $pluginData['systemSettings'];
             $this->sourceSettings  = $pluginData['sourceSettings'];
@@ -46,10 +48,11 @@ abstract class TestCase extends BaseTestCase
         }
     }
 
-    public function setupSelenium(SeleniumServerSettings $serverSettings)
+    public function setupSelenium(SeleniumServerSettings $serverSettings, $recordScreenshots)
     {
         $browserSettings = new SeleniumBrowserSettings;
         $this->browserFactory = new SeleniumBrowserFactory($serverSettings, $browserSettings);
+        $this->recordScreenshots = $recordScreenshots;
 
         register_shutdown_function(function () {
             $this->browserFactory->quitLaunchedBrowsers();
