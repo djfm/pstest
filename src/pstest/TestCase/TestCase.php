@@ -79,16 +79,25 @@ abstract class TestCase extends BaseTestCase
     private function setupBrowser(BrowserInterface $browser)
     {
         $browser->on('before action', function ($action) use ($browser) {
-            echo "before $action\n";
-
-            if ($this->aTestIsRunning()) {
-                $this->prepareFileStorage('screenshots/some.png');
+            if ($this->recordScreenshots && $this->aTestIsRunning()) {
+                $timestamp = date('Y-m-d h\hi\ms\s');
+                $filename = $this->prepareFileStorage('screenshots/' . "{$timestamp} before $action");
+                $screenshot = $browser->takeScreenshot($filename);
+                $this->addFileArtefact($screenshot, [
+                    'role' => 'screenshot'
+                ]);
             }
-
         });
 
-        $browser->on('after action', function ($action) {
-            echo "after $action\n";
+        $browser->on('after action', function ($action) use ($browser)  {
+            if ($this->recordScreenshots && $this->aTestIsRunning()) {
+                $timestamp = date('Y-m-d h\hi\ms\s');
+                $filename = $this->prepareFileStorage('screenshots/' . "{$timestamp} after $action");
+                $screenshot = $browser->takeScreenshot($filename);
+                $this->addFileArtefact($screenshot, [
+                    'role' => 'screenshot'
+                ]);
+            }
         });
     }
 

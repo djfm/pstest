@@ -357,12 +357,24 @@ abstract class TestCase implements TestPlanInterface
         $baseDir = 'test-artefacts';
         $classPath = explode('\\', get_called_class());
 
-        /**
-         * @todo add stringified context before $testDir
-         */
+        $contextDirParts = [];
+        $context = $this->getContext();
+        ksort($context);
+        foreach ($context as $key => $value) {
+            if (is_scalar($value)) {
+                $contextDirParts[] = "($key $value)";
+            }
+        }
+
         $testDir = $this->getCurrentTest()->getShortName();
 
-        $pathParts = array_merge([$baseDir], $classPath, [$testDir, $name]);
+        $tail = [$testDir, $name];
+
+        if (!empty($contextDirParts)) {
+            array_unshift($tail, implode(' ', $contextDirParts));
+        }
+
+        $pathParts = array_merge([$baseDir], $classPath, $tail);
 
         $path = FS::join($pathParts);
 
@@ -379,9 +391,9 @@ abstract class TestCase implements TestPlanInterface
         return $path;
     }
 
-    public function addFile($name, $path, array $metaData = array())
+    public function addFileArtefact($path, array $metaData = array())
     {
-
+        $this->aggregator->addFile(basename($path), realpath($path), $metaData);
         return $this;
     }
 }

@@ -934,10 +934,20 @@ EOS;
         return base64_decode($this->executeAsyncScript($script, [$url]));
     }
 
-    public function takeScreenshot($save_as)
+    public function takeScreenshot($filename)
     {
-        $this->driver->takeScreenshot($save_as);
+        $this->driver->takeScreenshot($filename . '.png');
 
-        return $this;
+        if (function_exists('imagecreatefrompng') && function_exists('imagejpeg') && file_exists($filename . '.png')) {
+            $image = @imagecreatefrompng($filename . '.png');
+            if ($image) {
+                imagejpeg($image, $filename . '.jpg', 50);
+                imagedestroy($image);
+                unlink($filename . '.png');
+                return $filename . '.jpg';
+            }
+        }
+
+        return $filename . '.png';
     }
 }
