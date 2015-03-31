@@ -218,6 +218,15 @@ class CLIRunner extends Runner
 
         $this->writeln(
             sprintf(
+                '<comment>' . str_pad('Took', $pad) . ': %ds</comment>',
+                (int)($this->endedAt - $this->startedAt)
+            )
+        );
+
+        $this->writeln('');
+
+        $this->writeln(
+            sprintf(
                 str_pad('Total', $pad).': %d',
                 $stats['total']
             )

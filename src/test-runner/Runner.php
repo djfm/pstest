@@ -23,6 +23,9 @@ class Runner
     private $summarizer;
     private $plugins = [];
     protected $informationOnly = false;
+    protected $startedAt = 0;
+    protected $endedAt = 0;
+
 
     public function __construct()
     {
@@ -192,6 +195,7 @@ class Runner
 
     public function run()
     {
+        $this->startedAt = microtime(true);
         $this->loadPlans();
 
         if (!$this->informationOnly) {
@@ -207,6 +211,7 @@ class Runner
 
     protected function done()
     {
+        $this->endedAt = microtime(true);
     }
 
     private function cleanClients()
