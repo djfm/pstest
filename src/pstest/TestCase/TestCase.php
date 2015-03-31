@@ -12,6 +12,7 @@ use PrestaShop\PSTest\LocalShopSourceSettings;
 
 use PrestaShop\Selenium\SeleniumBrowserFactory;
 use PrestaShop\Selenium\SeleniumBrowserSettings;
+use PrestaShop\Selenium\Browser\BrowserInterface;
 
 use PrestaShop\PSTest\Shop\LocalShopFactory;
 use PrestaShop\PSTest\Shop\DefaultSettings;
@@ -71,6 +72,24 @@ abstract class TestCase extends BaseTestCase
         ]);
 
         $this->shop->setDefaults($this->defaultSettings);
+
+        $this->setupBrowser($this->shop->getBrowser());
+    }
+
+    private function setupBrowser(BrowserInterface $browser)
+    {
+        $browser->on('before action', function ($action) use ($browser) {
+            echo "before $action\n";
+
+            if ($this->aTestIsRunning()) {
+                $this->prepareFileStorage('screenshots/some.png');
+            }
+
+        });
+
+        $browser->on('after action', function ($action) {
+            echo "after $action\n";
+        });
     }
 
     public function tearDownAfterClass()

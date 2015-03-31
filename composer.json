@@ -5,7 +5,8 @@
         "symfony/console": "~2.6",
         "symfony/finder": "~2.6",
         "facebook/webdriver": "0.5.*",
-        "djfm/socket-rpc": "~1"
+        "djfm/socket-rpc": "~1",
+        "evenement/evenement": "~2.0"
     },
     "authors": [
         {

@@ -20,17 +20,19 @@ use WebDriverBy;
 use WebDriverSelect;
 use WebDriverKeys;
 
-class Browser implements BrowserInterface
+use Evenement\EventEmitterInterface;
+use Evenement\EventEmitterTrait;
+
+class Browser implements BrowserInterface, EventEmitterInterface
 {
+    use EventEmitterTrait;
+
     // the underlying WebDriver
     private $driver;
 
     private $defaultTimeout = 5;
     private $defaultInterval = 500;
 
-    private $artefactsDir;
-    private $recordScreenshots = false;
-    private $screenshotNumber = 0;
     private $quitted = false;
 
     private $wrappedStackDepth = 0;
@@ -45,25 +47,6 @@ class Browser implements BrowserInterface
         $this->quit();
     }
 
-
-    public function setArtefactsDir($pathToDir)
-    {
-        $this->artefactsDir = $pathToDir;
-
-        return $this;
-    }
-
-    public function setRecordScreenshots($trueOrFalse = true)
-    {
-        $this->recordScreenshots = $trueOrFalse;
-        return $this;
-    }
-
-    public function getRecordScreenshots()
-    {
-        return $this->recordScreenshots;
-    }
-
     public function quit()
     {
         if (!$this->quitted) {
@@ -76,78 +59,27 @@ class Browser implements BrowserInterface
 
     private function before($function, $arguments)
     {
-        $this->autoScreenshot('before', $function);
-
-        $this->wrappedStackDepth++;
+        if ($this->wrappedStackDepth === 0) {
+            $this->emit('before action', [$function, $arguments]);
+        }
     }
 
     private function after($function, $arguments)
     {
-        $this->wrappedStackDepth--;
-
-        $this->autoScreenshot('after', $function);
-    }
-
-    private function autoScreenshot($type, $function)
-    {
-        if (!$this->recordScreenshots || $this->wrappedStackDepth !== 0 || (int)getenv('NO_SCREENSHOTS')) {
-            return;
+        if ($this->wrappedStackDepth === 0) {
+            $this->emit('after action', [$function, $arguments]);
         }
-
-        /**
-         * Ignore a few actions when taking screenshots,
-         * because screenshots are expensive both in terms of CPU and of
-         * disk space
-         */
-
-        if ($type === 'before' && in_array($function, [
-            'fillIn',
-            'checkbox',
-            'visit',
-            'waitFor',
-            'click',
-            'clickLabelFor',
-            'executeScript'
-        ])) {
-            return;
-        }
-
-        if ($type === 'after' && in_array($function, ['getValue', 'getAttribute'])) {
-            return;
-        }
-
-        if (in_array($function, ['find', 'clearCookies', 'sleep', 'getSelectOptions'])) {
-            return;
-        }
-
-        $comment = "$type $function";
-
-        $this->screenshotNumber++;
-        $n = sprintf("%'06d) ", $this->screenshotNumber);
-        $base = $this->artefactsDir.DIRECTORY_SEPARATOR.'screenshots'.DIRECTORY_SEPARATOR.$n.strftime("%a %d %b %Y, %H;%M;%S");
-        $filename = $base;
-
-        $filename .= ' - '.$comment;
-        $this->takeScreenshot($filename . '.png');
-
-        if (function_exists('imagecreatefrompng') && function_exists('imagejpeg') && file_exists($filename . '.png')) {
-            $image = @imagecreatefrompng($filename . '.png');
-            if ($image) {
-                imagejpeg($image, $filename . '.jpg', 50);
-                imagedestroy($image);
-                unlink($filename . '.png');
-            }
-        }
-
     }
 
     private function wrap($function, $arguments)
     {
         $this->before($function, $arguments);
+        $this->wrappedStackDepth++;
 
         try {
             return call_user_func_array([$this, '_' . $function], $arguments);
         } finally {
+            $this->wrappedStackDepth--;
             $this->after($function, $arguments);
         }
     }

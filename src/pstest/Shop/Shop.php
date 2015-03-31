@@ -46,4 +46,6 @@ abstract class Shop
             return [];
         }
     }
+
+    abstract public function getBrowser();
 }

@@ -150,6 +150,15 @@ class TestAggregator
         return $this;
     }
 
+    public function getCurrentTest()
+    {
+        if (empty($this->runningStack)) {
+            return null;
+        } else {
+            return end($this->runningStack);
+        }
+    }
+
     public function addException(Exception $e)
     {
         $this->onEvent(

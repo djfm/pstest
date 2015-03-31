@@ -7,6 +7,7 @@ use ReflectionClass;
 use ReflectionMethod;
 
 use PrestaShop\PSTest\Helper\DocCommentParser;
+use PrestaShop\FileSystem\FileSystemHelper as FS;
 
 use PrestaShop\TestRunner\TestPlanInterface;
 use PrestaShop\TestRunner\TestAggregator;
@@ -333,5 +334,54 @@ abstract class TestCase implements TestPlanInterface
         }
 
         $this->aggregator->endTest(get_called_class(), $allGood, $allGood ? 'success' : 'failure');
+    }
+
+    public function aTestIsRunning()
+    {
+        return $this->aggregator->getCurrentTest() ? true : false;
+    }
+
+    public function getCurrentTest()
+    {
+        $test = $this->aggregator->getCurrentTest();
+
+        if (!$test) {
+            throw new Exception('There is no currently running test!');
+        }
+
+        return $test;
+    }
+
+    public function prepareFileStorage($name)
+    {
+        $baseDir = 'test-artefacts';
+        $classPath = explode('\\', get_called_class());
+
+        /**
+         * @todo add stringified context before $testDir
+         */
+        $testDir = $this->getCurrentTest()->getShortName();
+
+        $pathParts = array_merge([$baseDir], $classPath, [$testDir, $name]);
+
+        $path = FS::join($pathParts);
+
+        $dir = dirname($path);
+
+        if (!is_dir($dir)) {
+            if (!@mkdir($dir, 0777, true)) {
+                throw new Exception(sprintf(
+                    'Could not create directory `%s`.'
+                , $dir));
+            }
+        }
+
+        return $path;
+    }
+
+    public function addFile($name, $path, array $metaData = array())
+    {
+
+        return $this;
     }
 }
