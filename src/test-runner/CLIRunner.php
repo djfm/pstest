@@ -83,7 +83,12 @@ class CLIRunner extends Runner
         $prefix = null;
 
         foreach ($strings as $str) {
-            if ($prefix === null) {
+
+            if (null === $str) {
+                continue;
+            }
+
+            if (null === $prefix) {
                 $prefix = $str;
             } else {
                 $newPrefix = '';
@@ -111,10 +116,12 @@ class CLIRunner extends Runner
 
         // strip common prefix in file paths for optimized display
         $prefix = $this->longestCommonPrefix(array_map(function ($line) {
-            return $line['file'];
+            return isset($line['file']) ? $line['file'] : null;
         }, $trace));
         $trace = array_map(function ($line) use ($prefix) {
-            $line['file'] = substr($line['file'], strlen($prefix));
+            if (isset($line['file'])) {
+                $line['file'] = substr($line['file'], strlen($prefix));
+            }
             return $line;
         }, $trace);
 
@@ -125,10 +132,12 @@ class CLIRunner extends Runner
                 $codeLocation = $line['class'] . $line['type'] . $codeLocation;
             }
 
+            $file = isset($line['file']) ? $this->nicerPath($line['file']) : '[unknown]';
+
             $in = sprintf(
                 '%1$s<comment>In     :</comment> %2$s [%3$s:%4$s]',
                 $paddingString, $codeLocation,
-                $this->nicerPath($line['file']), $line['line']
+                $file, (isset($line['line']) ? $line['line'] : '[unknown]')
             );
 
             if ($l !== count($trace) - 1 ) {
