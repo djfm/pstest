@@ -16,6 +16,9 @@ use PrestaShop\Selenium\Browser\BrowserInterface;
 
 use PrestaShop\PSTest\Shop\LocalShopFactory;
 use PrestaShop\PSTest\Shop\DefaultSettings;
+use PrestaShop\FileSystem\FileSystemHelper as FS;
+
+use Exception;
 
 abstract class TestCase extends BaseTestCase
 {
@@ -61,11 +64,79 @@ abstract class TestCase extends BaseTestCase
     }
 
     /**
+     * Return a description of how to initialize the shop.
+     *
+     * Should be an associative array like this:
+     * [
+     * 		'some.service' => [
+     * 			'some_method' => [some, arguments]
+     * 		],
+     * 		'some.other.service' => [
+     * 			'some_method_2' => [true, false],
+     * 			'some_method_3' => [42],
+     * 		]
+     * ]
+     *
+     * The methods on services will be called in order, with the provided arguments.
+     * Services are anything that the shop can return via a call to `get`.
+     *
+     * The description of the initial state is done as a plain array like this so that shops may be put in
+     * cache.
+     */
+    public function cacheInitialState()
+    {
+        return [];
+    }
+
+    private function getCacheDir()
+    {
+        return 'pstest-cache';
+    }
+
+    /**
+     * @internal
      * @beforeClass
      */
-    public function setShop()
+    final protected function setShop()
     {
+        $cacheInitialState = $this->cacheInitialState();
+        $initialStateCacheKey = md5(serialize($cacheInitialState));
+        $initialStateLockFile = null;
+        $lock = null;
+        $useCache = false;
+
+        if (!empty($cacheInitialState)) {
+            $useCache = true;
+            $initialStateLockFile = FS::join($this->getCacheDir(), 'initialState_' . $initialStateCacheKey . '.lock');
+
+            if (!is_dir(dirname($initialStateLockFile))) {
+                if (!@mkdir(dirname($initialStateLockFile), 0777, true)) {
+                    throw new Exception(
+                        sprintf('Could not create directory `%s`.', dirname($initialStateLockFile))
+                    );
+                }
+            }
+
+            $lock = fopen($initialStateLockFile, 'c+');
+            if (!$lock) {
+                throw new Exception(
+                    sprintf('Could not create lock file `%s`.', $initialStateLockFile)
+                );
+            }
+            flock($lock, LOCK_EX);
+        }
+
         $shopFactory = new LocalShopFactory($this->browserFactory, $this->systemSettings, $this->sourceSettings);
+
+        $cacheIsWarm = false;
+        if ($useCache) {
+            $cachedShopDir = FS::join($this->getCacheDir(), 'initialState_' . $initialStateCacheKey);
+
+            if (is_dir($cachedShopDir)) {
+                $cacheIsWarm = true;
+                $shopFactory->setShopCache($cachedShopDir);
+            }
+        }
 
         $this->shop = $shopFactory->makeShop([
             'temporary' => $this->shopIsTemporary
@@ -73,7 +144,23 @@ abstract class TestCase extends BaseTestCase
 
         $this->shop->setDefaults($this->defaultSettings);
 
+        if ($useCache && !$cacheIsWarm) {
+            foreach ($cacheInitialState as $serviceName => $calls) {
+                $service = $this->shop->get($serviceName);
+                foreach ($calls as $method => $arguments) {
+                    call_user_func_array([$service, $method], $arguments);
+                }
+            }
+            $shopFactory->cacheShop($this->shop, $cachedShopDir);
+        }
+
         $this->setupBrowser($this->shop->getBrowser());
+
+        if ($lock) {
+            flock($lock, LOCK_UN);
+            fclose($lock);
+            unlink($initialStateLockFile);
+        }
     }
 
     private function setupBrowser(BrowserInterface $browser)

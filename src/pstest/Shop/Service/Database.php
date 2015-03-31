@@ -32,4 +32,24 @@ class Database
 
         return $this;
     }
+
+    public function dump($target)
+    {
+        $this->db->dumpDatabase(
+            $this->shop->getSystemSettings()->getDatabaseName(),
+            $target
+        );
+
+        return $this;
+    }
+
+    public function load($source)
+    {
+        $this->db->loadDatabase(
+            $this->shop->getSystemSettings()->getDatabaseName(),
+            $source
+        );
+
+        return $this;
+    }
 }

@@ -17,6 +17,8 @@ class LocalShopFactory
     private $sourceSettings;
     private $browserFactory;
 
+    private $shopCache = null;
+
     private $fs; // helper
 
     public function __construct(
@@ -62,7 +64,11 @@ class LocalShopFactory
             throw new Exception(sprintf('WWW path (`%s`) is not a directory.', $targetRoot));
         }
 
-        $sourcesPath = $this->sourceSettings->getPathToShopFiles();
+        if ($this->shopCache) {
+            $sourcesPath = $this->fs->join($this->shopCache, 'files');
+        } else {
+            $sourcesPath = $this->sourceSettings->getPathToShopFiles();
+        }
 
         if (!is_dir($sourcesPath)) {
             throw new Exception(sprintf('Path to shop source files (`%s`) is not a directory.', $targetRoot));
@@ -98,6 +104,32 @@ class LocalShopFactory
             $shopSourceSettings
         );
 
+        if ($this->shopCache) {
+            $shop->get('database')->load(
+                $this->fs->join($this->shopCache, 'database.sql')
+            );
+        }
+
         return $shop;
+    }
+
+    public function setShopCache($dirname)
+    {
+        $this->shopCache = $dirname;
+        return $this;
+    }
+
+    public function cacheShop(LocalShop $shop, $dirname)
+    {
+        $this->fs->cpr(
+            $shop->getSourceSettings()->getPathToShopFiles(),
+            $this->fs->join($dirname, 'files')
+        );
+
+        $shop->get('database')->dump(
+            $this->fs->join($dirname, 'database.sql')
+        );
+
+        return $this;
     }
 }
