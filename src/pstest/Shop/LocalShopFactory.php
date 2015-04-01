@@ -74,13 +74,28 @@ class LocalShopFactory
             throw new Exception(sprintf('Path to shop source files (`%s`) is not a directory.', $targetRoot));
         }
 
+        $marker = '_tmpshpcpy_';
+        $uid = $this->getUID($targetRoot);
+
         if ($options['temporary']) {
-            $suffix = '_tmpshpcpy_' . $this->getUID($targetRoot);
+            $suffix = $marker . $uid;
         } else {
             $suffix = '';
         }
 
         $targetFolderName = basename($sourcesPath) . $suffix;
+
+        if ($this->shopCache) {
+            // Try to apply the suffix to the old name of the shop
+            $infoFile = $this->fs->join($this->shopCache, 'info.json');
+            if (file_exists($infoFile)) {
+                $info = json_decode(file_get_contents($infoFile), true);
+                $oldName = $info['name'];
+                if (false !== ($pos = strpos($oldName, $marker))) {
+                    $targetFolderName = substr($oldName, 0, $pos) . $suffix;
+                }
+            }
+        }
 
         $targetPath = $this->fs->join($targetRoot, $targetFolderName);
 
@@ -109,34 +124,44 @@ class LocalShopFactory
                 $this->fs->join($this->shopCache, 'database.sql')
             );
 
-            // Set new database name in settings.inc.php
-            $settingsFile = $this->fs->join($targetPath, 'config', 'settings.inc.php');
-            if (file_exists($settingsFile)) {
-                $settings = file_get_contents($settingsFile);
-                $newSettings = preg_replace(
-                    '/(define\s*\(\s*([\'"])_DB_NAME_\2\s*,\s*([\'"]))(.*?)((\3)\s*\)\s*;)/',
-                    '${1}' . $shopSystemSettings->getDatabaseName() . '${5}',
-                    $settings
-                );
-                file_put_contents($settingsFile, $newSettings);
-            }
-
-            // Update the physical_uri stored in the restored shop's database
-            $shop->get('database')->changePhysicalURI($targetFolderName);
-
-            // Update the .htaccess
-            $htaccessFile = $this->fs->join($targetPath, '.htaccess');
-            if (file_exists($htaccessFile)) {
-                $htaccess = file_get_contents($htaccessFile);
-                $rewrite_exp = '/(^\s*RewriteRule\s+\.\s+-\s+\[\s*E\s*=\s*REWRITEBASE\s*:)\/[^\/]+\/([^\]]*\]\s*$)/mi';
-                $htaccess = preg_replace($rewrite_exp, '${1}'.$uri.'${2}', $htaccess);
-                $errdoc_exp = '/(^\s*ErrorDocument\s+\w+\s+)\/[^\/]+\/(.*?$)/mi';
-                $htaccess = preg_replace($errdoc_exp, '${1}'.$uri.'${2}', $htaccess);
-                file_put_contents($htaccessFile, $htaccess);
-            }
+            $this->updateShopAfterMove($shop);
         }
 
         return $shop;
+    }
+
+    private function updateShopAfterMove(LocalShop $shop)
+    {
+        $targetPath = $shop->getSourceSettings()->getPathToShopFiles();
+        $shopSystemSettings = $shop->getSystemSettings();
+        $targetFolderName = basename($targetPath);
+
+        // Set new database name in settings.inc.php
+        $settingsFile = $this->fs->join($targetPath, 'config', 'settings.inc.php');
+        if (file_exists($settingsFile)) {
+            $settings = file_get_contents($settingsFile);
+            $newSettings = preg_replace(
+                '/(define\s*\(\s*([\'"])_DB_NAME_\2\s*,\s*([\'"]))(.*?)((\3)\s*\)\s*;)/',
+                '${1}' . $shopSystemSettings->getDatabaseName() . '${5}',
+                $settings
+            );
+            file_put_contents($settingsFile, $newSettings);
+        }
+
+        // Update the physical_uri stored in the restored shop's database
+        $shop->get('database')->changePhysicalURI($targetFolderName);
+
+        // Update the .htaccess
+        $htaccessFile = $this->fs->join($targetPath, '.htaccess');
+        if (file_exists($htaccessFile)) {
+            $uri = '/' . $targetFolderName . '/';
+            $htaccess = file_get_contents($htaccessFile);
+            $rewrite_exp = '/(^\s*RewriteRule\s+\.\s+-\s+\[\s*E\s*=\s*REWRITEBASE\s*:)\/[^\/]+\/([^\]]*\]\s*$)/mi';
+            $htaccess = preg_replace($rewrite_exp, '${1}'.$uri.'${2}', $htaccess);
+            $errdoc_exp = '/(^\s*ErrorDocument\s+\w+\s+)\/[^\/]+\/(.*?$)/mi';
+            $htaccess = preg_replace($errdoc_exp, '${1}'.$uri.'${2}', $htaccess);
+            file_put_contents($htaccessFile, $htaccess);
+        }
     }
 
     public function setShopCache($dirname)
@@ -154,6 +179,15 @@ class LocalShopFactory
 
         $shop->get('database')->dump(
             $this->fs->join($dirname, 'database.sql')
+        );
+
+        $info = [
+            'name' => basename($shop->getSourceSettings()->getPathToShopFiles())
+        ];
+
+        file_put_contents(
+            $this->fs->join($dirname, 'info.json'),
+            json_encode($info, JSON_PRETTY_PRINT)
         );
 
         return $this;
