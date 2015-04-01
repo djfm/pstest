@@ -52,4 +52,30 @@ class Database
 
         return $this;
     }
+
+    public function getPDO()
+    {
+        return $this->db->getPDO($this->shop->getSystemSettings()->getDatabaseName());
+    }
+
+    public function changePhysicalURI($uri)
+    {
+        $prefix = $this->shop->getSystemSettings()->getDatabaseTablesPrefix();
+
+        $urls = $this->getPDO()->query(sprintf(
+            'SELECT id_shop_url, physical_uri FROM %1$sshop_url',
+            $prefix
+        ));
+
+        while (($url = $urls->fetch())) {
+            $oldURI = $url['physical_uri'];
+            $newURI = preg_replace('#(?:^|/)(?:\w+)/?(.*)#', '/' . $uri . '/' . '${1}', $oldURI);
+            $this->getPDO()->exec(sprintf(
+                'UPDATE %1$sshop_url SET physical_uri = \'%2$s\' WHERE id_shop_url = %3$d;',
+                $prefix,
+                $newURI,
+                $url['id_shop_url']
+            ));
+        }
+    }
 }

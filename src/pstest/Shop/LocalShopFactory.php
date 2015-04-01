@@ -108,6 +108,32 @@ class LocalShopFactory
             $shop->get('database')->load(
                 $this->fs->join($this->shopCache, 'database.sql')
             );
+
+            // Set new database name in settings.inc.php
+            $settingsFile = $this->fs->join($targetPath, 'config', 'settings.inc.php');
+            if (file_exists($settingsFile)) {
+                $settings = file_get_contents($settingsFile);
+                $newSettings = preg_replace(
+                    '/(define\s*\(\s*([\'"])_DB_NAME_\2\s*,\s*([\'"]))(.*?)((\3)\s*\)\s*;)/',
+                    '${1}' . $shopSystemSettings->getDatabaseName() . '${5}',
+                    $settings
+                );
+                file_put_contents($settingsFile, $newSettings);
+            }
+
+            // Update the physical_uri stored in the restored shop's database
+            $shop->get('database')->changePhysicalURI($targetFolderName);
+
+            // Update the .htaccess
+            $htaccessFile = $this->fs->join($targetPath, '.htaccess');
+            if (file_exists($htaccessFile)) {
+                $htaccess = file_get_contents($htaccessFile);
+                $rewrite_exp = '/(^\s*RewriteRule\s+\.\s+-\s+\[\s*E\s*=\s*REWRITEBASE\s*:)\/[^\/]+\/([^\]]*\]\s*$)/mi';
+                $htaccess = preg_replace($rewrite_exp, '${1}'.$uri.'${2}', $htaccess);
+                $errdoc_exp = '/(^\s*ErrorDocument\s+\w+\s+)\/[^\/]+\/(.*?$)/mi';
+                $htaccess = preg_replace($errdoc_exp, '${1}'.$uri.'${2}', $htaccess);
+                file_put_contents($htaccessFile, $htaccess);
+            }
         }
 
         return $shop;

@@ -43,6 +43,7 @@ class FileSystem
         $finder
         ->in($sourceDir)
         ->ignoreVCS(true)
+        ->ignoreDotFiles(false)
         ->sortByType()
         ;
 

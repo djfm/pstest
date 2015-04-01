@@ -20,9 +20,15 @@ class MySQL
         $this->pass = $pass;
     }
 
-    private function getPDO()
+    public function getPDO($databaseName = null)
     {
-        $h = new PDO("mysql:host={$this->host};port={$this->port}", $this->user, $this->pass);
+        $dsn = "mysql:host={$this->host};port={$this->port}";
+
+        if ($databaseName) {
+            $dsn .= ";dbname=$databaseName";
+        }
+
+        $h = new PDO($dsn, $this->user, $this->pass);
 
         return $h;
     }

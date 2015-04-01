@@ -19,6 +19,7 @@ class DummyTest extends TestCase
 
     public function testSomething()
     {
-
+        $this->shop->getBrowser()->visit($this->shop->getFrontOfficeURL());
+        sleep(10);
     }
 }

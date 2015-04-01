@@ -48,4 +48,6 @@ abstract class Shop
     }
 
     abstract public function getBrowser();
+
+    abstract public function getFrontOfficeURL();
 }
