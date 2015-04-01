@@ -46,6 +46,11 @@ class LocalShop extends Shop implements ShopInterface
         ]);
     }
 
+    public function getBackOfficeURL()
+    {
+        return $this->getFrontOfficeURL() . '/' . $this->sourceSettings->getBackOfficeFolderName();
+    }
+
     public function getInstallerURL()
     {
         return $this->getFrontOfficeURL() . '/' . $this->sourceSettings->getInstallerFolderName();
@@ -95,5 +100,9 @@ class LocalShop extends Shop implements ShopInterface
 
             return new FilesService($this, $fs);
         }, true);
+
+        parent::registerServices();
+
+        return $this;
     }
 }

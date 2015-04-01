@@ -3,7 +3,7 @@
 namespace PrestaShop\Selenium\Browser;
 
 use PrestaShop\PSTest\Helper\SpinnerHelper as Spin;
-use PrestaShop\PSTAF\Helper\URLHelper as URL;
+use PrestaShop\PSTest\Helper\URLHelper as URL;
 
 use PrestaShop\Selenium\Browser\Exception\ElementNotFoundException;
 use PrestaShop\Selenium\Browser\Exception\TooManyElementsFoundException;
