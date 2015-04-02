@@ -7,6 +7,7 @@ use PHPUnit_Framework_TestCase;
 use PrestaShop_IoC_Container as Container;
 
 use PrestaShop\IoC\Tests\Fixtures\Dummy;
+use PrestaShop\IoC\Tests\Fixtures\ClassWithDep;
 
 class PrestaShop_IoC_Container_Test extends PHPUnit_Framework_TestCase
 {
@@ -46,5 +47,51 @@ class PrestaShop_IoC_Container_Test extends PHPUnit_Framework_TestCase
         $second = $this->container->make('same');
 
         $this->assertSame($first, $second);
+    }
+
+    public function test_bind_className()
+    {
+        $this->container->bind('dummy', 'PrestaShop\IoC\Tests\Fixtures\Dummy');
+
+        $this->assertEquals('PrestaShop\IoC\Tests\Fixtures\Dummy', get_class(
+            $this->container->make('dummy')
+        ));
+    }
+
+    public function test_make_without_bind()
+    {
+        $this->assertEquals('PrestaShop\IoC\Tests\Fixtures\Dummy', get_class(
+            $this->container->make('PrestaShop\IoC\Tests\Fixtures\Dummy')
+        ));
+    }
+
+    public function test_deps_are_fetched_automagically()
+    {
+        $this->assertEquals('PrestaShop\IoC\Tests\Fixtures\ClassWithDep', get_class(
+            $this->container->make('PrestaShop\IoC\Tests\Fixtures\ClassWithDep')
+        ));
+    }
+
+    public function test_deps_are_fetched_automagically_When_dependsOnThingWithADefaultValue()
+    {
+        $this->assertEquals('PrestaShop\IoC\Tests\Fixtures\ClassWithDepAndDefault', get_class(
+            $this->container->make('PrestaShop\IoC\Tests\Fixtures\ClassWithDepAndDefault')
+        ));
+    }
+
+    /**
+     * @expectedException PrestaShop_IoC_Exception
+     */
+    public function test_unbuildable_not_built()
+    {
+        $this->container->make('PrestaShop\IoC\Tests\Fixtures\UnBuildable');
+    }
+
+    /**
+     * @expectedException PrestaShop_IoC_Exception
+     */
+    public function test_non_existing_class_not_built()
+    {
+        $this->container->make('PrestaShop\IoC\Tests\Fixtures\AClassThatDoesntExistAtAll');
     }
 }
