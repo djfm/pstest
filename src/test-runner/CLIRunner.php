@@ -114,6 +114,10 @@ class CLIRunner extends Runner
         $trace[0]['file'] = $e->getFile();
         $trace[0]['line'] = $e->getLine();
 
+        if (!isset($trace[0]['function'])) {
+            $trace[0]['function'] = '???';
+        }
+
         // strip common prefix in file paths for optimized display
         $prefix = $this->longestCommonPrefix(array_map(function ($line) {
             return isset($line['file']) ? $line['file'] : null;

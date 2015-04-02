@@ -43,6 +43,8 @@ class TestEvent
 
     public function setException($exception)
     {
+        $transform = new ExceptionTransformer;
+        $exception = $transform->makeExceptionSerializable($exception);
         $this->exception = $exception;
         return $this;
     }
