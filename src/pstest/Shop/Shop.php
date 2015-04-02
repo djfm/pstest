@@ -56,6 +56,22 @@ abstract class Shop
         }, true);
     }
 
+    public function checkStandardErrorFeedback($errorMessage = '')
+    {
+        if (
+            true  !== $this->getBrowser()->hasVisible('div.alert.alert-success') ||
+            false !== $this->getBrowser()->hasVisible('div.alert.alert-error')
+        ) {
+            if (!$errorMessage) {
+                $errorMessage = 'The page either reported an error or did not confirm success.';
+            }
+
+            throw new Exception($errorMessage);
+        }
+
+        return $this;
+    }
+
     abstract public function getBrowser();
 
     abstract public function getFrontOfficeURL();

@@ -19,7 +19,11 @@ class DummyTest extends TestCase
 
     public function testSomething()
     {
-        $this->shop->get('back-office')->login();
+        $this->shop
+        ->get('back-office')
+        ->login()
+        ->get('taxes')
+        ->createTax('hello', 20, true);        
         //$this->shop->getBrowser()->visit($this->shop->getFrontOfficeURL());
         sleep(2);
     }
