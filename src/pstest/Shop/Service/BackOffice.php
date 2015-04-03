@@ -42,6 +42,12 @@ class BackOffice
             'PrestaShop\PSTest\Shop\Service\BackOffice\Localization',
             true
         );
+
+        $this->shop->getContainer()->bind(
+            'carriers',
+            'PrestaShop\PSTest\Shop\Service\BackOffice\Carriers',
+            true
+        );
     }
 
     public function get($serviceName)

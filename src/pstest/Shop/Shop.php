@@ -79,6 +79,13 @@ abstract class Shop
         );
     }
 
+    public function getPSForm()
+    {
+        return $this->getContainer()->make(
+            'PrestaShop\PSTest\Shop\BrowserExtension\PSForm'
+        );
+    }
+
     abstract public function getBrowser();
 
     abstract public function getFrontOfficeURL();
