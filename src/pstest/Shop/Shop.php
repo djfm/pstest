@@ -8,8 +8,6 @@ use PrestaShop\ConfMap\Configuration;
 
 use PrestaShop_IoC_Container as Container;
 
-use PrestaShop\PSTest\Shop\Service\BackOffice as BackOfficeService;
-
 abstract class Shop
 {
     private $container;
@@ -51,9 +49,27 @@ abstract class Shop
 
     public function registerServices()
     {
-        $this->getContainer()->bind('back-office', function () {
-            return new BackOfficeService($this);
-        }, true);
+        $this->getContainer()->bind(
+            'PrestaShop\PSTest\Shop\Shop',
+            function () {
+                return $this;
+            },
+            true // share the shop
+        );
+
+        $this->getContainer()->bind(
+            'PrestaShop\Selenium\Browser\BrowserInterface',
+            function () {
+                return $this->getBrowser();
+            },
+            true // share the browser
+        );
+
+        $this->getContainer()->bind(
+            'back-office',
+            'PrestaShop\PSTest\Shop\Service\BackOffice',
+            true
+        );
     }
 
     public function checkStandardErrorFeedback($errorMessage = '')

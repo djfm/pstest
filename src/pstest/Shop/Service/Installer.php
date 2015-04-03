@@ -6,8 +6,6 @@ use Exception;
 
 use PrestaShop\PSTest\Shop\LocalShop;
 
-use PrestaShop\PSTest\Shop\PageObject\Installer\ChooseYourLanguagePage;
-
 class Installer
 {
     private $shop;
@@ -21,7 +19,7 @@ class Installer
 
     /**
      * Install the shop.
-     * 
+     *
      * @param  array  $shop_options     language (2-letter code), country (2-letter code), name
      * @param  array  $employee_options firstname, lastname, email, password
      */
@@ -34,9 +32,10 @@ class Installer
             $this->shop->getInstallerURL()
         );
 
-        $chLanguage = new ChooseYourLanguagePage(
-            $this->browser
+        $chLanguage = $this->shop->getContainer()->make(
+            'PrestaShop\PSTest\Shop\PageObject\Installer\ChooseYourLanguagePage'
         );
+
         $chLanguage->setLanguage($shop_options['language']);
 
         $licensePage = $chLanguage->nextStep();

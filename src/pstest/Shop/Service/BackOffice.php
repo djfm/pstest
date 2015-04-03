@@ -17,7 +17,6 @@ class BackOffice
     private $browser;
 
     private $menuLinks = [];
-    private $container;
     private $loggedIn = false;
 
     private $defaultLanguage = null;
@@ -26,21 +25,22 @@ class BackOffice
     {
         $this->shop = $shop;
         $this->browser = $shop->getBrowser();
-        $this->container = new PrestaShop_IoC_Container;
 
         $this->registerServices();
     }
 
     private function registerServices()
     {
-        $this->container->bind('taxes', function () {
-            return new TaxesService($this->shop);
-        }, true);
+        $this->shop->getContainer()->bind(
+            'taxes',
+            'PrestaShop\PSTest\Shop\Service\BackOffice\Taxes',
+            true
+        );
     }
 
     public function get($serviceName)
     {
-        return $this->container->make($serviceName);
+        return $this->shop->getContainer()->make($serviceName);
     }
 
     public function login($email = null, $password = null, $stayLoggedIn = true)
@@ -148,7 +148,9 @@ class BackOffice
         if (null === $this->defaultLanguage) {
             $url = $this->browser->getCurrentURL();
             $this->visitController('AdminLocalization');
-            $loc = new AdminLocalizationPage($this->shop);
+            $loc = $this->shop->getContainer()->make(
+                'PrestaShop\PSTest\Shop\PageObject\BackOffice\AdminLocalizationPage'
+            );
             $this->defaultLanguage = $loc->getDefaultLanguage();
             $this->browser->visit($url);
         }
