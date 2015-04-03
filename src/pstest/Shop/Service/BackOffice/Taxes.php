@@ -65,7 +65,7 @@ class Taxes
             $taxRuleForm->setDescription($taxRule->getDescription());
             $taxRuleForm->submit();
         }
-        sleep(10);
+        
         return $this;
     }
 }
