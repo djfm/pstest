@@ -25,6 +25,10 @@ class PrestaShop_IoC_Container
 
         $args = [];
 
+        if ($refl->isAbstract()) {
+            throw new PrestaShop_IoC_Exception(sprintf('Cannot build abstract class: `%s`.', $className));
+        }
+
         $classConstructor = $refl->getConstructor();
 
         if ($classConstructor) {
@@ -71,7 +75,6 @@ class PrestaShop_IoC_Container
                 // assume the $constructor is a class name
                 $service = $this->makeInstanceFromClassName($constructor, $alreadySeen);
             }
-
 
             if ($binding['shared']) {
                 $this->instances[$serviceName] = $service;
