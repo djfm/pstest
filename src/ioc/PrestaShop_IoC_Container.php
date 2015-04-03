@@ -17,15 +17,6 @@ class PrestaShop_IoC_Container
 
     private function makeInstanceFromClassName($className, array $alreadySeen)
     {
-        if (array_key_exists($className, $alreadySeen)) {
-            throw new PrestaShop_IoC_Exception(sprintf(
-                'Cyclic dependency detected while building `%s`.',
-                $className
-            ));
-        }
-
-        $alreadySeen[$className] = true;
-
         try {
             $refl = new ReflectionClass($className);
         } catch (ReflectionException $re) {
@@ -40,10 +31,7 @@ class PrestaShop_IoC_Container
             foreach ($classConstructor->getParameters() as $param) {
                 $paramClass = $param->getClass();
                 if ($paramClass) {
-                    $args[] = $this->makeInstanceFromClassName(
-                        $param->getClass()->getName(),
-                        $alreadySeen
-                    );
+                    $args[] = $this->doMake($param->getClass()->getName(), $alreadySeen);
                 } else if ($param->isDefaultValueAvailable()) {
                     $args[] = $param->getDefaultValue();
                 } else {
@@ -55,8 +43,17 @@ class PrestaShop_IoC_Container
         return $refl->newInstanceArgs($args);
     }
 
-    public function make($serviceName)
+    private function doMake($serviceName, array $alreadySeen = array())
     {
+        if (array_key_exists($serviceName, $alreadySeen)) {
+            throw new PrestaShop_IoC_Exception(sprintf(
+                'Cyclic dependency detected while building `%s`.',
+                $serviceName
+            ));
+        }
+
+        $alreadySeen[$serviceName] = true;
+
         if (!array_key_exists($serviceName, $this->bindings)) {
             $this->bind($serviceName, $serviceName);
         }
@@ -72,7 +69,7 @@ class PrestaShop_IoC_Container
                 $service = call_user_func($constructor);
             } else {
                 // assume the $constructor is a class name
-                $service = $this->makeInstanceFromClassName($constructor, []);
+                $service = $this->makeInstanceFromClassName($constructor, $alreadySeen);
             }
 
 
@@ -82,5 +79,10 @@ class PrestaShop_IoC_Container
 
             return $service;
         }
+    }
+
+    public function make($serviceName)
+    {
+        return $this->doMake($serviceName, []);
     }
 }

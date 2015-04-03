@@ -8,6 +8,7 @@ use PrestaShop_IoC_Container as Container;
 
 use PrestaShop\IoC\Tests\Fixtures\Dummy;
 use PrestaShop\IoC\Tests\Fixtures\ClassWithDep;
+use PrestaShop\IoC\Tests\Fixtures\DepBuiltByClosure;
 
 class PrestaShop_IoC_Container_Test extends PHPUnit_Framework_TestCase
 {
@@ -105,5 +106,18 @@ class PrestaShop_IoC_Container_Test extends PHPUnit_Framework_TestCase
          * CycleB depends on CycleA
          */
         $this->container->make('PrestaShop\IoC\Tests\Fixtures\CycleA');
+    }
+
+    public function test_can_build_class_whose_dependency_is_buit_by_closure()
+    {
+        $this->container->bind(
+            'PrestaShop\IoC\Tests\Fixtures\DepBuiltByClosure',
+            function () {
+                return new DepBuiltByClosure(42);
+            }
+        );
+
+        $instance = $this->container->make('PrestaShop\IoC\Tests\Fixtures\ClassDependingOnClosureBuiltDep');
+        $this->assertEquals(42, $instance->getDep()->getValue());
     }
 }
