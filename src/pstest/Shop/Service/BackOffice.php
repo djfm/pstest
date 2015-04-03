@@ -36,6 +36,12 @@ class BackOffice
             'PrestaShop\PSTest\Shop\Service\BackOffice\Taxes',
             true
         );
+
+        $this->shop->getContainer()->bind(
+            'localization',
+            'PrestaShop\PSTest\Shop\Service\BackOffice\Localization',
+            true
+        );
     }
 
     public function get($serviceName)
@@ -77,9 +83,10 @@ class BackOffice
 
         $browser->clickButtonNamed('submitLogin');
 
-        $this->crawlMenuLinks();
-
         $this->loggedIn = true;
+
+        $this->crawlMenuLinks();
+        $this->discoverDefaultLanguage();
 
         return $this;
     }
@@ -139,6 +146,19 @@ class BackOffice
         return $this;
     }
 
+    public function discoverDefaultLanguage()
+    {
+        $url = $this->browser->getCurrentURL();
+        $this->visitController('AdminLocalization');
+        $loc = $this->shop->getContainer()->make(
+            'PrestaShop\PSTest\Shop\PageObject\BackOffice\AdminLocalizationPage'
+        );
+        $this->defaultLanguage = $loc->getDefaultLanguage();
+        $this->browser->visit($url);
+
+        return $this;
+    }
+
     /**
      * This adds the correct suffix to the passed-in $field
      * name, taking into account the language of the Back-Office.
@@ -146,13 +166,7 @@ class BackOffice
     public function i18nFieldName($field)
     {
         if (null === $this->defaultLanguage) {
-            $url = $this->browser->getCurrentURL();
-            $this->visitController('AdminLocalization');
-            $loc = $this->shop->getContainer()->make(
-                'PrestaShop\PSTest\Shop\PageObject\BackOffice\AdminLocalizationPage'
-            );
-            $this->defaultLanguage = $loc->getDefaultLanguage();
-            $this->browser->visit($url);
+            $this->discoverDefaultLanguage();
         }
 
         return $field . '_' . $this->defaultLanguage;

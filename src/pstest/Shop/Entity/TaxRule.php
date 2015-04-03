@@ -10,7 +10,7 @@ class TaxRule
 
     private $id;
     private $tax;
-    private $countryId;
+    private $country = null;
     private $zipCodeRange = 0;
     private $behavior = self::THIS_TAX_ONLY;
     private $description = 'A Tax Rule';
@@ -79,5 +79,16 @@ class TaxRule
     public function getId()
     {
         return $this->id;
+    }
+
+    public function setCountry(Country $country)
+    {
+        $this->country = $country;
+        return $this;
+    }
+
+    public function getCountry()
+    {
+        return $this->country;
     }
 }

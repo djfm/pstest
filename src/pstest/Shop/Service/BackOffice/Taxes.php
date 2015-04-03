@@ -2,6 +2,8 @@
 
 namespace PrestaShop\PSTest\Shop\Service\BackOffice;
 
+use Exception;
+
 use PrestaShop\PSTest\Shop\Entity\Tax;
 use PrestaShop\PSTest\Shop\Entity\TaxRule;
 use PrestaShop\PSTest\Shop\Entity\TaxRulesGroup;
@@ -47,6 +49,10 @@ class Taxes
             if (!$taxRule->getTax()->getId()) {
                 $this->saveTax($taxRule->getTax());
             }
+
+            if ($taxRule->getCountry() && !$taxRule->getCountry()->getId()) {
+                throw new Exception('Country of TaxRule has no id, will not be able to save TaxRule.');
+            }
         }
 
         $this->backOffice->visitController('AdminTaxRulesGroup', ['addtax_rules_group']);
@@ -62,10 +68,13 @@ class Taxes
             $taxRuleForm = new TaxRuleFormPage($this->shop);
             $taxRuleForm->setBehavior($taxRule->getBehavior());
             $taxRuleForm->setTaxId($taxRule->getTax()->getId());
+            if ($taxRule->getCountry()) {
+                $taxRuleForm->setCountryId($taxRule->getCountry()->getId());
+            }
             $taxRuleForm->setDescription($taxRule->getDescription());
             $taxRuleForm->submit();
         }
-        
+
         return $this;
     }
 }
