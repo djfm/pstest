@@ -5,6 +5,7 @@ namespace PrestaShop\TestRunner\TestCase;
 use Exception;
 use ReflectionClass;
 use ReflectionMethod;
+use PHPUnit_Framework_Assert;
 
 use PrestaShop\PSTest\Helper\DocCommentParser;
 use PrestaShop\FileSystem\FileSystemHelper as FS;
@@ -12,7 +13,7 @@ use PrestaShop\FileSystem\FileSystemHelper as FS;
 use PrestaShop\TestRunner\TestPlanInterface;
 use PrestaShop\TestRunner\TestAggregator;
 
-abstract class TestCase implements TestPlanInterface
+abstract class TestCase extends PHPUnit_Framework_Assert implements TestPlanInterface
 {
     private $aggregator;
     private $_context = [];
