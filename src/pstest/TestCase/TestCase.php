@@ -93,11 +93,7 @@ abstract class TestCase extends BaseTestCase
         return 'pstest-cache';
     }
 
-    /**
-     * @internal
-     * @beforeClass
-     */
-    final protected function setShop()
+    final public function setupBeforeClass()
     {
         $cacheInitialState = $this->cacheInitialState();
         $initialStateCacheKey = md5(serialize($cacheInitialState));
