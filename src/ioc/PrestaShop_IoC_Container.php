@@ -15,9 +15,17 @@ class PrestaShop_IoC_Container
         return $this;
     }
 
-    public function makeInstanceFromClassName($className)
+    private function makeInstanceFromClassName($className, array $alreadySeen)
     {
-        // assume it's a class name
+        if (array_key_exists($className, $alreadySeen)) {
+            throw new PrestaShop_IoC_Exception(sprintf(
+                'Cyclic dependency detected while building `%s`.',
+                $className
+            ));
+        }
+
+        $alreadySeen[$className] = true;
+
         try {
             $refl = new ReflectionClass($className);
         } catch (ReflectionException $re) {
@@ -33,7 +41,8 @@ class PrestaShop_IoC_Container
                 $paramClass = $param->getClass();
                 if ($paramClass) {
                     $args[] = $this->makeInstanceFromClassName(
-                        $param->getClass()->getName()
+                        $param->getClass()->getName(),
+                        $alreadySeen
                     );
                 } else if ($param->isDefaultValueAvailable()) {
                     $args[] = $param->getDefaultValue();
@@ -62,7 +71,8 @@ class PrestaShop_IoC_Container
             if (is_callable($constructor)) {
                 $service = call_user_func($constructor);
             } else {
-                $service = $this->makeInstanceFromClassName($constructor);
+                // assume the $constructor is a class name
+                $service = $this->makeInstanceFromClassName($constructor, []);
             }
 
 

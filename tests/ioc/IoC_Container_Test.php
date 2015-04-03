@@ -94,4 +94,16 @@ class PrestaShop_IoC_Container_Test extends PHPUnit_Framework_TestCase
     {
         $this->container->make('PrestaShop\IoC\Tests\Fixtures\AClassThatDoesntExistAtAll');
     }
+
+    /**
+     * @expectedException PrestaShop_IoC_Exception
+     */
+    public function test_dependency_loop_doesnt_crash_container()
+    {
+        /**
+         * CycleA depends on CycleB,
+         * CycleB depends on CycleA
+         */
+        $this->container->make('PrestaShop\IoC\Tests\Fixtures\CycleA');
+    }
 }
