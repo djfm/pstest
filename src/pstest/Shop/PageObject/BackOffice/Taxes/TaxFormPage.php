@@ -65,7 +65,7 @@ class TaxFormPage
     {
         $this->browser->clickButtonNamed('submitAddtax');
 
-        $this->shop->checkStandardErrorFeedback('Could not save Tax form.');
+        $this->shop->getErrorChecker()->checkStandardFormFeedback('Could not save Tax form.');
 
         return $this;
     }

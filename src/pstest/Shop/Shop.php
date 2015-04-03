@@ -72,20 +72,11 @@ abstract class Shop
         );
     }
 
-    public function checkStandardErrorFeedback($errorMessage = '')
+    public function getErrorChecker()
     {
-        if (
-            true  !== $this->getBrowser()->hasVisible('div.alert.alert-success') ||
-            false !== $this->getBrowser()->hasVisible('div.alert.alert-error')
-        ) {
-            if (!$errorMessage) {
-                $errorMessage = 'The page either reported an error or did not confirm success.';
-            }
-
-            throw new Exception($errorMessage);
-        }
-
-        return $this;
+        return $this->getContainer()->make(
+            'PrestaShop\PSTest\Shop\BrowserExtension\ErrorChecker'
+        );
     }
 
     abstract public function getBrowser();
