@@ -69,4 +69,9 @@ class TaxFormPage
 
         return $this;
     }
+
+    public function getId()
+    {
+        return (int)$this->browser->getURLParameter('id_tax');
+    }
 }

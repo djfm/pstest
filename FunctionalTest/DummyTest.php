@@ -17,14 +17,15 @@ class DummyTest extends TestCase
         ];
     }
 
-    public function testSomething()
+    public function test_tax_is_created()
     {
-        $this->shop
+        $id_tax = $this->shop
         ->get('back-office')
         ->login()
         ->get('taxes')
-        ->createTax('hello', 20, true);        
-        //$this->shop->getBrowser()->visit($this->shop->getFrontOfficeURL());
-        sleep(2);
+        ->createTax('hello', 20, true);
+
+        $this->assertInternalType('int', $id_tax);
+        $this->assertGreaterThan(0, $id_tax);
     }
 }
