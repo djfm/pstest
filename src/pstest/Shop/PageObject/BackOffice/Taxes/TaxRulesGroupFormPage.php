@@ -4,7 +4,7 @@ namespace PrestaShop\PSTest\Shop\PageObject\BackOffice\Taxes;
 
 use PrestaShop\PSTest\Shop\Shop;
 
-class TaxFormPage
+class TaxRulesGroupFormPage
 {
     private $shop;
     private $browser;
@@ -18,33 +18,18 @@ class TaxFormPage
     public function getName()
     {
         return $this->browser->getValue(
-            $this->shop->get('back-office')->i18nFieldName('#name')
+            '#name'
         );
     }
 
     public function setName($name)
     {
         $this->browser->fillIn(
-            $this->shop->get('back-office')->i18nFieldName('#name'),
+            '#name',
             $name
         );
 
         return $this;
-    }
-
-    public function setRate($rate)
-    {
-        $this->browser->fillIn(
-            '#rate',
-            $rate
-        );
-
-        return $this;
-    }
-
-    public function getRate()
-    {
-        return $this->browser->getValue('#rate');
     }
 
     public function setEnabled($yes) {
@@ -63,15 +48,21 @@ class TaxFormPage
 
     public function submit()
     {
-        $this->browser->clickButtonNamed('submitAddtax');
+        $this->browser->click('#tax_rules_group_form_submit_btn');
 
-        $this->shop->getErrorChecker()->checkStandardFormFeedback('Could not save Tax form.');
+        $this->shop->getErrorChecker()->checkStandardFormFeedback('Could not save TaxRulesGroup form.');
 
         return $this;
     }
 
     public function getId()
     {
-        return (int)$this->browser->getURLParameter('id_tax');
+        return (int)$this->browser->getURLParameter('id_tax_rules_group');
+    }
+
+    public function addNewTaxRule()
+    {
+        $this->browser->click('#page-header-desc-tax_rule-new');
+        return $this;
     }
 }

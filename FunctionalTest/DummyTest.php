@@ -4,8 +4,14 @@ namespace PrestaShop\FunctionalTest;
 
 use PrestaShop\PSTest\TestCase\TestCase;
 
+use PrestaShop\PSTest\Shop\Entity\Tax;
+use PrestaShop\PSTest\Shop\Entity\TaxRule;
+use PrestaShop\PSTest\Shop\Entity\TaxRulesGroup;
+
 class DummyTest extends TestCase
 {
+    private $backOffice;
+
     public function cacheInitialState()
     {
         return [
@@ -17,15 +23,36 @@ class DummyTest extends TestCase
         ];
     }
 
+    /**
+     * @beforeClass
+     */
+    public function loginToTheBackOffice()
+    {
+        $this->backOffice = $this->shop->get('back-office')->login();
+    }
+
     public function test_tax_is_created()
     {
-        $id_tax = $this->shop
-        ->get('back-office')
-        ->login()
-        ->get('taxes')
-        ->createTax('hello', 20, true);
+        $tax = (new Tax())->setName('hello')->setRate(20)->setEnabled(true);
 
-        $this->assertInternalType('int', $id_tax);
-        $this->assertGreaterThan(0, $id_tax);
+        $this->backOffice->get('taxes')->saveTax($tax);
+
+        $this->assertInternalType('int', $tax->getId());
+        $this->assertGreaterThan(0, $tax->getId());
+    }
+
+    public function test_tax_rule_is_created()
+    {
+        $tax = (new Tax())->setName('hello')->setRate(20)->setEnabled(true);
+
+        $taxRule = new TaxRule;
+        $taxRule->setTax($tax)->setBehavior(TaxRule::THIS_TAX_ONLY);
+
+        $taxRulesGroup = new TaxRulesGroup;
+        $taxRulesGroup->setName('Example Tax Rules Group')->setEnabled(true);
+
+        $taxRulesGroup->addTaxRule($taxRule);
+
+        $this->backOffice->get('taxes')->createTaxRulesGroup($taxRulesGroup);
     }
 }
