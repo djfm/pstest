@@ -55,5 +55,30 @@ class Carriers
         $costsSettings->setOutOfRangeBehavior($carrier->getOutOfRangeBehavior());
 
         $costsSettings->setRanges($carrier->getRanges());
+
+        $sizeWeightEtc = $costsSettings->nextStep();
+        $sizeWeightEtc
+            ->setMaximumPackageWidth($carrier->getMaximumPackageWidth())
+            ->setMaximumPackageHeight($carrier->getMaximumPackageHeight())
+            ->setMaximumPackageDepth($carrier->getMaximumPackageDepth())
+            ->setMaximumPackageWeight($carrier->getMaximumPackageWeight())
+            ->setGroupAccess($carrier->getGroupAccess())
+        ;
+
+        $finalPage = $sizeWeightEtc->nextStep();
+        $finalPage->setEnabled($carrier->getEnabled())->submit();
+
+        $this->browser
+             ->fillIn('input[name="carrierFilter_name"]', $carrier->getName())
+             ->click('#submitFilterButtoncarrier')
+        ;
+
+        $id = (int)$this->browser->getText('#table-carrier tr:first-of-type td:nth-of-type(2)');
+
+        $carrier->setId($id);
+
+        $this->browser->clickButtonNamed('submitResetcarrier');
+
+        return $this;
     }
 }

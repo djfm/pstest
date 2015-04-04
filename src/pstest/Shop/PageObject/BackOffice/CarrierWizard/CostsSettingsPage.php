@@ -142,4 +142,11 @@ class CostsSettingsPage
             ;
         }
     }
+
+    public function nextStep()
+    {
+        $this->browser->click('a.buttonNext');
+
+        return new SizeWeightAndGroupAccessPage($this->shop);
+    }
 }

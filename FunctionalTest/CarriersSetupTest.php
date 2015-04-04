@@ -44,17 +44,29 @@ class CarriersSetupTest extends TestCase
         $midRange->addZone($carrierZone);
 
         $carrier
-        ->setName('Oh My Carrier')
-        ->setTransitTime('28 days')
-        ->setSpeedGrade(0)
-        ->setAddHandlingCosts(true)
-        ->setFreeShipping(false)
-        ->setBillAccordingToPrice(true)
-        ->setTaxRulesGroup((new TaxRulesGroup)->setId(1))
-        ->setOutOfRangeBehavior(Carrier::BEHAVIOR_DISABLE)
-        ->addRange($lowRange)->addRange($midRange)->addRange($topRange)
+            ->setName('Oh My Carrier')
+            ->setTransitTime('28 days')
+            ->setSpeedGrade(0)
+            ->setAddHandlingCosts(true)
+            ->setFreeShipping(false)
+            ->setBillAccordingToPrice(true)
+            ->setTaxRulesGroup((new TaxRulesGroup)->setId(1))
+            ->setOutOfRangeBehavior(Carrier::BEHAVIOR_DISABLE)
+            ->addRange($lowRange)->addRange($midRange)->addRange($topRange)
+            ->setMaximumPackageWidth(100)
+            ->setMaximumPackageHeight(200)
+            ->setMaximumPackageDepth(300)
+            ->setMaximumPackageWeight(400)
+            ->setGroupAccess([
+                1 => false,
+                2 => true,
+                3 => false
+            ])
         ;
 
         $this->backOffice->get('carriers')->createCarrier($carrier);
+
+        $this->assertInternalType('int', $carrier->getId());
+        $this->assertGreaterThan(0, $carrier->getId());
     }
 }

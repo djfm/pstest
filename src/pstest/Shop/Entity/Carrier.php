@@ -22,7 +22,8 @@ class Carrier
     private $maximumPackageHeight;
     private $maximumPackageDepth;
     private $maximumPackageWeight;
-    private $groupAccess;
+    private $groupAccess = [];
+    private $enabled = true;
 
     public function setId($id)
     {
@@ -147,5 +148,71 @@ class Carrier
     public function getRanges()
     {
         return $this->ranges;
+    }
+
+    public function setMaximumPackageWidth($m)
+    {
+        $this->maximumPackageWidth = $m;
+        return $this;
+    }
+
+    public function getMaximumPackageWidth()
+    {
+        return $this->maximumPackageWidth;
+    }
+
+    public function setMaximumPackageHeight($m)
+    {
+        $this->maximumPackageHeight = $m;
+        return $this;
+    }
+
+    public function getMaximumPackageHeight()
+    {
+        return $this->maximumPackageHeight;
+    }
+
+    public function setMaximumPackageDepth($m)
+    {
+        $this->maximumPackageDepth = $m;
+        return $this;
+    }
+
+    public function getMaximumPackageDepth()
+    {
+        return $this->maximumPackageDepth;
+    }
+
+    public function setMaximumPackageWeight($m)
+    {
+        $this->maximumPackageWeight = $m;
+        return $this;
+    }
+
+    public function getMaximumPackageWeight()
+    {
+        return $this->maximumPackageWeight;
+    }
+
+    public function setGroupAccess(array $groupIdAsKeyBoolAsValue)
+    {
+        $this->groupAccess = $groupIdAsKeyBoolAsValue;
+        return $this;
+    }
+
+    public function getGroupAccess()
+    {
+        return $this->groupAccess;
+    }
+
+    public function setEnabled($yes = true)
+    {
+        $this->enabled = $yes;
+        return $this;
+    }
+
+    public function getEnabled()
+    {
+        return $this->enabled;
     }
 }
