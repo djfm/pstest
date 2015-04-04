@@ -53,5 +53,7 @@ class Carriers
         }
 
         $costsSettings->setOutOfRangeBehavior($carrier->getOutOfRangeBehavior());
+
+        $costsSettings->setRanges($carrier->getRanges());
     }
 }

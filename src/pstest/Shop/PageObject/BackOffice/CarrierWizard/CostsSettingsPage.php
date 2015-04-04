@@ -5,6 +5,9 @@ namespace PrestaShop\PSTest\Shop\PageObject\BackOffice\CarrierWizard;
 use Exception;
 
 use PrestaShop\PSTest\Shop\Shop;
+use PrestaShop\PSTest\Shop\Entity\CarrierRange;
+
+use PrestaShop\PSTest\Helper\SpinnerHelper as Spin;
 
 class CostsSettingsPage
 {
@@ -90,6 +93,53 @@ class CostsSettingsPage
 
     public function getOutOfRangeBehavior()
     {
-        return $this->getBrowser()->getSelectedValue('#range_behavior');
+        return $this->browser->getSelectedValue('#range_behavior');
+    }
+
+    public function setRanges(array $ranges)
+    {
+        foreach ($ranges as $n => $range) {
+
+            if ($n > 0) {
+                $this->browser->click('#add_new_range');
+            }
+
+            $this->setRange($n, $range);
+        }
+        sleep(10);
+    }
+
+    private function setRange($n, CarrierRange $range)
+    {
+        $index = $n + 3;
+
+        $this->browser
+             ->fillIn("tr.range_inf td:nth-of-type($index) input", $range->getFromIncluded())
+             ->fillIn("tr.range_sup td:nth-of-type($index) input", $range->getToExcluded())
+        ;
+
+        if ($range->getZones()) {
+            // We want a cost per zone
+            foreach ($range->getZones() as $zone) {
+                $costSelector = "tr.fees[data-zoneid='{$zone->getId()}'] td:nth-of-type($index) input";
+                $this->browser->checkbox("tr.fees[data-zoneid='{$zone->getId()}'] input[type='checkbox']", true);
+
+                Spin::assertNoException(function () use ($costSelector, $zone) {
+                    $this->browser->fillIn($costSelector, $zone->getCost());
+                }, 15, 1000, 'Could not set shipping cost for zone.');
+
+            }
+        } else {
+            // We want same cost for all zones
+            $this->browser
+                 ->checkbox('tr.fees_all input[type=checkbox]', true)
+                 // this selector is not immediately visible
+                 ->waitFor("tr.fees_all td:nth-of-type($index) input")
+                 ->fillIn("tr.fees_all td:nth-of-type($index) input", $range->getCost())
+                 // need to click somewhere to make cost input lose focus
+                 // and trigger the JS that updates the costs for all ranges
+                 ->click("tr.range_inf td:nth-of-type($index) input")
+            ;
+        }
     }
 }

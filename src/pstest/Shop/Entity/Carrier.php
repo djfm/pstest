@@ -17,11 +17,23 @@ class Carrier
     private $billAccordingToWeight;
     private $taxRulesGroup;
     private $outOfRangeBehavior = self::BEHAVIOR_HIGHEST;
+    private $ranges = [];
     private $maximumPackageWidth;
     private $maximumPackageHeight;
     private $maximumPackageDepth;
     private $maximumPackageWeight;
     private $groupAccess;
+
+    public function setId($id)
+    {
+        $this->id = $id;
+        return $this;
+    }
+
+    public function getId()
+    {
+        return $this->id;
+    }
 
     public function setName($name)
     {
@@ -42,9 +54,9 @@ class Carrier
 
     public function getTransitTime()
     {
-        return $this->transitTime;
+        return $this->transitTime;{
     }
-
+}
     public function setSpeedGrade($grade)
     {
         $this->speedGrade = $grade;
@@ -124,5 +136,16 @@ class Carrier
     public function getOutOfRangeBehavior()
     {
         return $this->outOfRangeBehavior;
+    }
+
+    public function addRange(CarrierRange $range)
+    {
+        $this->ranges[] = $range;
+        return $this;
+    }
+
+    public function getRanges()
+    {
+        return $this->ranges;
     }
 }
