@@ -6,7 +6,7 @@ class Tax
 {
     private $name;
     private $rate;
-    private $enabled;
+    private $enabled = true;
     private $id;
 
     public function getName()

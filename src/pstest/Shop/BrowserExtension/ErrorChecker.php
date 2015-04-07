@@ -2,6 +2,8 @@
 
 namespace PrestaShop\PSTest\Shop\BrowserExtension;
 
+use Exception;
+
 use PrestaShop\PSTest\Shop\Shop;
 
 class ErrorChecker

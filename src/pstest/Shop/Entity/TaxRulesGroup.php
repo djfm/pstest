@@ -5,7 +5,7 @@ namespace PrestaShop\PSTest\Shop\Entity;
 class TaxRulesGroup
 {
     private $name;
-    private $enabled;
+    private $enabled = true;
     private $taxRules = [];
     private $id;
 
