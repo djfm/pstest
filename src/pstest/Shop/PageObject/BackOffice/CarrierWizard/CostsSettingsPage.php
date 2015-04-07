@@ -106,7 +106,6 @@ class CostsSettingsPage
 
             $this->setRange($n, $range);
         }
-        sleep(10);
     }
 
     private function setRange($n, CarrierRange $range)
