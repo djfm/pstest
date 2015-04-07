@@ -10,6 +10,7 @@ use PrestaShop\PSTest\Shop\Shop;
 
 use PrestaShop\PSTest\Shop\PageObject\BackOffice\Products\InformationPage;
 use PrestaShop\PSTest\Shop\PageObject\BackOffice\Products\PricesPage;
+use PrestaShop\PSTest\Shop\PageObject\BackOffice\Products\QuantitiesPage;
 
 class Products
 {
@@ -36,6 +37,12 @@ class Products
         $this->browser->click('#link-Prices');
         return new PricesPage($this->shop);
 
+    }
+
+    private function gotoQuantitiesTab()
+    {
+        $this->browser->click('#link-Quantities');
+        return new QuantitiesPage($this->shop);
     }
 
     private function saveProduct()
@@ -68,6 +75,14 @@ class Products
         }
 
         $this->saveProduct();
+
+        if (($q =$product->getQuantity())) {
+            $this->gotoQuantitiesTab()->setQuantity($q);
+            $storedQuantity = $this->saveProduct()->gotoQuantitiesTab()->getQuantity();
+            if ($storedQuantity != $q) {
+                throw new Exception('Product was not saved correctly, quantity is not valid.');
+            }
+        }
 
         sleep(10);
     }

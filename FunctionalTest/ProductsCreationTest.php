@@ -33,10 +33,10 @@ class ProductsCreationTest extends TestCase
         $this->backOffice = $this->shop->get('back-office')->login();
     }
 
-    public function test_create_product()
+    public function test_create_product_basic()
     {
         $product = new Product;
-        $product->setName('Hello Product')->setPrice(20);
+        $product->setName('Hello Product')->setPrice(20)->setQuantity(42);
         $product->setTaxRulesGroup((new TaxRulesGroup)->setId(1));
 
         $this->backOffice->get('products')->createProduct($product);

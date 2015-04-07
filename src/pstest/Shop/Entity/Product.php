@@ -15,6 +15,7 @@ class Product
     private $name;
     private $price;
     private $taxRulesGroup;
+    private $quantity = 0;
 
     public function setName($name)
     {
@@ -47,5 +48,16 @@ class Product
     public function getTaxRulesGroup()
     {
         return $this->taxRulesGroup;
+    }
+
+    public function setQuantity($q)
+    {
+        $this->quantity = $q;
+        return $this;
+    }
+
+    public function getQuantity()
+    {
+        return $this->quantity;
     }
 }
