@@ -132,9 +132,10 @@ class CostsSettingsPage
         } else {
             // We want same cost for all zones
             $this->browser
-                 ->checkbox('tr.fees_all input[type=checkbox]', true)
-                 // this selector is not immediately visible
+                 // this selector is not immediately visible, we must not fill anything
+                 // else until it show up otherwise the JS won't work properly
                  ->waitFor("tr.fees_all td:nth-of-type($index) input")
+                 ->checkbox('tr.fees_all input[type=checkbox]', true)
                  ->fillIn("tr.fees_all td:nth-of-type($index) input", $range->getCost())
                  // need to click somewhere to make cost input lose focus
                  // and trigger the JS that updates the costs for all ranges
