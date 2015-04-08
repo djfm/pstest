@@ -113,6 +113,8 @@ class LocalShopFactory
 
         $browser = $this->browserFactory->makeBrowser();
 
+        $browser->setScriptTimeout(15);
+
         $shop = new LocalShop(
             $browser,
             $shopSystemSettings,

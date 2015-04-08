@@ -56,6 +56,12 @@ class BackOffice
         );
 
         $this->shop->getContainer()->bind(
+            'orders',
+            'PrestaShop\PSTest\Shop\Service\BackOffice\Orders',
+            true
+        );
+
+        $this->shop->getContainer()->bind(
             'settings',
             'PrestaShop\PSTest\Shop\Service\BackOffice\Settings',
             true

@@ -94,5 +94,13 @@ class FrontOffice
         $this->browser->click('p.payment_module a.bankwire');
 
         $this->browser->click('#cart_navigation button');
+
+        $orderId = (int)$this->browser->getURLParameter('id_order');
+
+        if ($orderId <= 0) {
+            throw new Exception('Did not find an order id after order. Most likely failed.');
+        }
+
+        return $orderId;
     }
 }

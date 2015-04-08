@@ -12,6 +12,8 @@ class InvoiceTest extends TestCase
 {
     private $scenario;
     private $backOffice;
+    private $orderId;
+    private $invoiceData;
 
     public function cacheInitialState()
     {
@@ -109,8 +111,18 @@ class InvoiceTest extends TestCase
             ;
         }
 
-        $this->shop->get('front-office')->checkoutCart([
+        $this->orderId = $this->shop->get('front-office')->checkoutCart([
             'carrierName' => $this->scenario->getCarrier()->getName()
         ]);
+    }
+
+    public function test_order_is_validated_in_the_backoffice()
+    {
+        $this->invoiceData = $this->backOffice
+                                  ->get('orders')
+                                  ->visitById($this->orderId)
+                                  ->validate()
+                                  ->getInvoiceData()
+        ;
     }
 }
