@@ -21,6 +21,7 @@ abstract class TestCase extends PHPUnit_Framework_Assert implements TestPlanInte
     private $tests = [];
     private $skipRemainingTests = false;
     private $filters = [];
+    private $setupBeforeClassCompleted = false;
 
     public function __construct(array $filters = array())
     {
@@ -272,6 +273,8 @@ abstract class TestCase extends PHPUnit_Framework_Assert implements TestPlanInte
             }
         }
 
+        $this->setupBeforeClassCompleted = true;
+
         foreach ($this->tests as $test) {
             $this->aggregator->startTest($test->getName());
 
@@ -337,16 +340,16 @@ abstract class TestCase extends PHPUnit_Framework_Assert implements TestPlanInte
         $this->aggregator->endTest(get_called_class(), $allGood, $allGood ? 'success' : 'failure');
     }
 
-    public function aTestIsRunning()
+    final public function aTestIsRunning()
     {
-        return $this->aggregator->getCurrentTest() ? true : false;
+        return $this->aggregator->getCurrentTest() && $this->setupBeforeClassCompleted;
     }
 
     public function getCurrentTest()
     {
         $test = $this->aggregator->getCurrentTest();
 
-        if (!$test) {
+        if (!$test || !$this->setupBeforeClassCompleted) {
             throw new Exception('There is no currently running test!');
         }
 
