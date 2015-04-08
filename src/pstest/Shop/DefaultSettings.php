@@ -43,4 +43,14 @@ class DefaultSettings extends Configuration
      * @conf employee.password
      */
     protected $employee_password = '123456789';
+
+    /**
+     * @conf customer.email
+     */
+    protected $customer_email = 'pub@prestashop.com';
+
+    /**
+     * @conf customer.password
+     */
+    protected $customer_password = '123456789';
 }

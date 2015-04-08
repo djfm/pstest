@@ -50,7 +50,7 @@ class InvoiceTest extends TestCase
      */
     public function loginToTheBackOffice()
     {
-        $this->info('Logging to the Back-Office');
+        $this->info('Logging in to the Back-Office');
         $this->backOffice = $this->shop->get('back-office')->login();
     }
 
@@ -97,8 +97,18 @@ class InvoiceTest extends TestCase
         }
     }
 
-    public function test_customer_can_log_in()
+    public function test_order_is_made()
     {
-        $this->shop->get('front-office')->visitMyAccount();
+        $this->shop->get('front-office')->login();
+
+        foreach ($this->scenario->getProducts() as $product) {
+            $this->shop->get('front-office')
+                 ->visitProduct($product)
+                 ->setQuantity($product->getQuantity())
+                 ->addToCart()
+            ;
+        }
+
+        sleep(10);
     }
 }

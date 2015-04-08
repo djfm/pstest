@@ -9,12 +9,12 @@ class Carrier
 
     private $id;
     private $name;
-    private $transitTime;
-    private $speedGrade;
-    private $addHandlingCosts;
-    private $freeShipping;
-    private $billAccordingToPrice;
-    private $billAccordingToWeight;
+    private $transitTime = '';
+    private $speedGrade = 1;
+    private $addHandlingCosts = false;
+    private $freeShipping = false;
+    private $billAccordingToPrice = false;
+    private $billAccordingToWeight = true;
     private $taxRulesGroup;
     private $outOfRangeBehavior = self::BEHAVIOR_HIGHEST;
     private $ranges = [];

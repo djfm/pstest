@@ -24,6 +24,7 @@ abstract class TestCase extends BaseTestCase
 {
     private $browserFactory;
     protected $shop;
+    protected $browser;
 
     private $shopIsTemporary = true;
 
