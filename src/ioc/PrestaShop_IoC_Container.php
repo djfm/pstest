@@ -5,8 +5,19 @@ class PrestaShop_IoC_Container
     private $bindings = array();
     private $instances = array();
 
+    public function knows($serviceName)
+    {
+        return array_key_exists($serviceName, $this->bindings);
+    }
+
     public function bind($serviceName, $constructor, $shared = false)
     {
+        if ($this->knows($serviceName)) {
+            throw new PrestaShop_IoC_Exception(
+                sprintf('Cannot bind `%s` again. A service name can only be bound once.', $serviceName)
+            );
+        }
+
         $this->bindings[$serviceName] = array(
             'constructor' => $constructor,
             'shared' => $shared
@@ -58,7 +69,7 @@ class PrestaShop_IoC_Container
 
         $alreadySeen[$serviceName] = true;
 
-        if (!array_key_exists($serviceName, $this->bindings)) {
+        if (!$this->knows($serviceName)) {
             $this->bind($serviceName, $serviceName);
         }
 

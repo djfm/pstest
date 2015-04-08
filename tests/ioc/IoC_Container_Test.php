@@ -26,6 +26,15 @@ class PrestaShop_IoC_Container_Test extends PHPUnit_Framework_TestCase
         $this->assertEquals('FOO', $this->container->make('foo'));
     }
 
+    /**
+     * @expectedException PrestaShop_IoC_Exception
+     */
+    public function test_cannot_bind_the_same_service_twice()
+    {
+        $this->container->bind('foo', function () {});
+        $this->container->bind('foo', function () {});
+    }
+
     public function test_bind_by_closure_instance_not_shared_by_default()
     {
         $this->container->bind('different', function () {
