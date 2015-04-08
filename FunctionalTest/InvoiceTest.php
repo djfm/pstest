@@ -109,6 +109,8 @@ class InvoiceTest extends TestCase
             ;
         }
 
-        sleep(10);
+        $this->shop->get('front-office')->checkoutCart([
+            'carrierName' => $this->scenario->getCarrier()->getName()
+        ]);
     }
 }

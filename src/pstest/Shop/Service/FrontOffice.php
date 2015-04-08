@@ -27,9 +27,15 @@ class FrontOffice
         return $this->browser->hasVisible('.header_user_info a.logout');
     }
 
-    public function visitMyAccount()
+    public function visitHome()
     {
         $this->browser->visit($this->shop->getFrontOfficeURL());
+        return $this;
+    }
+
+    public function visitMyAccount()
+    {
+        $this->visitHome();
 
         if ($this->loggedIn()) {
             $this->browser->click('.header_user_info a.account');
@@ -56,5 +62,37 @@ class FrontOffice
         }
         $this->browser->visit($product->getFrontOfficeURL());
         return new ProductPage($this->shop);
+    }
+
+    public function visitCart()
+    {
+        $this->visitHome();
+        $this->browser->click('.shopping_cart > a');
+
+        try {
+            $this->browser->waitFor('a.standard-checkout');
+        } catch (Exception $e) {
+            throw new Exception('Seems we\'re not on the Cart page as expected.');
+        }
+    }
+
+    public function checkoutCart(array $options)
+    {
+        $this->visitCart();
+        $this->browser->click('a.standard-checkout');
+
+        $this->browser->clickButtonNamed('processAddress');
+
+        if (isset($options['carrierName'])) {
+            $this->browser->click('{xpath}//tr[contains(., "' . $options['carrierName'] . '")]//input[@type="radio"]');
+        }
+
+        $this->browser->clickLabelFor('cgv');
+
+        $this->browser->clickButtonNamed('processCarrier');
+
+        $this->browser->click('p.payment_module a.bankwire');
+
+        $this->browser->click('#cart_navigation button');
     }
 }
