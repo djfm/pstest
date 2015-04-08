@@ -112,9 +112,12 @@ class CostsSettingsPage
     {
         $index = $n + 3;
 
+        $infSelector = "tr.range_inf td:nth-of-type($index) input";
+        $supSelector = "tr.range_sup td:nth-of-type($index) input";
+
         $this->browser
-             ->fillIn("tr.range_inf td:nth-of-type($index) input", $range->getFromIncluded())
-             ->fillIn("tr.range_sup td:nth-of-type($index) input", $range->getToExcluded())
+             ->fillIn($infSelector, $range->getFromIncluded())
+             ->fillIn($supSelector, $range->getToExcluded())
         ;
 
         if ($range->getZones()) {

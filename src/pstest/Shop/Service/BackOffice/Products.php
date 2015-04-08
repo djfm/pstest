@@ -4,27 +4,14 @@ namespace PrestaShop\PSTest\Shop\Service\BackOffice;
 
 use Exception;
 
+use PrestaShop\PSTest\Shop\Service\BackOffice\Service as BackOfficeService;
 use PrestaShop\PSTest\Shop\Entity\Product;
-
-use PrestaShop\PSTest\Shop\Shop;
-
 use PrestaShop\PSTest\Shop\PageObject\BackOffice\Products\InformationPage;
 use PrestaShop\PSTest\Shop\PageObject\BackOffice\Products\PricesPage;
 use PrestaShop\PSTest\Shop\PageObject\BackOffice\Products\QuantitiesPage;
 
-class Products
+class Products extends BackOfficeService
 {
-    private $shop;
-    private $backOffice;
-    private $browser;
-
-    public function __construct(Shop $shop)
-    {
-        $this->shop = $shop;
-        $this->backOffice = $this->shop->get('back-office');
-        $this->browser = $shop->getBrowser();
-    }
-
     private function gotoInformationTab()
     {
         $this->browser->click('#link-Informations');
@@ -84,6 +71,8 @@ class Products
             }
         }
 
-        sleep(10);
+        $product->setFrontOfficeURL($this->browser->getAttribute('#page-header-desc-product-preview', 'href'));
+
+        return $this;
     }
 }

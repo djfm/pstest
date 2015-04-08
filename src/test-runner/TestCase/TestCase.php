@@ -397,4 +397,10 @@ abstract class TestCase extends PHPUnit_Framework_Assert implements TestPlanInte
         $this->aggregator->addFile(basename($path), realpath($path), $metaData);
         return $this;
     }
+
+    public function info($message)
+    {
+        $this->aggregator->addMessage($message);
+        return $this;
+    }
 }

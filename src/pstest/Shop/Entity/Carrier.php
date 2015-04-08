@@ -18,10 +18,10 @@ class Carrier
     private $taxRulesGroup;
     private $outOfRangeBehavior = self::BEHAVIOR_HIGHEST;
     private $ranges = [];
-    private $maximumPackageWidth;
-    private $maximumPackageHeight;
-    private $maximumPackageDepth;
-    private $maximumPackageWeight;
+    private $maximumPackageWidth = 0;
+    private $maximumPackageHeight = 0;
+    private $maximumPackageDepth = 0;
+    private $maximumPackageWeight = 0;
     private $groupAccess = [];
     private $enabled = true;
 
@@ -141,6 +141,7 @@ class Carrier
 
     public function addRange(CarrierRange $range)
     {
+        $this->setFreeShipping(false);
         $this->ranges[] = $range;
         return $this;
     }

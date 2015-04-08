@@ -54,6 +54,12 @@ class BackOffice
             'PrestaShop\PSTest\Shop\Service\BackOffice\Products',
             true
         );
+
+        $this->shop->getContainer()->bind(
+            'settings',
+            'PrestaShop\PSTest\Shop\Service\BackOffice\Settings',
+            true
+        );
     }
 
     public function get($serviceName)

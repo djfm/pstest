@@ -4,25 +4,13 @@ namespace PrestaShop\PSTest\Shop\Service\BackOffice;
 
 use Exception;
 
+use PrestaShop\PSTest\Shop\Service\BackOffice\Service as BackOfficeService;
 use PrestaShop\PSTest\Shop\Entity\Carrier;
-
 use PrestaShop\PSTest\Shop\Shop;
-
 use PrestaShop\PSTest\Shop\PageObject\BackOffice\CarrierWizard\GeneralSettingsPage;
 
-class Carriers
+class Carriers extends BackOfficeService
 {
-    private $shop;
-    private $backOffice;
-    private $browser;
-
-    public function __construct(Shop $shop)
-    {
-        $this->shop = $shop;
-        $this->backOffice = $this->shop->get('back-office');
-        $this->browser = $shop->getBrowser();
-    }
-
     public function createCarrier(Carrier $carrier)
     {
         $this->backOffice->visitController('AdminCarriers');
@@ -50,6 +38,8 @@ class Carriers
             }
 
             $costsSettings->setTaxRulesGroupId($trgId);
+        } else {
+            $costsSettings->setTaxRulesGroupId(0);
         }
 
         $costsSettings->setOutOfRangeBehavior($carrier->getOutOfRangeBehavior());

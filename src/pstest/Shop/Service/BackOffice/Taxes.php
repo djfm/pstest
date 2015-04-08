@@ -4,6 +4,8 @@ namespace PrestaShop\PSTest\Shop\Service\BackOffice;
 
 use Exception;
 
+use PrestaShop\PSTest\Shop\Service\BackOffice\Service as BackOfficeService;
+
 use PrestaShop\PSTest\Shop\Entity\Tax;
 use PrestaShop\PSTest\Shop\Entity\TaxRule;
 use PrestaShop\PSTest\Shop\Entity\TaxRulesGroup;
@@ -13,17 +15,8 @@ use PrestaShop\PSTest\Shop\PageObject\BackOffice\Taxes\TaxFormPage;
 use PrestaShop\PSTest\Shop\PageObject\BackOffice\Taxes\TaxRulesGroupFormPage;
 use PrestaShop\PSTest\Shop\PageObject\BackOffice\Taxes\TaxRuleFormPage;
 
-class Taxes
+class Taxes extends BackOfficeService
 {
-    private $shop;
-    private $backOffice;
-
-    public function __construct(Shop $shop)
-    {
-        $this->shop = $shop;
-        $this->backOffice = $this->shop->get('back-office');
-    }
-
     public function saveTax(Tax $tax)
     {
         $this->backOffice->visitController('AdminTaxes', ['addtax']);

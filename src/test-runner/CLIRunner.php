@@ -282,7 +282,7 @@ class CLIRunner extends Runner
     {
         parent::onTestEvent($event, $context);
 
-        $display = $event->isStart() || $event->isEnd() || $event->hasException();
+        $display = $event->isStart() || $event->isEnd() || $event->hasException() || $event->hasMessage();
 
         if ($display) {
 
@@ -297,6 +297,8 @@ class CLIRunner extends Runner
                 }
             } elseif ($event->hasException()) {
                 $eventType = '<error>Problem</error>   !';
+            } else if ($event->hasMessage()) {
+                $eventType = 'Info      :';
             }
 
             $this->writeln(
@@ -310,6 +312,8 @@ class CLIRunner extends Runner
 
             if ($event->hasException()) {
                 $this->printException($event->getException(), str_pad('', 21) . '| ');
+            } else if ($event->hasMessage()) {
+                $this->writeln(str_pad('', 21) . '| <comment>' . $event->getMessage()->getText() . '</comment>');
             }
         }
     }

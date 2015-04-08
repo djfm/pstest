@@ -2,22 +2,11 @@
 
 namespace PrestaShop\PSTest\Shop\Service\BackOffice;
 
-use PrestaShop\PSTest\Shop\Shop;
+use PrestaShop\PSTest\Shop\Service\BackOffice\Service as BackOfficeService;
 use PrestaShop\PSTest\Shop\Entity\Country;
 
-class Localization
+class Localization extends BackOfficeService
 {
-    private $shop;
-    private $backOffice;
-    private $browser;
-
-    public function __construct(Shop $shop)
-    {
-        $this->shop = $shop;
-        $this->backOffice = $shop->get('back-office');
-        $this->browser = $shop->getBrowser();
-    }
-
     public function getCountryByISOCode($isoCode)
     {
         $this->backOffice->visitController('AdminCountries');

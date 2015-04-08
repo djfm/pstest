@@ -16,6 +16,7 @@ class Product
     private $price;
     private $taxRulesGroup;
     private $quantity = 0;
+    private $frontOfficeURL;
 
     public function setName($name)
     {
@@ -59,5 +60,16 @@ class Product
     public function getQuantity()
     {
         return $this->quantity;
+    }
+
+    public function getFrontOfficeURL()
+    {
+        return $this->frontOfficeURL;
+    }
+
+    public function setFrontOfficeURL($url)
+    {
+        $this->frontOfficeURL = $url;
+        return $this;
     }
 }

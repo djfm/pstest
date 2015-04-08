@@ -70,6 +70,12 @@ abstract class Shop
             'PrestaShop\PSTest\Shop\Service\BackOffice',
             true
         );
+
+        $this->getContainer()->bind(
+            'front-office',
+            'PrestaShop\PSTest\Shop\Service\FrontOffice',
+            true
+        );
     }
 
     public function getErrorChecker()
