@@ -156,7 +156,6 @@ abstract class TestCase extends BaseTestCase
         if ($lock) {
             flock($lock, LOCK_UN);
             fclose($lock);
-            unlink($initialStateLockFile);
         }
     }
 
