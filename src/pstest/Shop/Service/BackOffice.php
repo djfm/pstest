@@ -21,8 +21,11 @@ class BackOffice
 
     private $defaultLanguage = null;
 
+    private $container;
+
     public function __construct(Shop $shop)
     {
+        $this->container = new PrestaShop_IoC_Container;
         $this->shop = $shop;
         $this->browser = $shop->getBrowser();
 
@@ -31,37 +34,45 @@ class BackOffice
 
     private function registerServices()
     {
-        $this->shop->getContainer()->bind(
+        $this->container->bind(
+            'PrestaShop\PSTest\Shop\Shop',
+            function () {
+                return $this->shop;
+            },
+            true
+        );
+
+        $this->container->bind(
             'taxes',
             'PrestaShop\PSTest\Shop\Service\BackOffice\Taxes',
             true
         );
 
-        $this->shop->getContainer()->bind(
+        $this->container->bind(
             'localization',
             'PrestaShop\PSTest\Shop\Service\BackOffice\Localization',
             true
         );
 
-        $this->shop->getContainer()->bind(
+        $this->container->bind(
             'carriers',
             'PrestaShop\PSTest\Shop\Service\BackOffice\Carriers',
             true
         );
 
-        $this->shop->getContainer()->bind(
+        $this->container->bind(
             'products',
             'PrestaShop\PSTest\Shop\Service\BackOffice\Products',
             true
         );
 
-        $this->shop->getContainer()->bind(
+        $this->container->bind(
             'orders',
             'PrestaShop\PSTest\Shop\Service\BackOffice\Orders',
             true
         );
 
-        $this->shop->getContainer()->bind(
+        $this->container->bind(
             'settings',
             'PrestaShop\PSTest\Shop\Service\BackOffice\Settings',
             true
@@ -70,7 +81,7 @@ class BackOffice
 
     public function get($serviceName)
     {
-        return $this->shop->getContainer()->make($serviceName);
+        return $this->container->make($serviceName);
     }
 
     public function login($email = null, $password = null, $stayLoggedIn = true)

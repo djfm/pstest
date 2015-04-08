@@ -6,6 +6,7 @@ use Exception;
 use ReflectionClass;
 
 use PrestaShop\Proc\Proc;
+use Symfony\Component\Finder\Finder;
 
 use djfm\SocketRPC\Server;
 
@@ -69,10 +70,14 @@ class Runner
 
         foreach ($this->testPaths as $path) {
             if (is_dir($path)) {
-                throw new Exception('Loading folders is not implemented yet, sorry!');
+                $finder = new Finder;
+                $finder->files()->in($path);
+                foreach ($finder as $file) {
+                    $loader->loadFile($file->getRealpath());
+                }
+            } else {
+                $loader->loadFile($path);
             }
-
-            $loader->loadFile($path);
         }
 
         $this->plansLeft = $loader->getTestPlans();

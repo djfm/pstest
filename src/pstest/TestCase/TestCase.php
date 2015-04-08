@@ -25,6 +25,7 @@ abstract class TestCase extends BaseTestCase
     private $browserFactory;
     protected $shop;
     protected $browser;
+    private $headless = false;
 
     private $shopIsTemporary = true;
 
@@ -45,7 +46,7 @@ abstract class TestCase extends BaseTestCase
     public function setRunnerPluginData($pluginName, $pluginData)
     {
         if ($pluginName === 'selenium') {
-            $this->setupSelenium($pluginData['serverSettings'], $pluginData['recordScreenshots']);
+            $this->setupSelenium($pluginData['serverSettings'], $pluginData['recordScreenshots'], $pluginData['headless']);
         } else if ($pluginName === 'config') {
             $this->systemSettings  = $pluginData['systemSettings'];
             $this->sourceSettings  = $pluginData['sourceSettings'];
@@ -53,10 +54,13 @@ abstract class TestCase extends BaseTestCase
         }
     }
 
-    public function setupSelenium(SeleniumServerSettings $serverSettings, $recordScreenshots)
+    public function setupSelenium(SeleniumServerSettings $serverSettings, $recordScreenshots, $headless)
     {
         $browserSettings = new SeleniumBrowserSettings;
         $this->browserFactory = new SeleniumBrowserFactory($serverSettings, $browserSettings);
+
+        $this->headless = $headless;
+
         $this->recordScreenshots = $recordScreenshots;
 
         register_shutdown_function(function () {
@@ -161,6 +165,13 @@ abstract class TestCase extends BaseTestCase
 
     private function setupBrowser(BrowserInterface $browser)
     {
+        if($this->headless) {
+            // When running headlessly we might have a too small window
+            // because there is probably no window manager running.
+            // So force the window size.
+            $browser->resizeWindow(1920, 1080);
+        }
+
         $browser->on('before action', function ($action) use ($browser) {
             if ($this->recordScreenshots && $this->aTestIsRunning()) {
                 $timestamp = date('Y-m-d h\hi\ms\s');

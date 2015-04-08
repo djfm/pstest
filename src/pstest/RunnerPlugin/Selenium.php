@@ -18,6 +18,7 @@ class Selenium extends RunnerPlugin
     private $server;
     private $xvfbServer;
     private $recordScreenshots = false;
+    private $headless = false;
 
     public function getCLIOptions()
     {
@@ -29,7 +30,7 @@ class Selenium extends RunnerPlugin
 
     public function setup(array $options = array())
     {
-        $headless = !empty($options['headless']);
+        $this->headless = !empty($options['headless']);
         $this->recordScreenshots = !empty($options['record-screenshots']);
 
         $ssf = new SeleniumServerFactory;
@@ -37,7 +38,7 @@ class Selenium extends RunnerPlugin
         $this->xvfbServer = null;
 
         $xsf = new XvfbServerFactory;
-		if ($headless && $xsf->hasXvfbProgram()) {
+		if ($this->headless && $xsf->hasXvfbProgram()) {
 			$this->xvfbServer = $xsf->makeServer();
 			$ssf->setXvfb($this->xvfbServer);
 		}
@@ -58,7 +59,8 @@ class Selenium extends RunnerPlugin
     {
         return [
             'serverSettings' => $this->server->getSettings(),
-            'recordScreenshots' => $this->recordScreenshots
+            'recordScreenshots' => $this->recordScreenshots,
+            'headless' => $this->headless
         ];
     }
 }
