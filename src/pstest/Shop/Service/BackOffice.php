@@ -39,6 +39,8 @@ class BackOffice
 
     private function registerServices()
     {
+        $this->container->aliasNamespace('PageObject', 'PrestaShop\PSTest\Shop\PageObject');
+
         $this->container->bind(
             'PrestaShop\PSTest\Shop\Shop',
             function () {

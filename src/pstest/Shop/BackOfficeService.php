@@ -16,4 +16,9 @@ class BackOfficeService
         $this->shop = $backOffice->getShop();
         $this->browser = $this->shop->getBrowser();
     }
+
+    public function get($serviceName)
+    {
+        return $this->backOffice->get($serviceName);
+    }
 }

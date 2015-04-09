@@ -16,7 +16,7 @@ class Carriers extends BackOfficeService
         $this->backOffice->visitController('AdminCarriers');
         $this->browser->click('#page-header-desc-carrier-new_carrier')->click('#configuration_form a.btn');
 
-        $generalSettings = new GeneralSettingsPage($this->shop);
+        $generalSettings = $this->get('PageObject:BackOffice\CarrierWizard\GeneralSettingsPage');
 
         $generalSettings
         ->setName($carrier->getName())

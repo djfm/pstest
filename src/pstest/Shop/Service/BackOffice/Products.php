@@ -6,30 +6,27 @@ use Exception;
 
 use PrestaShop\PSTest\Shop\BackOfficeService;
 use PrestaShop\PSTest\Shop\Entity\Product;
-use PrestaShop\PSTest\Shop\PageObject\BackOffice\Products\InformationPage;
-use PrestaShop\PSTest\Shop\PageObject\BackOffice\Products\PricesPage;
-use PrestaShop\PSTest\Shop\PageObject\BackOffice\Products\QuantitiesPage;
 
 class Products extends BackOfficeService
 {
     private function gotoInformationTab()
     {
         $this->browser->click('#link-Informations');
-        return new InformationPage($this->shop);
+        return $this->get('PageObject:BackOffice\Products\InformationPage');
 
     }
 
     private function gotoPricesTab()
     {
         $this->browser->click('#link-Prices');
-        return new PricesPage($this->shop);
+        return $this->get('PageObject:BackOffice\Products\PricesPage');
 
     }
 
     private function gotoQuantitiesTab()
     {
         $this->browser->click('#link-Quantities');
-        return new QuantitiesPage($this->shop);
+        return $this->get('PageObject:BackOffice\Products\QuantitiesPage');
     }
 
     private function saveProduct()

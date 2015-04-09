@@ -11,6 +11,6 @@ class Orders extends BackOfficeService
     public function visitById($id)
     {
         $this->backOffice->visitController('AdminOrders', ['vieworder', 'id_order' => $id]);
-        return new OrderPage($this->shop);
+        return $this->get('PageObject:BackOffice\OrderPage');
     }
 }

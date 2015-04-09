@@ -11,9 +11,6 @@ use PrestaShop\PSTest\Shop\Entity\TaxRule;
 use PrestaShop\PSTest\Shop\Entity\TaxRulesGroup;
 
 use PrestaShop\PSTest\Shop\Shop;
-use PrestaShop\PSTest\Shop\PageObject\BackOffice\Taxes\TaxFormPage;
-use PrestaShop\PSTest\Shop\PageObject\BackOffice\Taxes\TaxRulesGroupFormPage;
-use PrestaShop\PSTest\Shop\PageObject\BackOffice\Taxes\TaxRuleFormPage;
 
 class Taxes extends BackOfficeService
 {
@@ -21,7 +18,7 @@ class Taxes extends BackOfficeService
     {
         $this->backOffice->visitController('AdminTaxes', ['addtax']);
 
-        $form = new TaxFormPage($this->shop);
+        $form = $this->get('PageObject:BackOffice\Taxes\TaxFormPage');
 
         $id = $form
         ->setName($tax->getName())
@@ -50,7 +47,7 @@ class Taxes extends BackOfficeService
 
         $this->backOffice->visitController('AdminTaxRulesGroup', ['addtax_rules_group']);
 
-        $trgForm = new TaxRulesGroupFormPage($this->shop);
+        $trgForm = $this->get('PageObject:BackOffice\Taxes\TaxRulesGroupFormPage');
 
         $id = $trgForm->setName($trg->getName())->setEnabled($trg->getEnabled())->submit()->getId();
         $trg->setId($id);
@@ -58,7 +55,7 @@ class Taxes extends BackOfficeService
         $trgForm->addNewTaxRule();
 
         foreach ($trg->getTaxRules() as $taxRule) {
-            $taxRuleForm = new TaxRuleFormPage($this->shop);
+            $taxRuleForm = $this->get('PageObject:BackOffice\Taxes\TaxRuleFormPage');
             $taxRuleForm->setBehavior($taxRule->getBehavior());
             $taxRuleForm->setTaxId($taxRule->getTax()->getId());
             if ($taxRule->getCountry()) {

@@ -5,7 +5,6 @@ namespace PrestaShop\PSTest\Shop\Service\BackOffice;
 use Exception;
 
 use PrestaShop\PSTest\Shop\BackOfficeService;
-use PrestaShop\PSTest\Shop\PageObject\BackOffice\AdminPreferencesPage;
 
 class Settings extends BackOfficeService
 {
@@ -32,7 +31,7 @@ class Settings extends BackOfficeService
     public function setRoundingType($type)
     {
         $this->backOffice->visitController('AdminPreferences');
-        $prefs = new AdminPreferencesPage($this->shop);
+        $prefs = $this->get('PageObject:BackOffice\AdminPreferencesPage');
 
         if (!array_key_exists($type, $this->getKnownRoundingTypes())) {
             throw new Exception(sprintf('Unknown rounding type `%s`.', $type));
@@ -50,7 +49,7 @@ class Settings extends BackOfficeService
     public function setRoundingMode($mode)
     {
         $this->backOffice->visitController('AdminPreferences');
-        $prefs = new AdminPreferencesPage($this->shop);
+        $prefs = $this->get('PageObject:BackOffice\AdminPreferencesPage');
 
         if (!array_key_exists($mode, $this->getKnownRoundingModes())) {
             throw new Exception(sprintf('Unknown rounding mode `%s`.', $mode));
