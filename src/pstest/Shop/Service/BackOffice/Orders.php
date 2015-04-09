@@ -2,7 +2,7 @@
 
 namespace PrestaShop\PSTest\Shop\Service\BackOffice;
 
-use PrestaShop\PSTest\Shop\Service\BackOffice\Service as BackOfficeService;
+use PrestaShop\PSTest\Shop\BackOfficeService;
 
 use PrestaShop\PSTest\Shop\PageObject\BackOffice\OrderPage;
 

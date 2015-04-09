@@ -32,12 +32,25 @@ class BackOffice
         $this->registerServices();
     }
 
+    public function getShop()
+    {
+        return $this->shop;
+    }
+
     private function registerServices()
     {
         $this->container->bind(
             'PrestaShop\PSTest\Shop\Shop',
             function () {
                 return $this->shop;
+            },
+            true
+        );
+
+        $this->container->bind(
+            get_called_class(),
+            function () {
+                return $this;
             },
             true
         );

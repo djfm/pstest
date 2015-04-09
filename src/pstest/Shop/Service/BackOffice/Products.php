@@ -4,7 +4,7 @@ namespace PrestaShop\PSTest\Shop\Service\BackOffice;
 
 use Exception;
 
-use PrestaShop\PSTest\Shop\Service\BackOffice\Service as BackOfficeService;
+use PrestaShop\PSTest\Shop\BackOfficeService;
 use PrestaShop\PSTest\Shop\Entity\Product;
 use PrestaShop\PSTest\Shop\PageObject\BackOffice\Products\InformationPage;
 use PrestaShop\PSTest\Shop\PageObject\BackOffice\Products\PricesPage;

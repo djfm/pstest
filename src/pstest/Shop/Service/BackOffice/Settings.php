@@ -4,7 +4,7 @@ namespace PrestaShop\PSTest\Shop\Service\BackOffice;
 
 use Exception;
 
-use PrestaShop\PSTest\Shop\Service\BackOffice\Service as BackOfficeService;
+use PrestaShop\PSTest\Shop\BackOfficeService;
 use PrestaShop\PSTest\Shop\PageObject\BackOffice\AdminPreferencesPage;
 
 class Settings extends BackOfficeService
