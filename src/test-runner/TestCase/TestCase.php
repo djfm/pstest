@@ -370,7 +370,11 @@ abstract class TestCase extends PHPUnit_Framework_Assert implements TestPlanInte
             }
         }
 
-        $testDir = $this->getCurrentTest()->getShortName();
+        if ($this->aTestIsRunning()) {
+            $testDir = $this->getCurrentTest()->getShortName();
+        } else {
+            $testDir = '__setup__';
+        }
 
         $tail = [$testDir, $name];
 
@@ -401,7 +405,7 @@ abstract class TestCase extends PHPUnit_Framework_Assert implements TestPlanInte
             $path = $this->prepareFileStorage($path);
             file_put_contents($path, $contents);
         }
-        
+
         $this->aggregator->addFile(basename($path), realpath($path), $metaData);
 
         return $this;

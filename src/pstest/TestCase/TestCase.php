@@ -173,7 +173,7 @@ abstract class TestCase extends BaseTestCase
         }
 
         $browser->on('before action', function ($action) use ($browser) {
-            if ($this->recordScreenshots && $this->aTestIsRunning()) {
+            if ($this->recordScreenshots) {
                 $timestamp = date('Y-m-d h\hi\ms\s');
                 $filename = $this->prepareFileStorage('screenshots/' . "{$timestamp} before $action");
                 $screenshot = $browser->takeScreenshot($filename);
@@ -184,7 +184,7 @@ abstract class TestCase extends BaseTestCase
         });
 
         $browser->on('after action', function ($action) use ($browser)  {
-            if ($this->recordScreenshots && $this->aTestIsRunning()) {
+            if ($this->recordScreenshots) {
                 $timestamp = date('Y-m-d h\hi\ms\s');
                 $filename = $this->prepareFileStorage('screenshots/' . "{$timestamp} after $action");
                 $screenshot = $browser->takeScreenshot($filename);
