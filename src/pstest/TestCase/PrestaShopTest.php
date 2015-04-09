@@ -2,7 +2,7 @@
 
 namespace PrestaShop\PSTest\TestCase;
 
-use PrestaShop\TestRunner\TestCase\TestCase as BaseTestCase;
+use PrestaShop\TestRunner\TestCase\TestCase;
 use PrestaShop\PSTest\RunnerPlugin\Selenium as SeleniumPlugin;
 use PrestaShop\PSTest\RunnerPlugin\ConfigReader as ConfigReaderPlugin;
 
@@ -20,7 +20,7 @@ use PrestaShop\FileSystem\FileSystemHelper as FS;
 
 use Exception;
 
-abstract class TestCase extends BaseTestCase
+abstract class PrestaShopTest extends TestCase
 {
     private $browserFactory;
     protected $shop;

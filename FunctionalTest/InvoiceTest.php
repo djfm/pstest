@@ -4,11 +4,11 @@ namespace PrestaShop\PrestaShop\FunctionalTest;
 
 use Exception;
 
-use PrestaShop\PSTest\TestCase\TestCase;
+use PrestaShop\PSTest\TestCase\PrestaShopTest;
 
 use PrestaShop\PrestaShop\FunctionalTest\InvoiceTest\Scenario;
 
-class InvoiceTest extends TestCase
+class InvoiceTest extends PrestaShopTest
 {
     private $scenario;
     private $backOffice;

@@ -2,14 +2,14 @@
 
 namespace PrestaShop\PrestaShop\FunctionalTest;
 
-use PrestaShop\PSTest\TestCase\TestCase;
+use PrestaShop\PSTest\TestCase\PrestaShopTest;
 
 use PrestaShop\PSTest\Shop\Entity\Carrier;
 use PrestaShop\PSTest\Shop\Entity\CarrierZone;
 use PrestaShop\PSTest\Shop\Entity\CarrierRange;
 use PrestaShop\PSTest\Shop\Entity\TaxRulesGroup;
 
-class CarriersSetupTest extends TestCase
+class CarriersSetupTest extends PrestaShopTest
 {
     private $backOffice;
 

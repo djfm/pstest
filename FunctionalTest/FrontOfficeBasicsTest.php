@@ -2,11 +2,11 @@
 
 namespace PrestaShop\PrestaShop\FunctionalTest;
 
-use PrestaShop\PSTest\TestCase\TestCase;
+use PrestaShop\PSTest\TestCase\PrestaShopTest;
 
 use PrestaShop\PSTest\Shop\Entity\Product;
 
-class FrontOfficeBasicsTest extends TestCase
+class FrontOfficeBasicsTest extends PrestaShopTest
 {
     public function cacheInitialState()
     {

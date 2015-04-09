@@ -2,9 +2,9 @@
 
 namespace PrestaShop\PrestaShop\FunctionalTest;
 
-use PrestaShop\PSTest\TestCase\TestCase;
+use PrestaShop\PSTest\TestCase\PrestaShopTest;
 
-class SmokeTest extends TestCase
+class SmokeTest extends PrestaShopTest
 {
     public function contextProvider()
     {

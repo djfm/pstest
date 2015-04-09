@@ -2,7 +2,7 @@
 
 namespace PrestaShop\PrestaShop\FunctionalTest;
 
-use PrestaShop\PSTest\TestCase\TestCase;
+use PrestaShop\PSTest\TestCase\PrestaShopTest;
 
 use PrestaShop\PSTest\Shop\Entity\Product;
 use PrestaShop\PSTest\Shop\Entity\Country;
@@ -10,7 +10,7 @@ use PrestaShop\PSTest\Shop\Entity\Tax;
 use PrestaShop\PSTest\Shop\Entity\TaxRule;
 use PrestaShop\PSTest\Shop\Entity\TaxRulesGroup;
 
-class ProductsCreationTest extends TestCase
+class ProductsCreationTest extends PrestaShopTest
 {
     private $backOffice;
 
