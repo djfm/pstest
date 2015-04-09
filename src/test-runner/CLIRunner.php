@@ -67,7 +67,7 @@ class CLIRunner extends Runner
         $this->writeln(
             sprintf(
                 '%1$s<comment>Message:</comment> %2$s',
-                $paddingString, $e->getMessage()
+                $paddingString, str_replace("\n", "\n$paddingString         ", $e->getMessage())
             )
         );
         $this->printExceptionTrace($e, $paddingString);

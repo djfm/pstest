@@ -395,9 +395,15 @@ abstract class TestCase extends PHPUnit_Framework_Assert implements TestPlanInte
         return $path;
     }
 
-    public function addFileArtefact($path, array $metaData = array())
+    public function addFileArtefact($path, array $metaData = array(), $contents = null)
     {
+        if (null !== $contents) {
+            $path = $this->prepareFileStorage($path);
+            file_put_contents($path, $contents);
+        }
+        
         $this->aggregator->addFile(basename($path), realpath($path), $metaData);
+
         return $this;
     }
 

@@ -32,4 +32,9 @@ class OrderPage extends BackOfficePageObject
         }
         return $arr;
     }
+
+    public function getInvoicePDF()
+    {
+        return $this->browser->xhr($this->getInvoiceLink());
+    }
 }

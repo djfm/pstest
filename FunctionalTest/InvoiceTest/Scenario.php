@@ -3,6 +3,7 @@
 namespace PrestaShop\FunctionalTest\InvoiceTest;
 
 use Exception;
+use PHPUnit_Framework_Assert as Assert;
 
 use PrestaShop\PSTest\Shop\Entity\CarrierRange;
 use PrestaShop\PSTest\Shop\Entity\Carrier;
@@ -19,6 +20,8 @@ class Scenario
     private $taxRulesGroups = [];
     private $products = [];
 
+    private $totalPriceExpected = [];
+
     public function __construct()
     {
         $this->carrier = new Carrier;
@@ -26,12 +29,7 @@ class Scenario
         $this->carrier->setName($uid)->setTransitTime($uid)->setFreeShipping(true);
     }
 
-    public function getCarrier()
-    {
-        return $this->carrier;
-    }
-
-    public function getTaxRulesGroupFromRate($rate)
+    private function getTaxRulesGroupFromRate($rate)
     {
         $key = "$rate% TRG";
         if (!isset($this->taxRulesGroups[$key])) {
@@ -47,48 +45,44 @@ class Scenario
         return $this->taxRulesGroups[$key];
     }
 
-    public function getTaxRulesGroups()
+    private function loadSettings(array $scenario)
     {
-        return $this->taxRulesGroups;
+        if (isset($scenario['settings']['rounding_type'])) {
+            $this->rounding_type = $scenario['settings']['rounding_type'];
+        }
+
+        if (isset($scenario['settings']['rounding_mode'])) {
+            $this->rounding_mode = $scenario['settings']['rounding_mode'];
+        }
+
+        return $this;
     }
 
-    public function loadFromJSONFile($path)
+    private function loadCarrier(array $scenario)
     {
-        if (!file_exists($path)) {
-            throw new Exeption(sprintf('File `%s` does not exist.', $path));
-        }
-
-        $json = @json_decode(file_get_contents($path), true);
-        if (json_last_error() !== JSON_ERROR_NONE) {
-            throw new Exeption(sprintf('Invalid JSON found in file `%s`.', $path));
-        }
-
-        if (isset($json['meta']['rounding_type'])) {
-            $this->rounding_type = $json['meta']['rounding_type'];
-        }
-
-        if (isset($json['meta']['rounding_mode'])) {
-            $this->rounding_mode = $json['meta']['rounding_mode'];
-        }
-
-        if (isset($json['shipping']['price']) && $json['shipping']['price'] > 0) {
-            $carrierPrice = $json['shipping']['price'];
+        if (isset($scenario['shipping']['price']) && $scenario['shipping']['price'] > 0) {
+            $carrierPrice = $scenario['shipping']['price'];
             $range = new CarrierRange;
             $range->setFromIncluded(0)->setToExcluded(1000);
             $range->setCost($carrierPrice);
             $this->carrier->addRange($range)->setOutOfRangeBehavior(Carrier::BEHAVIOR_HIGHEST);
 
-            if (isset($json['shipping']['taxRate']) && $json['shipping']['taxRate'] > 0) {
-                $rate = $json['shipping']['taxRate'];
+            if (isset($scenario['shipping']['tax_rate']) && $scenario['shipping']['tax_rate'] > 0) {
+                $rate = $scenario['shipping']['tax_rate'];
                 $this->carrier->setTaxRulesGroup($this->getTaxRulesGroupFromRate($rate));
             }
         }
 
-        if (!isset($json['products'])) {
+        return $this;
+    }
+
+    private function loadProducts(array $scenario)
+    {
+        if (!isset($scenario['products'])) {
             throw new Exception('Missing products definition!');
         }
 
-        foreach ($json['products'] as $name => $data) {
+        foreach ($scenario['products'] as $name => $data) {
             $product = new Product;
             $product
                 ->setName($name)
@@ -96,12 +90,121 @@ class Scenario
                 ->setQuantity($data['quantity'])
             ;
 
-            if (isset($data['taxRate'])) {
-                $product->setTaxRulesGroup($this->getTaxRulesGroupFromRate($data['taxRate']));
+            if (isset($data['tax_rate'])) {
+                $product->setTaxRulesGroup($this->getTaxRulesGroupFromRate($data['tax_rate']));
             }
 
             $this->products[] = $product;
         }
+    }
+
+    private function loadExpectations(array $scenario)
+    {
+        if (!$scenario['expect']) {
+            throw new Exception('No assertions found! Missing an `expect` key in scenario.');
+        }
+
+        foreach ($scenario['expect'] as $what => $how) {
+            if (is_scalar($how)) {
+                $this->assertsTotalPrice($what, $how);
+            }
+        }
+    }
+
+    public function loadFromJSONFile($path)
+    {
+        if (!file_exists($path)) {
+            throw new Exception(sprintf('File `%s` does not exist.', $path));
+        }
+
+        $scenario = @json_decode(file_get_contents($path), true);
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            throw new Exception(sprintf('Invalid JSON found in file `%s`.', $path));
+        }
+
+        $this->loadSettings($scenario);
+        $this->loadCarrier($scenario);
+        $this->loadProducts($scenario);
+        $this->loadExpectations($scenario);
+    }
+
+    public function normalizePriceExpectationFormulation($formulation)
+    {
+        $formulation = trim($formulation);
+
+        $normalized = explode(' ', $formulation)[0];
+
+        $beforeDiscounts = !preg_match('/\bafter\s+(?:discount|discounts)\b/', $formulation);
+        $beforeTaxes = !preg_match('/\bafter\s+(?:tax|taxes)\b/', $formulation);
+
+        if ($beforeDiscounts) {
+            $normalized .= '_before_discounts';
+        } else {
+            $normalized .= '_after_discounts';
+        }
+
+        if ($beforeTaxes) {
+            $normalized .= '_before_taxes';
+        } else {
+            $normalized .= '_after_taxes';
+        }
+
+        if (null === $this->mapTotalPriceKey($normalized)) {
+            throw new Exception(sprintf('Cannot make an assertion about unknown price `%s`.', $normalized));
+        }
+
+        return $normalized;
+    }
+
+    public function assertsTotalPrice($field, $expectedValue)
+    {
+        $this->totalPriceExpected[$this->normalizePriceExpectationFormulation($field)] = $expectedValue;
+
+        return $this;
+    }
+
+    private function mapTotalPriceKey($normalizedKey)
+    {
+        $mapping = [
+            'products_before_discounts_before_taxes' => 'products_before_discounts_tax_excl',
+            'products_before_discounts_after_taxes' => 'products_before_discounts_tax_incl',
+            'products_after_discounts_before_taxes' => 'products_after_discounts_tax_excl',
+            'products_after_discounts_after_taxes' => 'products_after_discounts_tax_incl',
+            'shipping_before_discounts_before_taxes' => 'shipping_tax_excl',
+            'shipping_before_discounts_after_taxes' => 'shipping_tax_incl',
+            'wrapping_before_discounts_before_taxes' => 'shipping_tax_excl',
+            'wrapping_before_discounts_after_taxes' => 'wrapping_tax_incl',
+            'total_after_discounts_before_taxes' => 'total_paid_tax_excl',
+            'total_after_discounts_after_taxes' => 'total_paid_tax_incl',
+        ];
+
+        if (!array_key_exists($normalizedKey, $mapping)) {
+            return null;
+        }
+
+        return $mapping[$normalizedKey];
+    }
+
+    private function runTotalPriceAssertions(array $footer)
+    {
+        foreach ($this->totalPriceExpected as $key => $expected) {
+            $nativeKey = $this->mapTotalPriceKey($key);
+            if (!array_key_exists($nativeKey, $footer)) {
+                throw new Exception(sprintf('Missing `%s` field in invoice footer.', $nativeKey));
+            }
+            Assert::assertEquals($expected, $footer[$nativeKey], sprintf('Invalid price for `%s`.', $key));
+        }
+    }
+
+    public function checkInvoiceData(array $invoiceData)
+    {
+        if (!isset($invoiceData['footer'])) {
+            throw new Exception('Missing footer in invoice data.');
+        }
+
+        $this->runTotalPriceAssertions($invoiceData['footer']);
+
+        return $this;
     }
 
     public function getRoundingType()
@@ -117,5 +220,15 @@ class Scenario
     public function getProducts()
     {
         return $this->products;
+    }
+
+    public function getTaxRulesGroups()
+    {
+        return $this->taxRulesGroups;
+    }
+
+    public function getCarrier()
+    {
+        return $this->carrier;
     }
 }

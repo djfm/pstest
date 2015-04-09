@@ -1,28 +1,32 @@
 {
-	"meta": {
+	"settings": {
 		"rounding_type": "line",
 		"rounding_mode": "half_up"
 	},
 	"shipping": {
 		"price": 5,
-		"taxRate": 19.6
+		"tax_rate": 19.6
 	},
 	"products": {
 		"A Product": {
 			"price": 2.599,
-			"taxRate": 5.5,
+			"tax_rate": 5.5,
 			"quantity": 100
 		}
 	},
 	"expect": {
-		"invoice": {
-			"total": {
-				"to_pay_tax_included": 275
+		"products before taxes before discounts": 259.9,
+		"products after taxes after discounts": 274.19,
+		"shipping before taxes": 5,
+		"shipping after taxes": 5.98,
+		"total after discounts before taxes": 264.9,
+		"total after discounts after taxes": 280.17,
+		"taxes": {
+			"products": {
+				"5.5": 14.29
 			},
-			"tax": {
-				"products": {
-					"6.0": 15.57
-				}
+			"shipping": {
+				"19.6": 0.98
 			}
 		}
 	}

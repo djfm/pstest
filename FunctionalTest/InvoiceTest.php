@@ -118,11 +118,31 @@ class InvoiceTest extends TestCase
 
     public function test_order_is_validated_in_the_backoffice()
     {
-        $this->invoiceData = $this->backOffice
-                                  ->get('orders')
-                                  ->visitById($this->orderId)
-                                  ->validate()
-                                  ->getInvoiceData()
-        ;
+        $orderPage = $this->backOffice
+                          ->get('orders')
+                          ->visitById($this->orderId)
+                          ->validate();
+
+        $this->invoiceData = $orderPage->getInvoiceData();
+
+        $this->addFileArtefact('invoice.json', [], json_encode($this->invoiceData, JSON_PRETTY_PRINT));
+        $this->addFileArtefact('invoice.pdf', [], $orderPage->getInvoicePDF());
+    }
+
+    public function test_invoice_has_expected_values()
+    {
+        $this->scenario->checkInvoiceData($this->invoiceData);
+    }
+
+    // @todo
+    public function xtest_invoice_coherence()
+    {
+
+    }
+
+    // @todo
+    public function xtest_invoice_stable_if_rounding_settings_changed()
+    {
+
     }
 }
