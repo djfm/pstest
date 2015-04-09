@@ -1,12 +1,12 @@
 <?php
 
-namespace PrestaShop\FunctionalTest;
+namespace PrestaShop\PrestaShop\FunctionalTest;
 
 use Exception;
 
 use PrestaShop\PSTest\TestCase\TestCase;
 
-use PrestaShop\FunctionalTest\InvoiceTest\Scenario;
+use PrestaShop\PrestaShop\FunctionalTest\InvoiceTest\Scenario;
 
 class InvoiceTest extends TestCase
 {

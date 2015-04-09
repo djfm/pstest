@@ -1,6 +1,6 @@
 <?php
 
-namespace PrestaShop\FunctionalTest;
+namespace PrestaShop\PrestaShop\FunctionalTest;
 
 use PrestaShop\PSTest\TestCase\TestCase;
 

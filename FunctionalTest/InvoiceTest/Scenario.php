@@ -1,6 +1,6 @@
 <?php
 
-namespace PrestaShop\FunctionalTest\InvoiceTest;
+namespace PrestaShop\PrestaShop\FunctionalTest\InvoiceTest;
 
 use Exception;
 use PHPUnit_Framework_Assert as Assert;

@@ -35,7 +35,7 @@
             "PrestaShop\\TestRunner\\Tests\\Fixtures\\": "tests/test-runner/fixtures/",
             "PrestaShop\\IoC\\Tests\\": "tests/ioc/",
             "PrestaShop\\IoC\\Tests\\Fixtures\\": "tests/ioc/fixtures/",
-            "PrestaShop\\FunctionalTest\\": "FunctionalTest"
+            "PrestaShop\\PrestaShop\\FunctionalTest\\": "FunctionalTest"
         }
     }
 }
