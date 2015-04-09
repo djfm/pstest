@@ -5,6 +5,7 @@ namespace PrestaShop\PSTest\TestCase;
 use PrestaShop\TestRunner\TestCase\TestCase;
 use PrestaShop\PSTest\RunnerPlugin\Selenium as SeleniumPlugin;
 use PrestaShop\PSTest\RunnerPlugin\ConfigReader as ConfigReaderPlugin;
+use PrestaShop\PSTest\RunnerPlugin\PrestaShopTest as PrestaShopTestPlugin;
 
 use PrestaShop\Selenium\SeleniumServerSettings;
 use PrestaShop\PSTest\SystemSettings;
@@ -35,11 +36,14 @@ abstract class PrestaShopTest extends TestCase
 
     private $recordScreenshots = false;
 
+    private $prestaShopTestPluginOptions = [];
+
     public function getRunnerPlugins()
     {
         return [
             'selenium' => new SeleniumPlugin,
-            'config' => new ConfigReaderPlugin
+            'config' => new ConfigReaderPlugin,
+            'PrestaShopTest' => new PrestaShopTestPlugin
         ];
     }
 
@@ -51,6 +55,8 @@ abstract class PrestaShopTest extends TestCase
             $this->systemSettings  = $pluginData['systemSettings'];
             $this->sourceSettings  = $pluginData['sourceSettings'];
             $this->defaultSettings = $pluginData['defaultSettings'];
+        } else if ($pluginName === 'PrestaShopTest') {
+            $this->prestaShopTestPluginOptions = $pluginData;
         }
     }
 
@@ -198,8 +204,10 @@ abstract class PrestaShopTest extends TestCase
     public function tearDownAfterClass()
     {
         if ($this->shopIsTemporary) {
-            $this->shop->get('database')->drop();
-            $this->shop->get('files')->removeAll();
+            if (empty($this->prestaShopTestPluginOptions['no-cleanup'])) {
+                $this->shop->get('database')->drop();
+                $this->shop->get('files')->removeAll();
+            }
         }
     }
 }
