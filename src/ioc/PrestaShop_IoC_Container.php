@@ -4,10 +4,16 @@ class PrestaShop_IoC_Container
 {
     private $bindings = array();
     private $instances = array();
+    private $namespaceAliases = array();
 
     public function knows($serviceName)
     {
         return array_key_exists($serviceName, $this->bindings);
+    }
+
+    private function knowsNamespaceAlias($alias)
+    {
+        return array_key_exists($alias, $this->namespaceAliases);
     }
 
     public function bind($serviceName, $constructor, $shared = false)
@@ -26,8 +32,39 @@ class PrestaShop_IoC_Container
         return $this;
     }
 
+    public function aliasNamespace($alias, $namespacePrefix)
+    {
+        if ($this->knowsNamespaceAlias($alias)) {
+            throw new PrestaShop_IoC_Exception(
+                sprintf(
+                    'Namespace alias `%1$s` already exists and points to `%2$s`',
+                    $alias, $this->namespaceAliases[$alias]
+                )
+            );
+        }
+
+        $this->namespaceAliases[$alias] = $namespacePrefix;
+        return $this;
+    }
+
+    public function resolveClassName($className)
+    {
+        $colonPos = strpos($className, ':');
+        if (0 !== $colonPos) {
+            $alias = substr($className, 0, $colonPos);
+            if ($this->knowsNamespaceAlias($alias)) {
+                $class = ltrim(substr($className, $colonPos + 1), '\\');
+                return $this->namespaceAliases[$alias] . '\\' . $class;
+            }
+        }
+
+        return $className;
+    }
+
     private function makeInstanceFromClassName($className, array $alreadySeen)
     {
+        $className = $this->resolveClassName($className);
+
         try {
             $refl = new ReflectionClass($className);
         } catch (ReflectionException $re) {

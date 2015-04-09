@@ -75,6 +75,24 @@ class PrestaShop_IoC_Container_Test extends PHPUnit_Framework_TestCase
         ));
     }
 
+    public function test_classes_can_be_loaded_with_custom_namespace_prefix()
+    {
+        $this->container->aliasNamespace('Fixtures', 'PrestaShop\IoC\Tests\Fixtures');
+
+        $this->assertEquals('PrestaShop\IoC\Tests\Fixtures\Dummy', get_class(
+            $this->container->make('Fixtures:Dummy')
+        ));
+    }
+
+    /**
+     * @expectedException PrestaShop_IoC_Exception
+     */
+    public function test_an_alias_cannot_be_changed()
+    {
+        $this->container->aliasNamespace('Fixtures', 'PrestaShop\IoC\Tests\Fixtures');
+        $this->container->aliasNamespace('Fixtures', 'PrestaShop\IoC\Tests\Other');
+    }
+
     public function test_deps_are_fetched_automagically()
     {
         $this->assertEquals('PrestaShop\IoC\Tests\Fixtures\ClassWithDep', get_class(
