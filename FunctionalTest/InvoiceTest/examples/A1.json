@@ -1,0 +1,34 @@
+{
+	"settings": {
+		"rounding_type": "item",
+		"rounding_mode": "half_up"
+	},
+	"shipping": {
+		"price": 0
+	},
+	"products": {
+		"Mars La Rouge": {
+			"price": 13.799,
+			"tax_rate": 4.449,
+			"quantity": 1
+		},
+		"Tablette Bling Bling": {
+			"price": 18.249,
+			"tax_rate": 4.449,
+			"quantity": 97
+		},
+		"License Office": {
+			"price": 19.555,
+			"tax_rate": 20,
+			"quantity": 99
+		},
+		"Housse balladeur": {
+			"price": 24.505,
+			"tax_rate": 20,
+			"quantity": 99
+		}
+	},
+	"expect": {
+		"total after taxes after discounts": 7098.35
+	}
+}

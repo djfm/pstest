@@ -21,6 +21,7 @@ class Scenario
     private $products = [];
 
     private $totalPriceExpected = [];
+    private $taxBreakdownsExpected = [];
 
     public function __construct()
     {
@@ -107,6 +108,10 @@ class Scenario
         foreach ($scenario['expect'] as $what => $how) {
             if (is_scalar($how)) {
                 $this->assertsTotalPrice($what, $how);
+            } else if ('taxes' === $what){
+                foreach ($how as $type => $amountsByRate) {
+                    $this->assertsTaxBreakdown($type, $amountsByRate);
+                }
             }
         }
     }
@@ -163,6 +168,16 @@ class Scenario
         return $this;
     }
 
+    public function assertsTaxBreakdown($type, array $amountsByRate)
+    {
+        if ($type !== 'products') {
+            throw new Exception(sprintf('Don\'t know how to assert `%s` tax breakdown.', $type));
+        }
+        $this->taxBreakdownsExpected[$type] = $amountsByRate;
+
+        return $this;
+    }
+
     private function mapTotalPriceKey($normalizedKey)
     {
         $mapping = [
@@ -196,6 +211,43 @@ class Scenario
         }
     }
 
+    public function runTaxBreakdownsAssertions(array $taxTab)
+    {
+        $floatToStr = function ($float) {
+            return sprintf('%.10f', $float);
+        };
+
+        foreach ($this->taxBreakdownsExpected as $type => $expectedAmounts) {
+            if ('products' === $type) {
+
+                $actualAmounts = [];
+                foreach ($taxTab['product_tax_breakdown'] as $rate => $amounts) {
+                    $actualAmounts[$floatToStr($rate)] = (float)$amounts['total_amount'];
+                }
+
+                foreach ($expectedAmounts as $rate => $expected) {
+                    $rate = $floatToStr($rate);
+                    if (!array_key_exists($rate, $actualAmounts)) {
+                        throw new Exception(
+                            sprintf(
+                                'There is no tax amount for rate `%1$s` in the `%2$s` breakdown.',
+                                $rate, $type
+                            )
+                        );
+                    }
+                    Assert::assertEquals(
+                        $expected,
+                        $actualAmounts[$rate],
+                        sprintf(
+                            'Incorrect tax amount for rate `%1$s` in the `%2$s` breakdown.',
+                            $rate, $type
+                        )
+                    );
+                }
+            }
+        }
+    }
+
     public function checkInvoiceData(array $invoiceData)
     {
         if (!isset($invoiceData['footer'])) {
@@ -203,6 +255,7 @@ class Scenario
         }
 
         $this->runTotalPriceAssertions($invoiceData['footer']);
+        $this->runTaxBreakdownsAssertions($invoiceData['tax_tab']);
 
         return $this;
     }
