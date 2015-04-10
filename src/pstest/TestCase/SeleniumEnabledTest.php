@@ -8,7 +8,7 @@ use PrestaShop\Selenium\SeleniumServerSettings;
 use PrestaShop\Selenium\SeleniumBrowserFactory;
 use PrestaShop\Selenium\SeleniumBrowserSettings;
 
-class SeleniumEnabledTest extends TestCase
+abstract class SeleniumEnabledTest extends TestCase
 {
     protected $browserFactory;
     protected $recordScreenshots = false;
