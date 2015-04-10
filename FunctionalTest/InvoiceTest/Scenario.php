@@ -170,7 +170,7 @@ class Scenario
 
     public function assertsTaxBreakdown($type, array $amountsByRate)
     {
-        if ($type !== 'products') {
+        if ($type !== 'products' && $type !== 'shipping') {
             throw new Exception(sprintf('Don\'t know how to assert `%s` tax breakdown.', $type));
         }
         $this->taxBreakdownsExpected[$type] = $amountsByRate;
@@ -218,32 +218,36 @@ class Scenario
         };
 
         foreach ($this->taxBreakdownsExpected as $type => $expectedAmounts) {
-            if ('products' === $type) {
+            $actualAmounts = [];
 
-                $actualAmounts = [];
+            if ('products' === $type) {
                 foreach ($taxTab['product_tax_breakdown'] as $rate => $amounts) {
                     $actualAmounts[$floatToStr($rate)] = (float)$amounts['total_amount'];
                 }
+            } else if ('shipping' === $type) {
+                foreach ($taxTab['shipping_tax_breakdown'] as $amounts) {
+                    $actualAmounts[$floatToStr($amounts['rate'])] = (float)$amounts['total_amount'];
+                }
+            }
 
-                foreach ($expectedAmounts as $rate => $expected) {
-                    $rate = $floatToStr($rate);
-                    if (!array_key_exists($rate, $actualAmounts)) {
-                        throw new Exception(
-                            sprintf(
-                                'There is no tax amount for rate `%1$s` in the `%2$s` breakdown.',
-                                $rate, $type
-                            )
-                        );
-                    }
-                    Assert::assertEquals(
-                        $expected,
-                        $actualAmounts[$rate],
+            foreach ($expectedAmounts as $rate => $expected) {
+                $rate = $floatToStr($rate);
+                if (!array_key_exists($rate, $actualAmounts)) {
+                    throw new Exception(
                         sprintf(
-                            'Incorrect tax amount for rate `%1$s` in the `%2$s` breakdown.',
+                            'There is no tax amount for rate `%1$s` in the `%2$s` breakdown.',
                             $rate, $type
                         )
                     );
                 }
+                Assert::assertEquals(
+                    $expected,
+                    $actualAmounts[$rate],
+                    sprintf(
+                        'Incorrect tax amount for rate `%1$s` in the `%2$s` breakdown.',
+                        $rate, $type
+                    )
+                );
             }
         }
     }
