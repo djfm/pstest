@@ -2,17 +2,12 @@
 
 namespace PrestaShop\PSTest\TestCase;
 
-use PrestaShop\TestRunner\TestCase\TestCase;
-use PrestaShop\PSTest\RunnerPlugin\Selenium as SeleniumPlugin;
 use PrestaShop\PSTest\RunnerPlugin\ConfigReader as ConfigReaderPlugin;
 use PrestaShop\PSTest\RunnerPlugin\PrestaShopTest as PrestaShopTestPlugin;
 
-use PrestaShop\Selenium\SeleniumServerSettings;
 use PrestaShop\PSTest\SystemSettings;
 use PrestaShop\PSTest\LocalShopSourceSettings;
 
-use PrestaShop\Selenium\SeleniumBrowserFactory;
-use PrestaShop\Selenium\SeleniumBrowserSettings;
 use PrestaShop\Selenium\Browser\BrowserInterface;
 
 use PrestaShop\PSTest\Shop\LocalShopFactory;
@@ -21,12 +16,9 @@ use PrestaShop\FileSystem\FileSystemHelper as FS;
 
 use Exception;
 
-abstract class PrestaShopTest extends TestCase
+abstract class PrestaShopTest extends SeleniumEnabledTest
 {
-    private $browserFactory;
     protected $shop;
-    protected $browser;
-    private $headless = false;
 
     private $shopIsTemporary = true;
 
@@ -34,44 +26,29 @@ abstract class PrestaShopTest extends TestCase
     private $sourceSettings;
     private $defaultSettings;
 
-    private $recordScreenshots = false;
-
     private $prestaShopTestPluginOptions = [];
 
     public function getRunnerPlugins()
     {
-        return [
-            'selenium' => new SeleniumPlugin,
-            'config' => new ConfigReaderPlugin,
-            'PrestaShopTest' => new PrestaShopTestPlugin
-        ];
+        $plugins = parent::getRunnerPlugins();
+
+        $plugins['PrestaShopTest'] = new PrestaShopTestPlugin;
+        $plugins['config'] = new ConfigReaderPlugin;
+
+        return $plugins;
     }
 
     public function setRunnerPluginData($pluginName, $pluginData)
     {
-        if ($pluginName === 'selenium') {
-            $this->setupSelenium($pluginData['serverSettings'], $pluginData['recordScreenshots'], $pluginData['headless']);
-        } else if ($pluginName === 'config') {
+        parent::setRunnerPluginData($pluginName, $pluginData);
+
+        if ($pluginName === 'config') {
             $this->systemSettings  = $pluginData['systemSettings'];
             $this->sourceSettings  = $pluginData['sourceSettings'];
             $this->defaultSettings = $pluginData['defaultSettings'];
         } else if ($pluginName === 'PrestaShopTest') {
             $this->prestaShopTestPluginOptions = $pluginData;
         }
-    }
-
-    public function setupSelenium(SeleniumServerSettings $serverSettings, $recordScreenshots, $headless)
-    {
-        $browserSettings = new SeleniumBrowserSettings;
-        $this->browserFactory = new SeleniumBrowserFactory($serverSettings, $browserSettings);
-
-        $this->headless = $headless;
-
-        $this->recordScreenshots = $recordScreenshots;
-
-        register_shutdown_function(function () {
-            $this->browserFactory->quitLaunchedBrowsers();
-        });
     }
 
     /**
