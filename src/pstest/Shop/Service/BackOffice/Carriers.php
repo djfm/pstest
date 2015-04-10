@@ -26,9 +26,9 @@ class Carriers extends BackOfficeService
 
         $costsSettings = $generalSettings->nextStep();
         $costsSettings
-        ->setAddHandlingCosts($carrier->getAddHandlingCosts())
-        ->setFreeShipping($carrier->getFreeShipping())
-        ->setBillAccordingToWeight($carrier->getBillAccordingToWeight())
+            ->setAddHandlingCosts($carrier->getAddHandlingCosts())
+            ->setFreeShipping($carrier->getFreeShipping())
+            ->setBillAccordingToWeight($carrier->getBillAccordingToWeight())
         ;
 
         if ($carrier->getTaxRulesGroup()) {
@@ -45,6 +45,11 @@ class Carriers extends BackOfficeService
         $costsSettings->setOutOfRangeBehavior($carrier->getOutOfRangeBehavior());
 
         $costsSettings->setRanges($carrier->getRanges());
+
+        if ($carrier->getFreeShipping()) {
+            // Assume we want the carrier on all zones if we said free shipping.
+            $costsSettings->checkAllZones();
+        }
 
         $sizeWeightEtc = $costsSettings->nextStep();
         $sizeWeightEtc

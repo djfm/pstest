@@ -23,11 +23,13 @@ class ProductPage extends PageObject
 
     public function addtoCart()
     {
-        try {
-            $numberOfProductsInCart = (int)$this->browser->getText('.shopping_cart .ajax_cart_quantity');
-        } catch (Exception $e) {
-            $numberOfProductsInCart = 0;
-        }
+        $getNumberOfProductsInCart = function () {
+            try {
+                return (int)$this->browser->getText('.shopping_cart .ajax_cart_quantity');
+            } catch (Exception $e) {
+                return 0;
+            }
+        };
 
         $quantityToAdd = $this->getQuantity();
 
@@ -35,10 +37,12 @@ class ProductPage extends PageObject
             throw new Exception('Looks like there is actually no product to add to the cart!');
         }
 
+        $expectedQuantityAfterAdd = $getNumberOfProductsInCart() + $quantityToAdd;
+
         $this->browser->click('#add_to_cart button');
 
-        Spin::assertTrue(function () use ($numberOfProductsInCart, $quantityToAdd) {
-            return $numberOfProductsInCart + $quantityToAdd === $this->getQuantity();
+        Spin::assertTrue(function () use ($expectedQuantityAfterAdd, $getNumberOfProductsInCart) {
+            return $expectedQuantityAfterAdd === $getNumberOfProductsInCart();
         }, 5, 1000, 'Could not add product to the cart.');
 
         $closePopinSelector = '#layer_cart span.cross';

@@ -39,6 +39,14 @@ class CostsSettingsPage
         return $this;
     }
 
+    public function checkAllZones()
+    {
+        foreach ($this->browser->all('tr.fees > td:nth-of-type(2) input[type=checkbox]') as $enableZone) {
+            $enableZone->click();
+        }
+        return $this;
+    }
+
     public function getFreeShipping()
     {
         return $this->shop->getPSForm()->getToggleValue('is_free');
