@@ -16,7 +16,12 @@ class TestCaseLoader implements LoaderInterface
             $filterValue = $m[2];
 
             if (array_key_exists($filterKey, $context)) {
-                return $context[$filterKey] != $filterValue;
+                $exp = '/' . $filterValue . '/';
+                if (false !== @preg_match($exp, null)) {
+                    return !preg_match($exp, $context[$filterKey]);
+                } else {
+                    return strpos($context[$filterKey], $filter) === false;
+                }
             }
         }
 

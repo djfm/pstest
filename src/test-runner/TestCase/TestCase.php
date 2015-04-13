@@ -53,7 +53,7 @@ abstract class TestCase extends PHPUnit_Framework_Assert implements TestPlanInte
             $sawExcludingFilters = true;
 
             $expFilter = '/' . $filter . '/';
-            if (@preg_match($expFilter, null)) {
+            if (false !== @preg_match($expFilter, null)) {
                 // if the passed filter can be interpreted as a regexp, use it as such
                 if (preg_match($expFilter, $testName)) {
                     return false;
