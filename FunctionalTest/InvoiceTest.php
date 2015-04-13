@@ -99,6 +99,23 @@ class InvoiceTest extends PrestaShopTest
         }
     }
 
+    /**
+     * @beforeClass
+     */
+    public function createNeededCartRules()
+    {
+        $cartRules = $this->scenario->getCartRules();
+
+        if (empty($cartRules)) {
+            $this->info('No Cart Rules necessary');
+        } else {
+            $this->info('Creating the Cart Rules I need');
+            foreach ($cartRules as $cartRule) {
+                $this->shop->get('back-office')->get('cart-rules')->createCartRule($cartRule);
+            }
+        }
+    }
+
     public function test_order_is_made()
     {
         $this->shop->get('front-office')->login();

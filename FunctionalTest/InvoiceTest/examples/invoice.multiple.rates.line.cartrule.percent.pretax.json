@@ -1,0 +1,38 @@
+{
+	"settings": {
+		"rounding_type": "line",
+		"rounding_mode": "up"
+	},
+	"shipping": {
+		"price": 0
+	},
+	"products": {
+		"Product A": {
+			"price": 10.17,
+			"tax_rate": 20,
+			"quantity": 2
+		},
+		"Product B": {
+			"price": 5.1,
+			"tax_rate": 5.5,
+			"quantity": 3
+		},
+		"Product C": {
+			"price": 2.85,
+			"tax_rate": 5.5,
+			"quantity": 4
+		}
+	},
+	"discounts": {
+		"10 percent off!": "10 %"
+	},
+	"expect": {
+        "total after discounts after taxes": 47.33,
+		"taxes": {
+			"products": {
+				"20.0": 3.67,
+				"5.5": 1.33
+			}
+		}
+	}
+}

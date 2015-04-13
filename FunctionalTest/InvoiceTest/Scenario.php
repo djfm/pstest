@@ -11,6 +11,7 @@ use PrestaShop\PSTest\Shop\Entity\Tax;
 use PrestaShop\PSTest\Shop\Entity\TaxRule;
 use PrestaShop\PSTest\Shop\Entity\TaxRulesGroup;
 use PrestaShop\PSTest\Shop\Entity\Product;
+use PrestaShop\PSTest\Shop\Entity\CartRule;
 
 class Scenario
 {
@@ -19,6 +20,7 @@ class Scenario
     private $carrier;
     private $taxRulesGroups = [];
     private $products = [];
+    private $cartRules = [];
 
     private $totalPriceExpected = [];
     private $taxBreakdownsExpected = [];
@@ -116,6 +118,29 @@ class Scenario
         }
     }
 
+    private function loadCartRules(array $scenario)
+    {
+        if (!isset($scenario['discounts'])) {
+            return;
+        }
+
+        foreach ($scenario['discounts'] as $cartRuleName => $data) {
+            if (!is_string($data)) {
+                throw new Exception('Invalid discount definition.');
+            }
+            $cartRule = new CartRule;
+            $this->cartRules[] = $cartRule;
+            $cartRule->setName($cartRuleName)->setFreeShipping(false);
+
+            $m = [];
+            if (preg_match('/^\s*(\d+(?:\.\d+)?)\s*%\s*$/', $data, $m)) {
+                $percent = (float)$m[1];
+                $cartRule->setDiscountType(CartRule::TYPE_PERCENT);
+                $cartRule->setDiscountAmount($percent);
+            }
+        }
+    }
+
     public function loadFromJSONFile($path)
     {
         if (!file_exists($path)) {
@@ -130,6 +155,7 @@ class Scenario
         $this->loadSettings($scenario);
         $this->loadCarrier($scenario);
         $this->loadProducts($scenario);
+        $this->loadCartRules($scenario);
         $this->loadExpectations($scenario);
     }
 
@@ -287,5 +313,10 @@ class Scenario
     public function getCarrier()
     {
         return $this->carrier;
+    }
+
+    public function getCartRules()
+    {
+        return $this->cartRules;
     }
 }
