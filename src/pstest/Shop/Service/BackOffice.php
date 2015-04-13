@@ -92,6 +92,12 @@ class BackOffice
             'PrestaShop\PSTest\Shop\Service\BackOffice\Settings',
             true
         );
+
+        $this->container->bind(
+            'cart-rules',
+            'PrestaShop\PSTest\Shop\Service\BackOffice\CartRules',
+            true
+        );
     }
 
     public function get($serviceName)
