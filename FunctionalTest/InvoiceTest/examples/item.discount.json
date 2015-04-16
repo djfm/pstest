@@ -1,0 +1,32 @@
+{
+	"settings": {
+		"rounding_type": "item",
+		"rounding_mode": "half_up"
+	},
+	"carrier": {
+		"price": 0
+	},
+	"products": {
+		"A": {
+			"price": 1.125,
+			"tax_rate": 20,
+			"quantity": 10
+		},
+		"B": {
+			"price": 2.3456,
+			"tax_rate": 20,
+			"quantity": 20
+		},
+		"C": {
+			"price": 3.166,
+			"tax_rate": 5.5,
+			"quantity": 30
+		}
+	},
+	"discounts": {
+			"30 after tax": "30 after tax"
+	},
+	"expect": {
+        "total after taxes after discounts": 139.9
+	}
+}

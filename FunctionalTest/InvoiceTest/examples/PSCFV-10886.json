@@ -1,0 +1,24 @@
+{
+	"settings": {
+		"rounding_type": "line",
+		"rounding_mode": "half_up"
+	},
+	"shipping": {
+		"price": 0
+	},
+	"products": {
+		"A Product": {
+			"price": 2.594340,
+			"tax_rate": 6,
+			"quantity": 100
+		}
+	},
+	"expect": {
+        "total after taxes after discounts": 275,
+        "taxes": {
+            "products": {
+                "6.0": 15.57
+            }
+        }
+	}
+}
