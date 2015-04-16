@@ -53,7 +53,7 @@ class CartRules extends BackOfficeService
 
         $this->browser->click('#desc-cart_rule-save-and-stay');
 
-        $this->shop->getErrorChecker()->checkStandardFormFeedback();
+        $this->browser->checkStandardFormFeedback();
 
         $id = (int)$this->browser->getURLParameter('id_cart_rule');
 

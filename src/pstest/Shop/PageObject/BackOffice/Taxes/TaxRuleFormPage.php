@@ -72,9 +72,10 @@ class TaxRuleFormPage
 
     public function submit()
     {
-        $this->browser->clickButtonNamed('create_ruleAndStay');
-
-        $this->shop->getErrorChecker()->checkStandardFormFeedback('Could not save TaxRulesGroup form.');
+        $this->browser
+             ->clickButtonNamed('create_ruleAndStay')
+             ->checkStandardFormFeedback('Could not save TaxRulesGroup form.')
+        ;
 
         return $this;
     }

@@ -32,7 +32,7 @@ class Products extends BackOfficeService
     private function saveProduct()
     {
         $this->browser->clickButtonNamed('submitAddproductAndStay');
-        $this->shop->getErrorChecker()->checkStandardFormFeedback();
+        $this->browser->checkStandardFormFeedback();
         return $this;
     }
 

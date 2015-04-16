@@ -21,20 +21,20 @@ class FinalPage
 
     public function setEnabled($yes = true)
     {
-        $this->shop->getPSForm()->toggle('active', $yes);
+        $this->browser->toggle('active', $yes);
         return $this;
     }
 
     public function getEnabled()
     {
-        return $this->shop->getPSForm()->getToggleValue('active');
+        return $this->browser->getToggleValue('active');
     }
 
     public function submit()
     {
         $this->browser->click('a.buttonFinish');
 
-        $this->shop->getErrorChecker()->checkStandardFormFeedback();
+        $this->browser->checkStandardFormFeedback();
 
         return $this;
     }

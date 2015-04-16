@@ -2,14 +2,14 @@
 
 namespace PrestaShop\PSTest\Shop\PageObject\Installer;
 
-use PrestaShop\Selenium\Browser\BrowserInterface;
+use PrestaShop\PSTest\Shop\Browser\Browser;
 use PrestaShop\PSTest\Helper\SpinnerHelper as Spin;
 
 class SystemConfigurationPage
 {
     private $browser;
 
-    public function __construct(BrowserInterface $browser)
+    public function __construct(Browser $browser)
     {
         $this->browser = $browser;
     }

@@ -9,7 +9,7 @@ class ActionsPage extends BackOfficePageObject
 {
     public function setFreeShipping($yes)
     {
-        $this->shop->getPSForm()->toggle('free_shipping', $yes);
+        $this->browser->toggle('free_shipping', $yes);
         return $this;
     }
 

@@ -48,9 +48,10 @@ class TaxRulesGroupFormPage
 
     public function submit()
     {
-        $this->browser->click('#tax_rules_group_form_submit_btn');
-
-        $this->shop->getErrorChecker()->checkStandardFormFeedback('Could not save TaxRulesGroup form.');
+        $this->browser
+             ->click('#tax_rules_group_form_submit_btn')
+             ->checkStandardFormFeedback('Could not save TaxRulesGroup form.')
+        ;
 
         return $this;
     }

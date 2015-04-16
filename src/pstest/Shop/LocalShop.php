@@ -5,6 +5,7 @@ namespace PrestaShop\PSTest\Shop;
 use Exception;
 
 use PrestaShop\Selenium\Browser\BrowserInterface;
+use PrestaShop\PSTest\Shop\Browser\Browser;
 
 use PrestaShop\PSTest\Shop\Service\Installer;
 
@@ -31,7 +32,7 @@ class LocalShop extends Shop implements ShopInterface
     {
         parent::__construct();
 
-        $this->browser        = $browser;
+        $this->browser        = new Browser($browser, $this);
         $this->systemSettings = $systemSettings;
         $this->sourceSettings = $sourceSettings;
 

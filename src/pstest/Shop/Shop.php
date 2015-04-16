@@ -58,7 +58,7 @@ abstract class Shop
         );
 
         $this->getContainer()->bind(
-            'PrestaShop\Selenium\Browser\BrowserInterface',
+            'PrestaShop\PSTest\Shop\Browser\Browser',
             function () {
                 return $this->getBrowser();
             },
@@ -75,20 +75,6 @@ abstract class Shop
             'front-office',
             'PrestaShop\PSTest\Shop\Service\FrontOffice',
             true
-        );
-    }
-
-    public function getErrorChecker()
-    {
-        return $this->getContainer()->make(
-            'PrestaShop\PSTest\Shop\BrowserExtension\ErrorChecker'
-        );
-    }
-
-    public function getPSForm()
-    {
-        return $this->getContainer()->make(
-            'PrestaShop\PSTest\Shop\BrowserExtension\PSForm'
         );
     }
 

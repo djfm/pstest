@@ -8,8 +8,6 @@ use PrestaShop\PSTest\RunnerPlugin\PrestaShopTest as PrestaShopTestPlugin;
 use PrestaShop\PSTest\SystemSettings;
 use PrestaShop\PSTest\LocalShopSourceSettings;
 
-use PrestaShop\Selenium\Browser\BrowserInterface;
-
 use PrestaShop\PSTest\Shop\LocalShopFactory;
 use PrestaShop\PSTest\Shop\DefaultSettings;
 use PrestaShop\FileSystem\FileSystemHelper as FS;
@@ -146,7 +144,7 @@ abstract class PrestaShopTest extends SeleniumEnabledTest
         }
     }
 
-    private function setupBrowser(BrowserInterface $browser)
+    private function setupBrowser($browser)
     {
         if($this->headless) {
             // When running headlessly we might have a too small window

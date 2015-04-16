@@ -5,7 +5,6 @@ namespace PrestaShop\PSTest\Shop;
 use Exception;
 
 use PrestaShop\Selenium\SeleniumBrowserFactory;
-
 use PrestaShop\PSTest\SystemSettings;
 use PrestaShop\PSTest\LocalShopSourceSettings;
 

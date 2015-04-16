@@ -24,18 +24,18 @@ class CostsSettingsPage
 
     public function setAddHandlingCosts($yes = true)
     {
-        $this->shop->getPSForm()->toggle('shipping_handling', $yes);
+        $this->browser->toggle('shipping_handling', $yes);
         return $this;
     }
 
     public function getAddHandlingCosts()
     {
-        return $this->shop->getPSForm()->getToggleValue('shipping_handling');
+        return $this->browser->getToggleValue('shipping_handling');
     }
 
     public function setFreeShipping($yes = true)
     {
-        $this->shop->getPSForm()->toggle('is_free', $yes);
+        $this->browser->toggle('is_free', $yes);
         return $this;
     }
 
@@ -49,7 +49,7 @@ class CostsSettingsPage
 
     public function getFreeShipping()
     {
-        return $this->shop->getPSForm()->getToggleValue('is_free');
+        return $this->browser->getToggleValue('is_free');
     }
 
     public function setBillAccordingToPrice($yes = true)

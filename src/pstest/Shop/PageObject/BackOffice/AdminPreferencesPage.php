@@ -32,8 +32,7 @@ class AdminPreferencesPage extends PageObject
 
     public function submit()
     {
-        $this->browser->clickButtonNamed('submitOptionsconfiguration');
-        $this->shop->getErrorChecker()->checkStandardFormFeedback();
+        $this->browser->clickButtonNamed('submitOptionsconfiguration')->checkStandardFormFeedback();
         return $this;
     }
 }
