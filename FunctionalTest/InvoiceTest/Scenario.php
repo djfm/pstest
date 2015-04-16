@@ -167,6 +167,8 @@ class Scenario
                     }
                 }
 
+                $cartRule->setApplyToCheapestProduct(!empty($data['apply_to_cheapest_product']));
+
             } else {
                 throw new Exception('Unknown cart rule specification.');
             }

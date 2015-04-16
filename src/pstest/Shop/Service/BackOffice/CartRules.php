@@ -47,6 +47,10 @@ class CartRules extends BackOfficeService
             $cartRule->getDiscountIsBeforeTaxes()
         );
 
+        if ($cartRule->getApplyToCheapestProduct()) {
+            $actionsPage->applyToCheapestProduct();
+        }
+
         $this->browser->click('#desc-cart_rule-save-and-stay');
 
         $this->shop->getErrorChecker()->checkStandardFormFeedback();

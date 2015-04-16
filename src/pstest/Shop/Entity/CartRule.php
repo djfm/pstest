@@ -17,6 +17,7 @@ class CartRule
     private $discountIsBeforeTaxes = true;
 
     private $productRestrictions = [];
+    private $applyToCheapestProduct;
 
     public function setName($name)
     {
@@ -94,5 +95,16 @@ class CartRule
     public function getProductRestrictions()
     {
         return $this->productRestrictions;
+    }
+
+    public function setApplyToCheapestProduct($yes)
+    {
+        $this->applyToCheapestProduct = $yes;
+        return $this;
+    }
+
+    public function getApplyToCheapestProduct()
+    {
+        return $this->applyToCheapestProduct;
     }
 }

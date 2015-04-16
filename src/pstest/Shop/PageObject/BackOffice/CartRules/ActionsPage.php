@@ -31,4 +31,10 @@ class ActionsPage extends BackOfficePageObject
 
         return $this;
     }
+
+    public function applyToCheapestProduct()
+    {
+        $this->browser->clickLabelFor('apply_discount_to_cheapest');
+        return $this;
+    }
 }

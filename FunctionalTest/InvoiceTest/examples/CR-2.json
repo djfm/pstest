@@ -1,0 +1,42 @@
+{
+	"settings": {
+		"rounding_type": "line",
+		"rounding_mode": "half_up"
+	},
+	"shipping": {
+		"price": 0
+	},
+	"products": {
+		"A": {
+			"price": 10,
+			"tax_rate": 30,
+			"quantity": 2
+		},
+		"B": {
+			"price": 20,
+			"tax_rate": 20,
+			"quantity": 2
+		},
+		"C": {
+			"price": 30,
+			"tax_rate": 10,
+			"quantity": 2
+		}
+	},
+	"discounts": {
+		"Apply To Cheapest": {
+			"apply_to_cheapest_product": true,
+			"discount": "100%"
+		}
+	},
+	"expect": {
+        "total after taxes after discounts": 128.33,
+        "taxes": {
+            "products": {
+                "10": 5.5,
+                "20": 7.33,
+                "30": 5.5
+            }
+        }
+	}
+}
