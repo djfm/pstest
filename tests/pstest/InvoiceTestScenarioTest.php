@@ -4,7 +4,7 @@ namespace PrestaShop\PSTest\Tests;
 
 use PHPUnit_Framework_TestCase;
 
-use PrestaShop\FunctionalTest\InvoiceTest\Scenario;
+use PrestaShop\PrestaShop\FunctionalTest\InvoiceTest\Scenario;
 
 class InvoiceTestScenarioTest extends PHPUnit_Framework_TestCase
 {
