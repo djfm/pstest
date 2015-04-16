@@ -70,6 +70,14 @@ class Products extends BackOfficeService
 
         $product->setFrontOfficeURL($this->browser->getAttribute('#page-header-desc-product-preview', 'href'));
 
+        $id = (int)$this->browser->getURLParameter('id_product');
+
+        if ($id <= 0) {
+            throw new Exception('No product ID found after product creation.');
+        }
+
+        $product->setId($id);
+
         return $this;
     }
 }

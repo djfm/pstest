@@ -118,6 +118,24 @@ class Scenario
         }
     }
 
+    private function setCartRuleDiscountFromString(CartRule $cartRule, $strDiscount)
+    {
+        $m = [];
+        if (preg_match('/^\s*(\d+(?:\.\d+)?)\s*%\s*$/', $strDiscount, $m)) {
+            $percent = (float)$m[1];
+            $cartRule->setDiscountType(CartRule::TYPE_PERCENT);
+            $cartRule->setDiscountAmount($percent);
+        } else if (preg_match('/^\s*(\d+(?:\.\d+)?)\s+(before|after)\s+(?:tax|taxes)\s*$/', $strDiscount, $m)) {
+            $amount = (float)$m[1];
+            $cartRule->setDiscountType(CartRule::TYPE_AMOUNT);
+            $cartRule->setDiscountAmount($amount);
+
+            $cartRule->setDiscountIsBeforeTaxes(($m[2] === 'before'));
+        } else {
+            throw new Exception(sprintf('Invalid cart rule discount specification `%s`.', $strDiscount));
+        }
+    }
+
     private function loadCartRules(array $scenario)
     {
         if (!isset($scenario['discounts'])) {
@@ -125,18 +143,32 @@ class Scenario
         }
 
         foreach ($scenario['discounts'] as $cartRuleName => $data) {
-            if (!is_string($data)) {
-                throw new Exception('Invalid discount definition.');
-            }
+
             $cartRule = new CartRule;
             $this->cartRules[] = $cartRule;
             $cartRule->setName($cartRuleName)->setFreeShipping(false);
 
-            $m = [];
-            if (preg_match('/^\s*(\d+(?:\.\d+)?)\s*%\s*$/', $data, $m)) {
-                $percent = (float)$m[1];
-                $cartRule->setDiscountType(CartRule::TYPE_PERCENT);
-                $cartRule->setDiscountAmount($percent);
+            if (is_string($data)) {
+                $this->setCartRuleDiscountFromString($cartRule, $data);
+            } else if(is_array($data)) {
+                if (!isset($data['discount'])) {
+                    throw new Exception('Missing discount field in cart rule definitiion.');
+                }
+                $this->setCartRuleDiscountFromString($cartRule, $data['discount']);
+
+                if (isset($data['product_restrictions']['products'])) {
+                    foreach ($data['product_restrictions']['products'] as $productName) {
+                        foreach ($this->products as $product) {
+                            if ($product->getName() === $productName) {
+                                $cartRule->addProductRestriction($product);
+                                break;
+                            }
+                        }
+                    }
+                }
+
+            } else {
+                throw new Exception('Unknown cart rule specification.');
             }
         }
     }

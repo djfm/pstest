@@ -2,6 +2,8 @@
 
 namespace PrestaShop\PSTest\Shop\Service\BackOffice;
 
+use Exception;
+
 use PrestaShop\PSTest\Shop\BackOfficeService;
 
 use PrestaShop\PSTest\Shop\Entity\CartRule;
@@ -15,6 +17,23 @@ class CartRules extends BackOfficeService
         $informationPage = $this->get('PageObject:BackOffice\CartRules\InformationPage');
 
         $informationPage->setName($cartRule->getName());
+
+        $products = $cartRule->getProductRestrictions();
+        if (!empty($products)) {
+            $this->browser->click('#cart_rule_link_conditions');
+            $conditionsPage = $this->get('PageObject:BackOffice\CartRules\ConditionsPage');
+
+            $productIds = [];
+            foreach ($products as $product) {
+                if (!$product->getId()) {
+                    throw new Exception('A product is missing an ID, cannot use it as a Cart Rule restriction.');
+                }
+                $productIds[] = $product->getId();
+            }
+
+            $conditionsPage->addProductRestrictions($productIds);
+        }
+
 
         $this->browser->click('#cart_rule_link_actions');
 

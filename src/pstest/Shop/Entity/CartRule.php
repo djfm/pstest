@@ -16,6 +16,8 @@ class CartRule
     private $discountAmount = 0;
     private $discountIsBeforeTaxes = true;
 
+    private $productRestrictions = [];
+
     public function setName($name)
     {
         $this->name = $name;
@@ -80,5 +82,17 @@ class CartRule
     public function getId()
     {
         return $this->id;
+    }
+
+    public function addProductRestriction(Product $product)
+    {
+        $this->productRestrictions[] = $product;
+
+        return $this;
+    }
+
+    public function getProductRestrictions()
+    {
+        return $this->productRestrictions;
     }
 }

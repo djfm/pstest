@@ -28,7 +28,7 @@
 			"product_restrictions": {
 				"products": ["A", "B"]
 			},
-			"discount": "10 before tax"
+			"discount": "10 before taxes"
 		}
 	},
 	"expect": {
