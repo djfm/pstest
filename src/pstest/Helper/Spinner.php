@@ -56,10 +56,6 @@ class Spinner
                 }
             }
 
-            if ($outOfTime()) {
-                break;
-            }
-
             usleep($this->interval_ms * 1000);
         }
     }
@@ -75,9 +71,11 @@ class Spinner
         $actualTest = $this->test;
 
         $this->test = function () use ($message, $actualTest) {
-            if ($actualTest($this) !== true) {
+            $res = $actualTest($this);
+            if (!$res) {
                 throw new Exception($message);
             }
+            return $res;
         };
 
         return $this->assertNoException();

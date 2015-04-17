@@ -60,6 +60,13 @@ class SpinnerTest extends PHPUnit_Framework_TestCase
         }, 0.1);
     }
 
+    public function test_assertTrue_Returns_Value_From_Test()
+    {
+        $this->assertEquals(42, Spin::assertTrue(function () {
+            return 42;
+        }, 0.1));
+    }
+
     /**
      * @expectedException Exception
      */

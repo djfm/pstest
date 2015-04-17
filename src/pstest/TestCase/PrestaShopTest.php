@@ -144,38 +144,6 @@ abstract class PrestaShopTest extends SeleniumEnabledTest
         }
     }
 
-    private function setupBrowser($browser)
-    {
-        if($this->headless) {
-            // When running headlessly we might have a too small window
-            // because there is probably no window manager running.
-            // So force the window size.
-            $browser->resizeWindow(1920, 1080);
-        }
-
-        $browser->on('before action', function ($action) use ($browser) {
-            if ($this->recordScreenshots) {
-                $timestamp = date('Y-m-d h\hi\ms\s');
-                $filename = $this->prepareFileStorage('screenshots/' . "{$timestamp} about to $action");
-                $screenshot = $browser->takeScreenshot($filename);
-                $this->addFileArtefact($screenshot, [
-                    'role' => 'screenshot'
-                ]);
-            }
-        });
-
-        $browser->on('after action', function ($action) use ($browser)  {
-            if ($this->recordScreenshots) {
-                $timestamp = date('Y-m-d h\hi\ms\s');
-                $filename = $this->prepareFileStorage('screenshots/' . "{$timestamp} after $action");
-                $screenshot = $browser->takeScreenshot($filename);
-                $this->addFileArtefact($screenshot, [
-                    'role' => 'screenshot'
-                ]);
-            }
-        });
-    }
-
     public function tearDownAfterClass()
     {
         if ($this->shopIsTemporary) {

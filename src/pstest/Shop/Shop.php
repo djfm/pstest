@@ -78,6 +78,11 @@ abstract class Shop
         );
     }
 
+    public function getName()
+    {
+        return $this->getFrontOfficeURL();
+    }
+
     abstract public function getBrowser();
 
     abstract public function getFrontOfficeURL();

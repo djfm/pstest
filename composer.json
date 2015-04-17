@@ -6,7 +6,8 @@
         "symfony/finder": "~2.6",
         "facebook/webdriver": "0.5.*",
         "djfm/socket-rpc": "~1",
-        "evenement/evenement": "~2.0"
+        "evenement/evenement": "~2.0",
+        "symfony/dom-crawler": "~2.6"
     },
     "authors": [
         {
@@ -35,7 +36,8 @@
             "PrestaShop\\TestRunner\\Tests\\Fixtures\\": "tests/test-runner/fixtures/",
             "PrestaShop\\IoC\\Tests\\": "tests/ioc/",
             "PrestaShop\\IoC\\Tests\\Fixtures\\": "tests/ioc/fixtures/",
-            "PrestaShop\\PrestaShop\\FunctionalTest\\": "FunctionalTest"
+            "PrestaShop\\PrestaShop\\FunctionalTest\\": "FunctionalTest",
+            "PrestaShop\\PrestaShop\\CloudTest\\": "CloudTest"
         }
     }
 }
