@@ -7,7 +7,9 @@
         "facebook/webdriver": "0.5.*",
         "djfm/socket-rpc": "~1",
         "evenement/evenement": "~2.0",
-        "symfony/dom-crawler": "~2.6"
+        "symfony/dom-crawler": "~2.6",
+        "ext-imap": "*",
+        "ext-curl": "*"
     },
     "authors": [
         {
